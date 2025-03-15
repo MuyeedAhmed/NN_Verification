@@ -7,13 +7,7 @@ from sklearn.datasets import load_iris
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-# data = load_iris()
-# data = load_breast_cancer()
-# X = data.data
-# X = (X - np.min(X)) / (np.max(X) - np.min(X))
-# y = data.target.reshape(-1, 1)
 
-# df = pd.read_csv("/Users/muyeedahmed/Desktop/Gitcode/AD_Attack/Dataset/appendicitis.csv")
 df = pd.read_csv("Dataset/appendicitis.csv")
 X = df.iloc[:, :-1].to_numpy()
 scaler = StandardScaler()
@@ -22,7 +16,6 @@ y = df.iloc[:, -1].to_numpy().reshape(-1, 1)
 
 trn = RunNN(X, y, hs1=3, hs2=2, out_size=1, lr = 0.1, epoch=10000)
 nn, predictions = trn.TrainReturnWeights()
-# print("NN done", len(X_filtered), len(X_wrong))
 
 print("W1")
 print(nn.W1)

@@ -61,4 +61,4 @@ def forward_pass_with_constraints(X, y, W1, b1, W2, b2, W3, b3, solver):
         # else:
         # solver.add(y_predict[row_idx] == y_row[0])
 
-    return y_predict, Z3
+    return y_predict

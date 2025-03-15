@@ -53,7 +53,7 @@ Newb3 = [[nn.b3[0, i] + b3_offset[i] for i in range(l3_size)]]
 # Newb1 = [[nn.b1[0, i] for i in range(l1_size)]]
 # Newb2 = [[nn.b2[0, i] for i in range(l2_size)]]
 # Newb3 = [[nn.b3[0, i] for i in range(l3_size)]]
-y_predict, Z3 = forward_pass_with_constraints(X_test, y_test, NewW1, Newb1, NewW2, Newb2, NewW3, Newb3, solver)
+y_predict = forward_pass_with_constraints(X_test, y_test, NewW1, Newb1, NewW2, Newb2, NewW3, Newb3, solver)
 
 # for row_idx in range(len(X_test)):
 #     if row_idx == 4:
@@ -109,10 +109,6 @@ if solver.check() == sat:
         for j in range(len(W3_offset[0])):
             print(model[W3_offset[i][j]].as_fraction()/nn.W3[i][j], end=", ")
         print("]")
-    print("Z3: [", end="")
-    for i in range(len(y_test)):
-        print(float(model[Z3[i]].as_fraction()), end=" ")
-    print("]")
 
     print("y pred: [", end="")
     for i in range(len(y_test)):
