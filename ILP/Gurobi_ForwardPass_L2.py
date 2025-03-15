@@ -11,6 +11,12 @@ def ForwardPass(model, X, W1, W2, W3, b1, b2, b3):
     A1 = model.addVars(len(X), l1_size, lb=0, name="A1") 
 
     M = 100
+    # M = model.addVar(vtype=GRB.CONTINUOUS, name="M")  # Big-M variable
+
+    # for j in range(l1_size):
+    #     for row_idx in range(len(X)):  # Loop through all samples
+    #         model.addConstr(M >= gp.quicksum(abs(X[row_idx][i]) * W1[i][j] for i in range(len(X[0]))) + b1[0][j],
+    #                         f"BigM_LB_{row_idx}_{j}")
     z1 = model.addVars(len(X), l1_size, vtype=GRB.BINARY, name="z1")
     z2 = model.addVars(len(X), l2_size, vtype=GRB.BINARY, name="z2")
     z3 = model.addVars(len(X), l3_size, vtype=GRB.BINARY, name="z3")
