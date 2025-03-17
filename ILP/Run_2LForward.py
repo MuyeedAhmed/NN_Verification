@@ -1,5 +1,5 @@
 from NN.Network import NN, RunNN
-from Gurobi_ForwardPass_L2 import ForwardPass
+from Gurobi_ForwardPass_L2_Indicator import ForwardPass
 
 import gurobipy as gp
 from gurobipy import GRB
@@ -28,8 +28,8 @@ def main():
 
     runtimes = [] 
     for idx in range(len(X)):
-        # if idx != 4:
-        #     continue
+        if idx != 3:
+            continue
         t0 = time.time()
         RunForward(nn, X, y, idx)
         runtimes.append(time.time()-t0)
