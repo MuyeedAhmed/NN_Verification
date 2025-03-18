@@ -21,8 +21,9 @@ def main():
     trn = RunNN(X, y_true, hs1=3, hs2=3, out_size=1, lr = 0.1, epoch=10000)
     nn, y_predict = trn.TrainReturnWeights()
     
-    X = X[15:23]
-    y = y_predict[15:23]
+    X = X[15:35]
+    y = y_predict[15:35]
+    # y = y_predict
     # print(y_true[15:25].reshape(1,-1))
     # print(y_test.reshape(1,-1))
 
@@ -104,7 +105,9 @@ def RunForward(nn, X, y, flp_idx):
     model.setObjective(objective, GRB.MINIMIZE)
 
     model.addConstr(objective >= 0, "NonNegativeObjective")
-    model.setParam(GRB.Param.TimeLimit, 10)
+    # model.setParam(GRB.Param.TimeLimit, 10)
+    model.setParam('MIPGap', 0.5)
+    model.setParam('TimeLimit', 60)
     model.optimize()
 
     if model.status == GRB.OPTIMAL:
