@@ -1,6 +1,9 @@
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
+import sys
+import os
+from scipy.stats import gmean
 
 def relu(x):
     return np.maximum(0, x)
@@ -63,45 +66,45 @@ class NeuralNetwork_AfterNoise:
     def predict(self, X):
         return (self.forward(X) >= 0.5).astype(int)
 
-def print_magnitude(nn_before, nn_after):
-    print("W1")
-    for i in range(nn_before.W1.shape[0]):
-        print("[", end='')
-        for j in range(nn_before.W1.shape[1]):
-            print(f"{(nn_after.W1[i][j] - nn_before.W1[i][j]) / nn_before.W1[i][j]:.5f}", end=", ")
-        print("]")
+def print_magnitude(nn_before, nn_after, test_len, missmatch, threshold, f_id):
+    # print("W1")
+    # for i in range(nn_before.W1.shape[0]):
+    #     print("[", end='')
+    #     for j in range(nn_before.W1.shape[1]):
+    #         print(f"{(nn_after.W1[i][j] - nn_before.W1[i][j]) / nn_before.W1[i][j]:.5f}", end=", ")
+    #     print("]")
 
-    print("W2")
-    for i in range(nn_before.W2.shape[0]):
-        print("[", end='')
-        for j in range(nn_before.W2.shape[1]):
-            print(f"{(nn_after.W2[i][j] - nn_before.W2[i][j]) / nn_before.W2[i][j]:.5f}", end=", ")
-        print("]")
+    # print("W2")
+    # for i in range(nn_before.W2.shape[0]):
+    #     print("[", end='')
+    #     for j in range(nn_before.W2.shape[1]):
+    #         print(f"{(nn_after.W2[i][j] - nn_before.W2[i][j]) / nn_before.W2[i][j]:.5f}", end=", ")
+    #     print("]")
 
-    print("W3")
-    for i in range(nn_before.W3.shape[0]):
-        print("[", end='')
-        for j in range(nn_before.W3.shape[1]):
-            print(f"{(nn_after.W3[i][j] - nn_before.W3[i][j]) / nn_before.W3[i][j]:.5f}", end=", ")
-        print("]")
+    # print("W3")
+    # for i in range(nn_before.W3.shape[0]):
+    #     print("[", end='')
+    #     for j in range(nn_before.W3.shape[1]):
+    #         print(f"{(nn_after.W3[i][j] - nn_before.W3[i][j]) / nn_before.W3[i][j]:.5f}", end=", ")
+    #     print("]")
 
-    print("b1")
-    print("[", end='')
-    for i in range(len(nn_after.b1)):
-        print(f"{(nn_after.b1[i] - nn_before.b1[i]) / nn_before.b1[i]:.5f}", end=", ")
-    print("]")
+    # print("b1")
+    # print("[", end='')
+    # for i in range(len(nn_after.b1)):
+    #     print(f"{(nn_after.b1[i] - nn_before.b1[i]) / nn_before.b1[i]:.5f}", end=", ")
+    # print("]")
 
-    print("b2")
-    print("[", end='')
-    for i in range(len(nn_after.b2)):
-        print(f"{(nn_after.b2[i] - nn_before.b2[i]) / nn_before.b2[i]:.5f}", end=", ")
-    print("]")
+    # print("b2")
+    # print("[", end='')
+    # for i in range(len(nn_after.b2)):
+    #     print(f"{(nn_after.b2[i] - nn_before.b2[i]) / nn_before.b2[i]:.5f}", end=", ")
+    # print("]")
 
-    print("b3")
-    print("[", end='')
-    for i in range(len(nn_after.b3)):
-        print(f"{(nn_after.b3[i] - nn_before.b3[i]) / nn_before.b3[i]:.5f}", end=", ")
-    print("]")
+    # print("b3")
+    # print("[", end='')
+    # for i in range(len(nn_after.b3)):
+    #     print(f"{(nn_after.b3[i] - nn_before.b3[i]) / nn_before.b3[i]:.5f}", end=", ")
+    # print("]")
 
     W1_diff = [[(nn_after.W1[i][j] - nn_before.W1[i][j]) / nn_before.W1[i][j] 
             for j in range(nn_before.W1.shape[1])] for i in range(nn_before.W1.shape[0])]
@@ -127,28 +130,72 @@ def print_magnitude(nn_before, nn_after):
                                 b1_diff.flatten(), b2_diff.flatten(), b3_diff.flatten()])
 
     max_abs_value = np.max(np.abs(all_diffs))
-    median_value = np.median(all_diffs)
-    mean_value = np.mean(all_diffs)
+    median_value = np.median(np.abs(all_diffs))
+    mean_value = np.mean(np.abs(all_diffs))
+    sum_abs_value = np.sum(np.abs(all_diffs))
+    geomean_value = gmean(np.abs(all_diffs) + 1) - 1
+
+    print("Mismatch:", missmatch)
+    print("Sum of Absolute Differences:", sum_abs_value)
+    print("Geometric Mean of Differences:", geomean_value)
 
     print("Max Absolute Difference:", max_abs_value)
     print("Median Difference:", median_value)
     print("Mean Difference:", mean_value)
 
-df = pd.read_csv("../Dataset/appendicitis.csv")
-X = df.iloc[:, :-1].to_numpy()
-scaler = StandardScaler()
-X = scaler.fit_transform(X)
-y = df.iloc[:, -1].to_numpy().reshape(-1, 1)
-X_test = X[15:23]
-y_test = y[15:23]
-# print(y_test.reshape(1, -1))
+    if not os.path.exists("Stats/Result_32_15.csv"):
+        with open("Stats/Result_32_15.csv", "w") as f:
+            f.write("Test_Length,Threshold,Flip_ID,Mismatch,Max_Abs_Diff,Median_Diff,Mean_Diff,Sum_Abs_Diff,Geomean_Diff\n")
+    with open("Stats/Result_32_15.csv", "a") as f:
+        f.write(f"{test_len},{threshold},{f_id},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
-nn_before = NeuralNetwork_BeforeNoise()
-print(nn_before.predict(X_test).reshape(1, -1))
+def main():
+    df = pd.read_csv("../Dataset/appendicitis.csv")
+    X = df.iloc[:, :-1].to_numpy()
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
+    y = df.iloc[:, -1].to_numpy().reshape(-1, 1)
 
-nn_after = NeuralNetwork_AfterNoise()
-print(nn_after.predict(X_test).reshape(1, -1))
+    X_test = X[15:30]
+    y_test = y[15:30]
 
-# print("Magnitude")
-# print_magnitude(nn_before, nn_after)
+    nn_before = NeuralNetwork_BeforeNoise()
+    labels_before = nn_before.predict(X_test).reshape(1, -1)[0]
 
+    nn_after = NeuralNetwork_AfterNoise()
+    labels_after = nn_after.predict(X_test).reshape(1, -1)[0]
+
+    test_len = 15
+    f_id = 0
+    threshold = 0
+    if len(sys.argv) > 1:
+        f_id = int(sys.argv[1])
+        test_len = int(sys.argv[2])
+        threshold = float(sys.argv[3])
+        print(f"Before : ", end="")
+        for i in range(len(labels_before)):
+            if i == f_id:
+                print(f"\033[0;32m{labels_before[i]}\033[0m", end=" ")
+            else:
+                print(labels_before[i], end=" ")
+        print()
+        missmatch = 0
+        print(f"After  : ", end="")
+        for i in range(len(labels_after)):
+            if labels_after[i] != labels_before[i]:
+                print(f"\033[0;31m{labels_after[i]}\033[0m", end=" ")
+                if i != f_id:
+                    missmatch += 1
+            else:
+                if i == f_id:
+                    missmatch += 1
+                print(labels_after[i], end=" ")
+        print()
+    else:
+        print("Before: ", labels_before)
+        print("After: ", labels_after)
+
+    print_magnitude(nn_before, nn_after, test_len, missmatch, threshold, f_id)
+
+if __name__ == "__main__":
+    main()
