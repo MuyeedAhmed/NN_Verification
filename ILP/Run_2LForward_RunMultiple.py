@@ -10,7 +10,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-output_file = "Output.txt"
+output_file = "Output_20.txt"
 
 def main():
     df = pd.read_csv("../Dataset/appendicitis.csv")
@@ -18,24 +18,24 @@ def main():
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
     y_true = df.iloc[:, -1].to_numpy().reshape(-1, 1)
-    trn = RunNN(X, y_true, hs1=3, hs2=2, out_size=1, lr = 0.1, epoch=10000)
+    trn = RunNN(X, y_true, hs1=3, hs2=3, out_size=1, lr = 0.1, epoch=10000)
     nn, y_predict = trn.TrainReturnWeights()
     
-    X = X[15:30]
-    y = y_predict[15:30]
+    X = X[0:20]
+    y = y_predict[0:20]
     # y = y_predict
     # print(y_true[15:25].reshape(1,-1))
     # print(y_test.reshape(1,-1))
 
-    runtimes = []
+    # runtimes = []
     tolerances = [1e-9, 1e-7, 1e-5, 1e-3, 1e-1, 1]
     for tol in tolerances:
         for idx in range(len(X)):
             # if idx != 14:
             #     continue
-            t0 = time.time()
+            # t0 = time.time()
             RunForward(nn, X, y, idx, tol)
-            runtimes.append(time.time()-t0)
+            # runtimes.append(time.time()-t0)
             # break 
 
     # print(np.mean(runtimes), runtimes)
@@ -66,19 +66,6 @@ def RunForward(nn, X, y, flp_idx, tol):
     Newb3 = [[nn.b3[0, i] + b3_offset[i] for i in range(l3_size)]]
 
     Z3 = ForwardPass(model, X, NewW1, NewW2, NewW3, Newb1, Newb2, Newb3)
-    # y_g = {i: model.addVar(vtype=GRB.BINARY, name=f"y2_{i}") for i in range(len(X))}
-    # f = {i: model.addVar(vtype=GRB.BINARY, name=f"flip_{i}") for i in range(len(X))}
-
-    # M = 1e16
-    # model.addConstr(sum(f[i] for i in range(len(X))) == 1, "one_flip")
-
-    # for i in range(len(X)):
-    #     y_scalar = int(y[i])
-    #     model.addConstr(Z3[i, 0] >= -M * (1 - y_g[i]), f"Z3_{i}_lower_bound")
-    #     model.addConstr(Z3[i, 0] <= -0.0000000000001 + M * y_g[i], f"Z3_{i}_upper_bound")
-
-    #     model.addConstr(y_g[i] - y_scalar <= f[i], f"flip_upper_{i}")
-    #     model.addConstr(y_scalar - y_g[i] <= f[i], f"flip_lower_{i}")
         
     for i in range(len(X)):
         if i == flp_idx:
@@ -92,28 +79,8 @@ def RunForward(nn, X, y, flp_idx, tol):
             else:
                 model.addConstr(Z3[i, 0] <= -tol, f"Z3_{i}_negative")
 
-    # y_bin = model.addVars(len(y), vtype=GRB.BINARY, name="y_bin")
-
-    # for i in range(len(y)):
-    #     model.addConstr(y_bin[i] == y[i], name=f"fix_y_{i}")
-
-    # for i in range(len(X)):
-    #     if i == flp_idx:
-    #         # model.addGenConstrIndicator(y_bin[i], False, Z3[i, 0] >= 0, name=f"Z3_pos_{i}")
-    #         # model.addGenConstrIndicator(y_bin[i], True, Z3[i, 0] <= -EPS, name=f"Z3_neg_{i}")
-    #         model.addConstr((y_bin[i] == 0) >> (Z3[i, 0] >= 0), name=f"Z3_pos_{i}")
-    #         model.addConstr((y_bin[i] == 1) >> (Z3[i, 0] <= -1e-16), name=f"Z3_neg_{i}")
-
-    #     else:
-    #         # model.addGenConstrIndicator(y_bin[i], True, Z3[i, 0] >= 0, name=f"Z3_pos_{i}")
-    #         # model.addGenConstrIndicator(y_bin[i], False, Z3[i, 0] <= -EPS, name=f"Z3_neg_{i}")
-    #         model.addConstr((y_bin[i] == 1) >> (Z3[i, 0] >= 0), name=f"Z3_pos_{i}")
-    #         model.addConstr((y_bin[i] == 0) >> (Z3[i, 0] <= -1e-16), name=f"Z3_neg_{i}")
-
 
     objective = (
-        # gp.quicksum(Z2[i, 0] for i in range(len(X)) if y_predict[i] == 1) - 
-        # gp.quicksum(Z2[i, 0] for i in range(len(X)) if y_predict[i] == 0) + 
         gp.quicksum(b1_offset[i] * b1_offset[i] for i in range(l1_size)) + 
         gp.quicksum(b2_offset[i] * b2_offset[i] for i in range(l2_size)) + 
         gp.quicksum(b3_offset[i] * b3_offset[i] for i in range(l3_size)) +
@@ -128,11 +95,10 @@ def RunForward(nn, X, y, flp_idx, tol):
     model.addConstr(objective >= 0, "NonNegativeObjective")
     # model.setParam(GRB.Param.TimeLimit, 10)
     # model.setParam('MIPGap', 0.5)
-    model.setParam('TimeLimit', 20)
+    model.setParam('TimeLimit', 60)
     model.optimize()
     # model.setParam(GRB.Param.NumericFocus, 3)
 
-    # if model.status == GRB.OPTIMAL:
     if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
         if model.SolCount == 0:
             print("Timeout")
@@ -180,53 +146,13 @@ def RunForward(nn, X, y, flp_idx, tol):
         with open(output_file, "a") as f:
             subprocess.run(["python", "Weights/TestWeights.py", str(flp_idx), str(len(X)), str(tol)], stdout=f, stderr=f, text=True)
 
-        # print("W1_offset:")
-        # for i in range(len(nn.W1)):
-        #     print("[", end='')
-        #     for j in range(l1_size):
-        #         print(f"{W1_offset[i, j].X}", end=', ' if j < l1_size - 1 else '')
-        #     print("]")
-
-        # print("\nW2_offset:")
-        # for i in range(len(nn.W2)):
-        #     print("[", end='')
-        #     for j in range(l2_size):
-        #         print(f"{W2_offset[i, j].X}", end=', ' if j < l2_size - 1 else '')
-        #     print("]")
-
-        # print("\nW3_offset:")
-        # for i in range(len(nn.W3)):
-        #     print("[", end='')
-        #     for j in range(l3_size):
-        #         print(f"{W3_offset[i, j].X}", end=', ' if j < l3_size - 1 else '')
-        #     print("]")
-
-        # print("\nb1_offset:")
-        # print("[", end='')
-        # for j in range(l1_size):
-        #     print(f"{b1_offset[j].X}", end=', ' if j < l1_size - 1 else '')
-        # print("]")
-
-        # print("\nb2_offset:")
-        # print("[", end='')
-        # for j in range(l2_size):
-        #     print(f"{b2_offset[j].X}", end=', ' if j < l2_size - 1 else '')
-        # print("]")
-
-        # print("\nb3_offset:")
-        # print("[", end='')
-        # for j in range(l3_size):
-        #     print(f"{b3_offset[j].X}", end=', ' if j < l3_size - 1 else '')
-        # print("]")
-        # print()
         Z3_values = [[Z3[i, j].X for j in range(l3_size)] for i in range(len(X))]
         print(y.reshape(1,-1)[0])
-        print("Z3:", Z3_values)
-        # y_g_values = [int(y_g[i].X) for i in range(len(X))]
-        # print("y_g values:", y_g_values)
-        
+        print("Z3:", Z3_values)        
     else:
-        print("No feasible solution found.")
+        with open(output_file, "a") as f:
+            print(f"----------{flp_idx}----------", file=f)
+            print("No feasible solution found.")
 
 
 main()

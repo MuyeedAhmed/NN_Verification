@@ -66,7 +66,7 @@ class NeuralNetwork_AfterNoise:
     def predict(self, X):
         return (self.forward(X) >= 0.5).astype(int)
 
-def print_magnitude(nn_before, nn_after, test_len, missmatch, threshold, f_id):
+def print_magnitude(nn_before, nn_after, test_len, missmatch, threshold, f_id, write_in_csv = False):
     # print("W1")
     # for i in range(nn_before.W1.shape[0]):
     #     print("[", end='')
@@ -143,11 +143,12 @@ def print_magnitude(nn_before, nn_after, test_len, missmatch, threshold, f_id):
     print("Median Difference:", median_value)
     print("Mean Difference:", mean_value)
 
-    if not os.path.exists("Stats/Result_32_15.csv"):
-        with open("Stats/Result_32_15.csv", "w") as f:
-            f.write("Test_Length,Threshold,Flip_ID,Mismatch,Max_Abs_Diff,Median_Diff,Mean_Diff,Sum_Abs_Diff,Geomean_Diff\n")
-    with open("Stats/Result_32_15.csv", "a") as f:
-        f.write(f"{test_len},{threshold},{f_id},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
+    if write_in_csv:
+        if not os.path.exists("Stats/Result_32_30.csv"):
+            with open("Stats/Result_32_30.csv", "w") as f:
+                f.write("Test_Length,Threshold,Flip_ID,Mismatch,Max_Abs_Diff,Median_Diff,Mean_Diff,Sum_Abs_Diff,Geomean_Diff\n")
+        with open("Stats/Result_33_20.csv", "a") as f:
+            f.write(f"{test_len},{threshold},{f_id},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
 def main():
     df = pd.read_csv("../Dataset/appendicitis.csv")
@@ -156,8 +157,8 @@ def main():
     X = scaler.fit_transform(X)
     y = df.iloc[:, -1].to_numpy().reshape(-1, 1)
 
-    X_test = X[15:30]
-    y_test = y[15:30]
+    X_test = X[0:20]
+    y_test = y[0:20]
 
     nn_before = NeuralNetwork_BeforeNoise()
     labels_before = nn_before.predict(X_test).reshape(1, -1)[0]
@@ -165,7 +166,7 @@ def main():
     nn_after = NeuralNetwork_AfterNoise()
     labels_after = nn_after.predict(X_test).reshape(1, -1)[0]
 
-    test_len = 15
+    test_len = 20
     f_id = 0
     threshold = 0
     if len(sys.argv) > 1:
@@ -191,11 +192,12 @@ def main():
                     missmatch += 1
                 print(labels_after[i], end=" ")
         print()
+        print_magnitude(nn_before, nn_after, test_len, missmatch, threshold, f_id, True)
     else:
         print("Before: ", labels_before)
         print("After: ", labels_after)
+        print_magnitude(nn_before, nn_after, test_len, missmatch, threshold, f_id, False)
 
-    print_magnitude(nn_before, nn_after, test_len, missmatch, threshold, f_id)
 
 if __name__ == "__main__":
     main()
