@@ -21,8 +21,9 @@ def main():
     trn = RunNN(X, y_true, hs1=3, hs2=3, out_size=1, lr = 0.1, epoch=10000)
     nn, y_predict = trn.TrainReturnWeights()
     
-    X = X[15:20]
-    y = y_predict[15:20]
+    X = X[15:30]
+    y = y_predict[15:30]
+    # y = y_predict
     # print(y_true[15:25].reshape(1,-1))
     # print(y_test.reshape(1,-1))
 
@@ -58,26 +59,29 @@ def RunForward(nn, X, y):
     Newb3 = [[nn.b3[0, i] + b3_offset[i] for i in range(l3_size)]]
 
     Z3 = ForwardPass(model, X, NewW1, NewW2, NewW3, Newb1, Newb2, Newb3)
-    y_g = {i: model.addVar(vtype=GRB.BINARY, name=f"y2_{i}") for i in range(len(X))}
-    f = {i: model.addVar(vtype=GRB.BINARY, name=f"flip_{i}") for i in range(len(X))}
-
-    # M = 1e16
+    y_g = [model.addVar(vtype=GRB.BINARY, name=f"y2_{i}") for i in range(len(X))]
+    f = model.addVars(len(X), vtype=GRB.BINARY, name=f"flip_i") 
+    
+    M = 50
     model.addConstr(sum(f[i] for i in range(len(X))) == 1, "one_flip")
 
+    E = 1e-9
     for i in range(len(X)):
-        y_scalar = int(y[i])  
-        
-        model.addGenConstrIndicator(y_g[i], 1, Z3[i, 0] >= 0, name=f"Z3_pos_{i}")
-        model.addGenConstrIndicator(y_g[i], 0, Z3[i, 0] <= -0.00001, name=f"Z3_neg_{i}")
+        y_scalar = int(y[i])
+        model.addConstr(Z3[i, 0] >= E - M * (1 - y_g[i]), f"Z3_{i}_lower_bound")
+        model.addConstr(Z3[i, 0] <= -1e-9 + M * y_g[i], f"Z3_{i}_upper_bound")
 
-        model.addConstr(y_g[i] - y_scalar <= f[i], f"flip_upper_{i}")
-        model.addConstr(y_scalar - y_g[i] <= f[i], f"flip_lower_{i}")
+        model.addConstr(f[i] >= y_g[i] - y_scalar, f"flip_upper_{i}")
+        model.addConstr(f[i] >= y_scalar - y_g[i], f"flip_lower_{i}")
+        model.addConstr(f[i] <= y_g[i] + y_scalar, f"flip_cap_{i}")
+        model.addConstr(f[i] <= 2 - y_g[i] - y_scalar, f"flip_cap_2_{i}")
+
+        # model.addConstr((y_g[i] == 1) >> (Z3[i, 0] >= 0), name=f"Z3_pos_{i}")
+        # model.addConstr((y_g[i] == 0) >> (Z3[i, 0] <= -1e-16), name=f"Z3_neg_{i}")
+
         
-    
-                
-    objective = (
-        # gp.quicksum(Z2[i, 0] for i in range(len(X)) if y_predict[i] == 1) - 
-        # gp.quicksum(Z2[i, 0] for i in range(len(X)) if y_predict[i] == 0) + 
+                    
+    objective = ( 
         gp.quicksum(b1_offset[i] * b1_offset[i] for i in range(l1_size)) + 
         gp.quicksum(b2_offset[i] * b2_offset[i] for i in range(l2_size)) + 
         gp.quicksum(b3_offset[i] * b3_offset[i] for i in range(l3_size)) +
@@ -88,22 +92,27 @@ def RunForward(nn, X, y):
 
 
     model.setObjective(objective, GRB.MINIMIZE)
-
+    model.setParam(GRB.Param.NumericFocus, 3)
     model.addConstr(objective >= 0, "NonNegativeObjective")
-    model.setParam(GRB.Param.TimeLimit, 10)
+    model.setParam(GRB.Param.TimeLimit, 50)
     model.optimize()
-
-    if model.status == GRB.OPTIMAL:
-        f_values = {i: int(f[i].X) for i in range(len(X))}
-        y_g_values = {i: int(y_g[i].X) for i in range(len(X))}
+    
+    # if model.status == GRB.OPTIMAL:
+    if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
+        if model.SolCount == 0:
+            print("Timeout")
+            return
+            
+        f_values = [f[i].X for i in range(len(X))]
+        y_g_values = [y_g[i].X for i in range(len(X))]
 
         print("f values:", f_values)
         print("y_g values:", y_g_values)
 
-        # Find which index flipped
-        for i in range(len(X)):
-            if f_values[i] == 1:
-                print(f"Flipped index: {i}, original y: {int(y[i])}, new y_g: {y_g_values[i]}")
+        Z3_values = [[Z3[i, j].X for j in range(l3_size)] for i in range(len(X))]
+        print("y_pred:", y.reshape(1,-1)[0])
+        print("Z3:", Z3_values)
+        
 
         W1_values = np.array([[nn.W1[i][j] for j in range(l1_size)] for i in range(len(nn.W1))])
         np.save("Weights/W1_data.npy", W1_values)
@@ -186,11 +195,7 @@ def RunForward(nn, X, y):
         #     print(f"{b3_offset[j].X}", end=', ' if j < l3_size - 1 else '')
         # print("]")
         # print()
-        Z3_values = [[Z3[i, j].X for j in range(l3_size)] for i in range(len(X))]
-        print("y_pred:", y.reshape(1,-1)[0])
-        print("Z3:", Z3_values)
-        y_g_values = [int(y_g[i].X) for i in range(len(X))]
-        print("y_g values:", y_g_values)
+        
         
     else:
         print("No feasible solution found.")
