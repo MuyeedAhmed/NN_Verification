@@ -11,7 +11,7 @@ def ForwardPass(model, X, W1, W2, W3, b1, b2, b3):
     A1 = model.addVars(len(X), l1_size, lb=0, name="A1") 
     z1 = model.addVars(len(X), l1_size, vtype=GRB.BINARY, name="z1")
     z2 = model.addVars(len(X), l2_size, vtype=GRB.BINARY, name="z2")
-    z3 = model.addVars(len(X), l3_size, vtype=GRB.BINARY, name="z3")
+    # z3 = model.addVars(len(X), l3_size, vtype=GRB.BINARY, name="z3")
     
 
     for row_idx in range(len(X)):
@@ -22,11 +22,17 @@ def ForwardPass(model, X, W1, W2, W3, b1, b2, b3):
                 f"Z1_def_{row_idx}_{j}"
             )
 
-            model.addGenConstrIndicator(z1[row_idx, j], True, Z1[row_idx, j] >= 0, name=f"ReLU_pos_{row_idx}_{j}")
-            model.addGenConstrIndicator(z1[row_idx, j], True, A1[row_idx, j] == Z1[row_idx, j], name=f"ReLU_eq_{row_idx}_{j}")
+            # model.addGenConstrIndicator(z1[row_idx, j], True, Z1[row_idx, j] >= 0, name=f"ReLU_pos_{row_idx}_{j}")
+            # model.addGenConstrIndicator(z1[row_idx, j], True, A1[row_idx, j] == Z1[row_idx, j], name=f"ReLU_eq_{row_idx}_{j}")
 
-            model.addGenConstrIndicator(z1[row_idx, j], False, Z1[row_idx, j] <= 0, name=f"ReLU_neg_{row_idx}_{j}")
-            model.addGenConstrIndicator(z1[row_idx, j], False, A1[row_idx, j] == 0, name=f"ReLU_zero_{row_idx}_{j}")
+            # model.addGenConstrIndicator(z1[row_idx, j], False, Z1[row_idx, j] <= 0, name=f"ReLU_neg_{row_idx}_{j}")
+            # model.addGenConstrIndicator(z1[row_idx, j], False, A1[row_idx, j] == 0, name=f"ReLU_zero_{row_idx}_{j}")
+
+            model.addConstr((z1[row_idx, j] == 1) >> (Z1[row_idx, j] >= 0), name=f"ReLU_pos_{row_idx}_{j}")
+            model.addConstr((z1[row_idx, j] == 1) >> (A1[row_idx, j] == Z1[row_idx, j]), name=f"ReLU_eq_{row_idx}_{j}")
+
+            model.addConstr((z1[row_idx, j] == 0) >> (Z1[row_idx, j] <= 0), name=f"ReLU_neg_{row_idx}_{j}")
+            model.addConstr((z1[row_idx, j] == 0) >> (A1[row_idx, j] == 0), name=f"ReLU_zero_{row_idx}_{j}")
 
 
     Z2 = model.addVars(len(X), l2_size,  lb=-GRB.INFINITY, ub=GRB.INFINITY, name="Z2") 
@@ -39,11 +45,17 @@ def ForwardPass(model, X, W1, W2, W3, b1, b2, b3):
                 f"Z2_def_{row_idx}_{j}"
             )
 
-            model.addGenConstrIndicator(z2[row_idx, j], True, Z2[row_idx, j] >= 0, name=f"ReLU2_pos_{row_idx}_{j}")
-            model.addGenConstrIndicator(z2[row_idx, j], True, A2[row_idx, j] == Z2[row_idx, j], name=f"ReLU2_eq_{row_idx}_{j}")
+            # model.addGenConstrIndicator(z2[row_idx, j], True, Z2[row_idx, j] >= 0, name=f"ReLU2_pos_{row_idx}_{j}")
+            # model.addGenConstrIndicator(z2[row_idx, j], True, A2[row_idx, j] == Z2[row_idx, j], name=f"ReLU2_eq_{row_idx}_{j}")
 
-            model.addGenConstrIndicator(z2[row_idx, j], False, Z2[row_idx, j] <= 0, name=f"ReLU2_neg_{row_idx}_{j}")
-            model.addGenConstrIndicator(z2[row_idx, j], False, A2[row_idx, j] == 0, name=f"ReLU2_zero_{row_idx}_{j}")
+            # model.addGenConstrIndicator(z2[row_idx, j], False, Z2[row_idx, j] <= 0, name=f"ReLU2_neg_{row_idx}_{j}")
+            # model.addGenConstrIndicator(z2[row_idx, j], False, A2[row_idx, j] == 0, name=f"ReLU2_zero_{row_idx}_{j}")
+
+            model.addConstr((z2[row_idx, j] == 1) >> (Z2[row_idx, j] >= 0), name=f"ReLU2_pos_{row_idx}_{j}")
+            model.addConstr((z2[row_idx, j] == 1) >> (A2[row_idx, j] == Z2[row_idx, j]), name=f"ReLU2_eq_{row_idx}_{j}")
+
+            model.addConstr((z2[row_idx, j] == 0) >> (Z2[row_idx, j] <= 0), name=f"ReLU2_neg_{row_idx}_{j}")
+            model.addConstr((z2[row_idx, j] == 0) >> (A2[row_idx, j] == 0), name=f"ReLU2_zero_{row_idx}_{j}")
 
     Z3 = model.addVars(len(X), l3_size,  lb=-GRB.INFINITY, ub=GRB.INFINITY, name="Z3")
 
