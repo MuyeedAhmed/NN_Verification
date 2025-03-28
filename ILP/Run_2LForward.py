@@ -18,27 +18,24 @@ def main():
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
     y_true = df.iloc[:, -1].to_numpy().reshape(-1, 1)
-    trn = RunNN(X, y_true, hs1=3, hs2=3, out_size=1, lr = 0.1, epoch=10000)
+    trn = RunNN(X, y_true, hs1=3, hs2=2, out_size=1, lr = 0.1, epoch=10000)
     nn, y_predict = trn.TrainReturnWeights()
     
-    X = X[15:35]
-    y = y_predict[15:35]
+    X = X[15:30]
+    y = y_predict[15:30]
     # y = y_predict
     # print(y_true[15:25].reshape(1,-1))
     # print(y_test.reshape(1,-1))
 
-    runtimes = [] 
+    tol = 1e-9
     for idx in range(len(X)):
-        if idx != 3:
+        if idx != 14:
             continue
         t0 = time.time()
-        RunForward(nn, X, y, idx)
+        RunForward(nn, X, y, idx, tol)
         runtimes.append(time.time()-t0)
-        # break
 
-    print(np.mean(runtimes), runtimes)
-
-def RunForward(nn, X, y, flp_idx):
+def RunForward(nn, X, y, flp_idx, tol):
 
     l1_size = len(nn.W1[0])
     l2_size = len(nn.W2[0])
@@ -81,15 +78,34 @@ def RunForward(nn, X, y, flp_idx):
     for i in range(len(X)):
         if i == flp_idx:
             if y[i] == 0:
-                model.addConstr(Z3[i, 0] >= 0, f"Z3_{i}_positive")
+                model.addConstr(Z3[i, 0] >= tol, f"Z3_{i}_positive")
             else:
-                model.addConstr(Z3[i, 0] <= -0.0000001, f"Z3_{i}_negative")
+                model.addConstr(Z3[i, 0] <= -tol, f"Z3_{i}_negative")
         else:
             if y[i] == 1:
-                model.addConstr(Z3[i, 0] >= 0, f"Z3_{i}_positive")
+                model.addConstr(Z3[i, 0] >= tol, f"Z3_{i}_positive")
             else:
-                model.addConstr(Z3[i, 0] <= -0.0000001, f"Z3_{i}_negative")
-                
+                model.addConstr(Z3[i, 0] <= -tol, f"Z3_{i}_negative")
+
+    # y_bin = model.addVars(len(y), vtype=GRB.BINARY, name="y_bin")
+
+    # for i in range(len(y)):
+    #     model.addConstr(y_bin[i] == y[i], name=f"fix_y_{i}")
+
+    # for i in range(len(X)):
+    #     if i == flp_idx:
+    #         # model.addGenConstrIndicator(y_bin[i], False, Z3[i, 0] >= 0, name=f"Z3_pos_{i}")
+    #         # model.addGenConstrIndicator(y_bin[i], True, Z3[i, 0] <= -EPS, name=f"Z3_neg_{i}")
+    #         model.addConstr((y_bin[i] == 0) >> (Z3[i, 0] >= 0), name=f"Z3_pos_{i}")
+    #         model.addConstr((y_bin[i] == 1) >> (Z3[i, 0] <= -1e-16), name=f"Z3_neg_{i}")
+
+    #     else:
+    #         # model.addGenConstrIndicator(y_bin[i], True, Z3[i, 0] >= 0, name=f"Z3_pos_{i}")
+    #         # model.addGenConstrIndicator(y_bin[i], False, Z3[i, 0] <= -EPS, name=f"Z3_neg_{i}")
+    #         model.addConstr((y_bin[i] == 1) >> (Z3[i, 0] >= 0), name=f"Z3_pos_{i}")
+    #         model.addConstr((y_bin[i] == 0) >> (Z3[i, 0] <= -1e-16), name=f"Z3_neg_{i}")
+
+
     objective = (
         # gp.quicksum(Z2[i, 0] for i in range(len(X)) if y_predict[i] == 1) - 
         # gp.quicksum(Z2[i, 0] for i in range(len(X)) if y_predict[i] == 0) + 
@@ -103,14 +119,19 @@ def RunForward(nn, X, y, flp_idx):
 
 
     model.setObjective(objective, GRB.MINIMIZE)
-
+    model.setParam("FeasibilityTol", 1e-9)
     model.addConstr(objective >= 0, "NonNegativeObjective")
     # model.setParam(GRB.Param.TimeLimit, 10)
-    model.setParam('MIPGap', 0.5)
-    model.setParam('TimeLimit', 60)
+    # model.setParam('MIPGap', 0.5)
+    model.setParam('TimeLimit', 100)
     model.optimize()
+    # model.setParam(GRB.Param.NumericFocus, 3)
 
-    if model.status == GRB.OPTIMAL:
+    # if model.status == GRB.OPTIMAL:
+    if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
+        if model.SolCount == 0:
+            print("Timeout")
+            return
         W1_values = np.array([[nn.W1[i][j] for j in range(l1_size)] for i in range(len(nn.W1))])
         np.save("Weights/W1_data.npy", W1_values)
 
@@ -149,8 +170,7 @@ def RunForward(nn, X, y, flp_idx):
         np.save("Weights/b3_offset_data.npy", b3_values)
 
         
-        with open(output_file, "a") as f:
-            print(f"----------{flp_idx}----------", file=f)
+        
         with open(output_file, "a") as f:
             subprocess.run(["python", "Weights/TestWeights.py"], stdout=f, stderr=f, text=True)
 
