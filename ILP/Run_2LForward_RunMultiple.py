@@ -10,7 +10,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-output_file = "Output_44_20.txt"
+output_file = "Output_44_25.txt"
 
 def main():
     df = pd.read_csv("../Dataset/appendicitis.csv")
@@ -21,14 +21,14 @@ def main():
     trn = RunNN(X, y_true, hs1=4, hs2=4, out_size=1, lr = 0.1, epoch=10000)
     nn, y_predict = trn.TrainReturnWeights()
     
-    X = X[0:20]
-    y = y_predict[0:20]
+    X = X[0:25]
+    y = y_predict[0:25]
     # y = y_predict
     # print(y_true[15:25].reshape(1,-1))
     # print(y_test.reshape(1,-1))
 
     # runtimes = []
-    tolerances = [1e-9, 1e-7, 1e-5, 1e-3, 1e-1, 1]
+    tolerances = [1e-9, 1e-8, 1e-7, 1e-5, 1e-3, 1e-1, 1]
     for tol in tolerances:
         for idx in range(len(X)):
             # if idx != 14:
@@ -95,7 +95,7 @@ def RunForward(nn, X, y, flp_idx, tol):
     model.addConstr(objective >= 0, "NonNegativeObjective")
     # model.setParam(GRB.Param.TimeLimit, 10)
     # model.setParam('MIPGap', 0.5)
-    model.setParam('TimeLimit', 60)
+    model.setParam('TimeLimit', 120)
     model.optimize()
     # model.setParam(GRB.Param.NumericFocus, 3)
 
