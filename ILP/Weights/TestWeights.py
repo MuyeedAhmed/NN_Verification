@@ -144,10 +144,10 @@ def print_magnitude(nn_before, nn_after, test_len, missmatch, threshold, f_id, w
     print("Mean Difference:", mean_value)
 
     if write_in_csv:
-        if not os.path.exists("Stats/Result_44_30.csv"):
-            with open("Stats/Result_44_30.csv", "w") as f:
+        if not os.path.exists("Stats/Result_88_40.csv"):
+            with open("Stats/Result_88_40.csv", "w") as f:
                 f.write("Test_Length,Threshold,Flip_ID,Mismatch,Max_Abs_Diff,Median_Diff,Mean_Diff,Sum_Abs_Diff,Geomean_Diff\n")
-        with open("Stats/Result_44_30.csv", "a") as f:
+        with open("Stats/Result_88_40.csv", "a") as f:
             f.write(f"{test_len},{threshold},{f_id},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
 def main():
@@ -157,8 +157,8 @@ def main():
     X = scaler.fit_transform(X)
     y = df.iloc[:, -1].to_numpy().reshape(-1, 1)
 
-    X_test = X[0:30]
-    y_test = y[0:30]
+    X_test = X[0:40]
+    y_test = y[0:40]
 
     nn_before = NeuralNetwork_BeforeNoise()
     labels_before = nn_before.predict(X_test).reshape(1, -1)[0]
@@ -166,7 +166,7 @@ def main():
     nn_after = NeuralNetwork_AfterNoise()
     labels_after = nn_after.predict(X_test).reshape(1, -1)[0]
 
-    test_len = 30
+    test_len = 40
     f_id = 0
     threshold = 0
     if len(sys.argv) > 1:
