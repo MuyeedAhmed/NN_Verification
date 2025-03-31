@@ -1,0 +1,594 @@
+----------0----------
+Before : [0;32m1[0m 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 1
+Sum of Absolute Differences: 0.03500070086274962
+Geometric Mean of Differences: 0.0006127272740039658
+Max Absolute Difference: 0.00922757343827441
+Median Difference: 0.0
+Mean Difference: 0.0006140473835570109
+----------3----------
+Before : 1 0 1 [0;32m1[0m 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 [0;31m0[0m 1 1 1 1 1 1 [0;31m0[0m 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 1
+Sum of Absolute Differences: 1.383576314505001
+Geometric Mean of Differences: 0.021947223688660866
+Max Absolute Difference: 0.35725285202406576
+Median Difference: 0.0
+Mean Difference: 0.024273268675526333
+----------4----------
+Before : 1 0 1 1 [0;32m1[0m 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 [0;31m0[0m 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.9953738082798756
+Geometric Mean of Differences: 0.015515603462339378
+Max Absolute Difference: 0.5324566737120876
+Median Difference: 1.0229563271924073e-10
+Mean Difference: 0.01746269839087501
+----------5----------
+Before : 1 0 1 1 1 [0;32m1[0m 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 [0;31m0[0m 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 1.7266950569247868
+Geometric Mean of Differences: 0.028432134858361602
+Max Absolute Difference: 0.3641211244330096
+Median Difference: 4.3481935081799026e-05
+Mean Difference: 0.030292895735522574
+----------7----------
+Before : 1 0 1 1 1 1 1 [0;32m1[0m 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 [0;31m0[0m 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.9349224023559299
+Geometric Mean of Differences: 0.014215556223907244
+Max Absolute Difference: 0.5767625214374024
+Median Difference: 2.0418562187536443e-09
+Mean Difference: 0.016402147409753157
+----------10----------
+Before : 1 0 1 1 1 1 1 1 1 1 [0;32m1[0m 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : [0;31m0[0m 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 2
+Sum of Absolute Differences: 0.4862051520647146
+Geometric Mean of Differences: 0.007883398129880703
+Max Absolute Difference: 0.2976717908950469
+Median Difference: 0.0
+Mean Difference: 0.008529914948503765
+----------12----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 [0;32m0[0m 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 [0;31m0[0m 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 2
+Sum of Absolute Differences: 2.010581066007643
+Geometric Mean of Differences: 0.03307380264705895
+Max Absolute Difference: 0.458899892230057
+Median Difference: 0.0008660462173339712
+Mean Difference: 0.035273352035221806
+----------15----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 [0;32m1[0m 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 [0;31m0[0m 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 2.916839367548935
+Geometric Mean of Differences: 0.038940916500980194
+Max Absolute Difference: 1.2654636380055722
+Median Difference: 0.0
+Mean Difference: 0.05117262048331465
+----------17----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 [0;32m0[0m 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;31m1[0m 1 0 0 [0;31m1[0m 0 0 0 0 0 0 
+Mismatch: 3
+Sum of Absolute Differences: 0.6702389673544419
+Geometric Mean of Differences: 0.01128157083417225
+Max Absolute Difference: 0.2194363836766531
+Median Difference: 0.0
+Mean Difference: 0.011758578374639332
+----------18----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 [0;32m1[0m 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 [0;31m0[0m 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 9.851593667886812
+Geometric Mean of Differences: 0.07890226240956144
+Max Absolute Difference: 6.9356864992997265
+Median Difference: 4.290414741115868e-11
+Mean Difference: 0.17283497662959318
+----------19----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;32m0[0m 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;31m1[0m 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.09689898797229977
+Geometric Mean of Differences: 0.0016789468167526245
+Max Absolute Difference: 0.037740904886521605
+Median Difference: 0.0
+Mean Difference: 0.0016999822451280661
+----------22----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 [0;32m0[0m 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 [0;31m1[0m 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 8.614119451307765
+Geometric Mean of Differences: 0.09983241118576247
+Max Absolute Difference: 4.067804011808798
+Median Difference: 0.010566282706906526
+Mean Difference: 0.1511249026545222
+----------23----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 [0;32m0[0m 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 [0;31m1[0m 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.7707690102071464
+Geometric Mean of Differences: 0.012583093368410125
+Max Absolute Difference: 0.3567439792127765
+Median Difference: 0.0
+Mean Difference: 0.013522263336967481
+----------25----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 [0;32m0[0m 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;31m1[0m 1 0 0 0 0 [0;31m1[0m 0 0 0 0 
+Mismatch: 1
+Sum of Absolute Differences: 2.3594758532833398
+Geometric Mean of Differences: 0.036467366028418935
+Max Absolute Difference: 0.6169587673293164
+Median Difference: 0.0051831041097490805
+Mean Difference: 0.04139431321549719
+----------27----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 [0;32m0[0m 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 [0;31m0[0m 1 [0;31m1[0m 1 1 1 1 0 1 0 1 0 0 0 0 0 0 [0;31m1[0m 0 [0;31m1[0m 
+Mismatch: 3
+Sum of Absolute Differences: 2.740856925038988
+Geometric Mean of Differences: 0.04286203102805031
+Max Absolute Difference: 0.7564549461417377
+Median Difference: 0.0005116553038309317
+Mean Difference: 0.04808520921121032
+----------29----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 [0;32m0[0m 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 1
+Sum of Absolute Differences: 1.371238994907372
+Geometric Mean of Differences: 0.022733623408864645
+Max Absolute Difference: 0.3586021899302446
+Median Difference: 4.560575641178364e-05
+Mean Difference: 0.024056824472059157
+----------0----------
+Before : [0;32m1[0m 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : [0;31m0[0m 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.03497306199962978
+Geometric Mean of Differences: 0.0006122426115429125
+Max Absolute Difference: 0.009228767374853586
+Median Difference: 0.0
+Mean Difference: 0.0006135624912215751
+----------3----------
+Before : 1 0 1 [0;32m1[0m 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 [0;31m0[0m 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 1.3742609685402674
+Geometric Mean of Differences: 0.021716176216578953
+Max Absolute Difference: 0.35918531628813816
+Median Difference: 5.136616944317692e-11
+Mean Difference: 0.024109841553338025
+----------4----------
+Before : 1 0 1 1 [0;32m1[0m 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 [0;31m0[0m 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 1.7112313631935383
+Geometric Mean of Differences: 0.02348419907060273
+Max Absolute Difference: 1.1204138911929695
+Median Difference: 5.249087488262825e-10
+Mean Difference: 0.030021602863044533
+----------5----------
+Before : 1 0 1 1 1 [0;32m1[0m 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 [0;31m0[0m 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 2.573425823429874
+Geometric Mean of Differences: 0.03837640661222563
+Max Absolute Difference: 0.8510943966491303
+Median Difference: 4.138491766261479e-05
+Mean Difference: 0.045147821463682
+----------7----------
+Before : 1 0 1 1 1 1 1 [0;32m1[0m 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 [0;31m0[0m 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.935316673651648
+Geometric Mean of Differences: 0.01422113959629856
+Max Absolute Difference: 0.5769764310525961
+Median Difference: 2.678819156836624e-09
+Mean Difference: 0.01640906445002891
+----------10----------
+Before : 1 0 1 1 1 1 1 1 1 1 [0;32m1[0m 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 [0;31m0[0m 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.48565840992372283
+Geometric Mean of Differences: 0.007875833506585161
+Max Absolute Difference: 0.29716361670281227
+Median Difference: 3.0752943842307334e-06
+Mean Difference: 0.008520322981117944
+----------15----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 [0;32m1[0m 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 [0;31m0[0m 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.16948939230676913
+Geometric Mean of Differences: 0.002933407302520674
+Max Absolute Difference: 0.056838188523375695
+Median Difference: 8.717873846211946e-06
+Mean Difference: 0.0029734981106450723
+----------17----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 [0;32m0[0m 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 [0;31m1[0m 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.6236381779158866
+Geometric Mean of Differences: 0.010578277380502987
+Max Absolute Difference: 0.17801748261366987
+Median Difference: 0.0
+Mean Difference: 0.010941020665190994
+----------18----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 [0;32m1[0m 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 [0;31m0[0m 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 9.922509373842876
+Geometric Mean of Differences: 0.07914654689271017
+Max Absolute Difference: 6.997721459179122
+Median Difference: 0.0
+Mean Difference: 0.17407911182180485
+----------19----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;32m0[0m 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;31m1[0m 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.09692204078111413
+Geometric Mean of Differences: 0.0016793640761434414
+Max Absolute Difference: 0.03772906464485854
+Median Difference: 0.0
+Mean Difference: 0.0017003866803704233
+----------23----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 [0;32m0[0m 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 [0;31m1[0m 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.7524764627860255
+Geometric Mean of Differences: 0.012324526229724464
+Max Absolute Difference: 0.3430577276055868
+Median Difference: 0.0
+Mean Difference: 0.013201341452386413
+----------25----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 [0;32m0[0m 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 [0;31m1[0m 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 1.8238289898964415
+Geometric Mean of Differences: 0.028762138251772873
+Max Absolute Difference: 0.6116435512854326
+Median Difference: 0.00562158749355676
+Mean Difference: 0.031996999822744586
+----------29----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 [0;32m0[0m 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 [0;31m1[0m 
+Mismatch: 0
+Sum of Absolute Differences: 1.383788077167671
+Geometric Mean of Differences: 0.022964722257522663
+Max Absolute Difference: 0.35832922191637573
+Median Difference: 1.5329729068249506e-09
+Mean Difference: 0.02427698380995914
+----------0----------
+Before : [0;32m1[0m 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : [0;31m0[0m 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.03497117737333192
+Geometric Mean of Differences: 0.0006122094784934973
+Max Absolute Difference: 0.009229274756388782
+Median Difference: 0.0
+Mean Difference: 0.0006135294276023144
+----------3----------
+Before : 1 0 1 [0;32m1[0m 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 [0;31m0[0m 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 1.3753892536378878
+Geometric Mean of Differences: 0.02179669052477684
+Max Absolute Difference: 0.3565631052748314
+Median Difference: 1.1571086647895514e-10
+Mean Difference: 0.02412963602873487
+----------4----------
+Before : 1 0 1 1 [0;32m1[0m 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 [0;31m0[0m 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.7606491205340704
+Geometric Mean of Differences: 0.012524470663354714
+Max Absolute Difference: 0.3071432218539158
+Median Difference: 0.0
+Mean Difference: 0.013344721412878428
+----------5----------
+Before : 1 0 1 1 1 [0;32m1[0m 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 [0;31m0[0m 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 1.4979023016024497
+Geometric Mean of Differences: 0.02450905374151713
+Max Absolute Difference: 0.3920544727020819
+Median Difference: 6.081389542517503e-05
+Mean Difference: 0.0262789877474114
+----------7----------
+Before : 1 0 1 1 1 1 1 [0;32m1[0m 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 [0;31m0[0m 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.9351367799335184
+Geometric Mean of Differences: 0.014218291639321201
+Max Absolute Difference: 0.5769267268213367
+Median Difference: 3.5911967674861525e-10
+Mean Difference: 0.01640590841988629
+----------10----------
+Before : 1 0 1 1 1 1 1 1 1 1 [0;32m1[0m 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 [0;31m0[0m 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.4856083840661098
+Geometric Mean of Differences: 0.007876835075078858
+Max Absolute Difference: 0.2966826378632663
+Median Difference: 1.585994949505622e-05
+Mean Difference: 0.008519445334493154
+----------15----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 [0;32m1[0m 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 [0;31m0[0m 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 2.6876511570738524
+Geometric Mean of Differences: 0.032585334117969156
+Max Absolute Difference: 1.8442202962228493
+Median Difference: 0.0
+Mean Difference: 0.04715177468550618
+----------17----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 [0;32m0[0m 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 [0;31m1[0m 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.6519153596674596
+Geometric Mean of Differences: 0.010993311854479604
+Max Absolute Difference: 0.20867306409188185
+Median Difference: 0.0
+Mean Difference: 0.011437111573113327
+----------18----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 [0;32m1[0m 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 [0;31m0[0m 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 9.910693473071607
+Geometric Mean of Differences: 0.07952055284870374
+Max Absolute Difference: 6.970196065619955
+Median Difference: 1.3636627306043058e-05
+Mean Difference: 0.17387181531704574
+----------19----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;32m0[0m 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;31m1[0m 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.09693311070796903
+Geometric Mean of Differences: 0.0016795536870635175
+Max Absolute Difference: 0.03773279640131436
+Median Difference: 0.0
+Mean Difference: 0.0017005808896134917
+----------23----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 [0;32m0[0m 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 [0;31m1[0m 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.7617505509291755
+Geometric Mean of Differences: 0.01245885004759284
+Max Absolute Difference: 0.34929619484197566
+Median Difference: 7.910853775324675e-05
+Mean Difference: 0.01336404475314343
+----------25----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 [0;32m0[0m 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 [0;31m1[0m 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 1.5631268877579967
+Geometric Mean of Differences: 0.02529616475583274
+Max Absolute Difference: 0.5095956328734672
+Median Difference: 0.004289718152612268
+Mean Difference: 0.027423278732596434
+----------29----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 [0;32m0[0m 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 [0;31m1[0m 
+Mismatch: 0
+Sum of Absolute Differences: 1.3568955433398178
+Geometric Mean of Differences: 0.022344309296060016
+Max Absolute Difference: 0.3824084509417473
+Median Difference: 1.541677910409471e-05
+Mean Difference: 0.023805184970873996
+----------0----------
+Before : [0;32m1[0m 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : [0;31m0[0m 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.034962956070189635
+Geometric Mean of Differences: 0.0006120653887575767
+Max Absolute Difference: 0.009229275289722293
+Median Difference: 0.0
+Mean Difference: 0.0006133851942138533
+----------4----------
+Before : 1 0 1 1 [0;32m1[0m 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 [0;31m0[0m 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 1.738684110539283
+Geometric Mean of Differences: 0.023735293844642236
+Max Absolute Difference: 1.1461939920343596
+Median Difference: 3.579644321317463e-08
+Mean Difference: 0.030503230009461105
+----------5----------
+Before : 1 0 1 1 1 [0;32m1[0m 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 [0;31m0[0m 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 2.124282446203355
+Geometric Mean of Differences: 0.034401194631457965
+Max Absolute Difference: 0.3339489240834966
+Median Difference: 0.0
+Mean Difference: 0.037268113091286935
+----------7----------
+Before : 1 0 1 1 1 1 1 [0;32m1[0m 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 [0;31m0[0m 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.9355736418909867
+Geometric Mean of Differences: 0.014224543828335934
+Max Absolute Difference: 0.5771447854857555
+Median Difference: 7.521922801230304e-11
+Mean Difference: 0.016413572664754152
+----------10----------
+Before : 1 0 1 1 1 1 1 1 1 1 [0;32m1[0m 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 [0;31m0[0m 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.48576974391122585
+Geometric Mean of Differences: 0.00787778019836427
+Max Absolute Difference: 0.29715298635587073
+Median Difference: 1.9569326058407848e-08
+Mean Difference: 0.008522276208968874
+----------15----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 [0;32m1[0m 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 [0;31m0[0m 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 5.089998461492162
+Geometric Mean of Differences: 0.051247533945108836
+Max Absolute Difference: 3.4472301952985527
+Median Difference: 0.0
+Mean Difference: 0.08929821862266951
+----------17----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 [0;32m0[0m 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 [0;31m1[0m 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.5890684024198926
+Geometric Mean of Differences: 0.010035628846095213
+Max Absolute Difference: 0.15198795981108573
+Median Difference: 1.1596627156257004e-09
+Mean Difference: 0.010334533375787588
+----------18----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 [0;32m1[0m 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 [0;31m0[0m 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 9.91415405885227
+Geometric Mean of Differences: 0.07916600987250155
+Max Absolute Difference: 6.985988018321702
+Median Difference: 0.0
+Mean Difference: 0.17393252734828546
+----------19----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;32m0[0m 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;31m1[0m 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.09693802233716556
+Geometric Mean of Differences: 0.0016796433807007016
+Max Absolute Difference: 0.037730533854944875
+Median Difference: 0.0
+Mean Difference: 0.0017006670585467641
+----------23----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 [0;32m0[0m 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 [0;31m1[0m 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.7531548456167713
+Geometric Mean of Differences: 0.012336845431770715
+Max Absolute Difference: 0.3430216841458781
+Median Difference: 0.0
+Mean Difference: 0.013213242905557391
+----------25----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 [0;32m0[0m 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 [0;31m1[0m 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 2.4278034702241644
+Geometric Mean of Differences: 0.037514858826700026
+Max Absolute Difference: 0.6299264435786508
+Median Difference: 0.006807190635233494
+Mean Difference: 0.042593043337266046
+----------29----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 [0;32m0[0m 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 [0;31m1[0m 
+Mismatch: 0
+Sum of Absolute Differences: 1.367994350781878
+Geometric Mean of Differences: 0.022650785736707757
+Max Absolute Difference: 0.357877664402646
+Median Difference: 0.0
+Mean Difference: 0.02399990089091014
+----------0----------
+Before : [0;32m1[0m 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : [0;31m0[0m 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.03498453184068751
+Geometric Mean of Differences: 0.0006124436908441222
+Max Absolute Difference: 0.009228516430654737
+Median Difference: 0.0
+Mean Difference: 0.0006137637165032897
+----------4----------
+Before : 1 0 1 1 [0;32m1[0m 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 [0;31m0[0m 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.7586265572545977
+Geometric Mean of Differences: 0.012496372905674846
+Max Absolute Difference: 0.30514455133762325
+Median Difference: 7.134467255451717e-08
+Mean Difference: 0.01330923784657189
+----------5----------
+Before : 1 0 1 1 1 [0;32m1[0m 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 [0;31m0[0m 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 1.6686398791354966
+Geometric Mean of Differences: 0.026892503231092935
+Max Absolute Difference: 0.4182337566209613
+Median Difference: 0.0
+Mean Difference: 0.029274383844482398
+----------7----------
+Before : 1 0 1 1 1 1 1 [0;32m1[0m 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 [0;31m0[0m 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.9353543267330147
+Geometric Mean of Differences: 0.01422130550549583
+Max Absolute Difference: 0.5770555784619361
+Median Difference: 6.673148626463507e-09
+Mean Difference: 0.016409725030403766
+----------10----------
+Before : 1 0 1 1 1 1 1 1 1 1 [0;32m1[0m 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 [0;31m0[0m 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.4861382872969319
+Geometric Mean of Differences: 0.007882128181004422
+Max Absolute Difference: 0.29770586582420155
+Median Difference: 0.0
+Mean Difference: 0.008528741882402314
+----------15----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 [0;32m1[0m 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 [0;31m0[0m 1 0 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 4.512378637069142
+Geometric Mean of Differences: 0.05603557297744688
+Max Absolute Difference: 2.0786047665556886
+Median Difference: 0.0
+Mean Difference: 0.0791645374924411
+----------17----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 [0;32m0[0m 1 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 [0;31m1[0m 1 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.6227863956249887
+Geometric Mean of Differences: 0.01056367444749573
+Max Absolute Difference: 0.17806414898846354
+Median Difference: 0.0
+Mean Difference: 0.010926077116227872
+----------18----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 [0;32m1[0m 0 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 [0;31m0[0m 0 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 9.896523435698551
+Geometric Mean of Differences: 0.07901210510324352
+Max Absolute Difference: 6.974586859865147
+Median Difference: 0.0
+Mean Difference: 0.17362321817015003
+----------19----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;32m0[0m 1 0 0 0 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 [0;31m1[0m 1 0 0 0 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.09691898106707236
+Geometric Mean of Differences: 0.001679309407487617
+Max Absolute Difference: 0.03772983391063893
+Median Difference: 0.0
+Mean Difference: 0.001700333001176708
+----------23----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 [0;32m0[0m 0 0 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 [0;31m1[0m 0 0 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 0.7698538496033388
+Geometric Mean of Differences: 0.012573481088963057
+Max Absolute Difference: 0.3554396134941143
+Median Difference: 0.0
+Mean Difference: 0.013506207887777873
+----------25----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 [0;32m0[0m 0 0 0 0 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 [0;31m1[0m 0 0 0 0 
+Mismatch: 0
+Sum of Absolute Differences: 2.2723622131820833
+Geometric Mean of Differences: 0.03071159876095586
+Max Absolute Difference: 1.351553082961282
+Median Difference: 0.0
+Mean Difference: 0.03986600374003655
+----------29----------
+Before : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 [0;32m0[0m 
+After  : 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 0 1 0 0 0 0 0 0 0 0 [0;31m1[0m 
+Mismatch: 0
+Sum of Absolute Differences: 1.3544949689658916
+Geometric Mean of Differences: 0.02233314916412943
+Max Absolute Difference: 0.37198632846418556
+Median Difference: 1.8248783060429445e-10
+Mean Difference: 0.023763069630980554
