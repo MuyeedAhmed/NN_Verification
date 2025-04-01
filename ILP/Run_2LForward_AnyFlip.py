@@ -14,7 +14,7 @@ import subprocess
 timeLimit = 600
 
 def main():
-    n = 30
+    n = 50
     l1 = 4
     l2 = 4
     
@@ -25,13 +25,15 @@ def main():
     y_true = df.iloc[:, -1].to_numpy().reshape(-1, 1)
     trn = RunNN(X, y_true, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000)
     nn, y_predict = trn.TrainReturnWeights()
-    
-    X = X[0:n]
-    y = y_predict[0:n]
+    ns = [50, 75, 100, 40, 60]
+    for n in ns:
+        X = X[0:n]
+        y = y_predict[0:n]
 
-    tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
-    for tol in tolerances:
-        RunForward(nn, X, y, tol, n, l1, l2)
+        tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
+        for tol in tolerances:
+            RunForward(nn, X, y, tol, n, l1, l2)
+        
 
 def RunForward(nn, X, y, tol, n, l1, l2):
 
@@ -134,6 +136,35 @@ def RunForward(nn, X, y, tol, n, l1, l2):
         b2_values_with_offset = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
         b3_values_with_offset = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
         
+        # print("W1 values:\n", W1_values)
+        # print("W2 values:\n", W2_values)
+        # print("W3 values:\n", W3_values)
+        # print("b1 values:\n", b1_values)
+        # print("b2 values:\n", b2_values)
+        # print("b3 values:\n", b3_values)
+        # print("W1 values with offset:\n", W1_values_with_offset)
+        # print("W2 values with offset:\n", W2_values_with_offset)
+        # print("W3 values with offset:\n", W3_values_with_offset)
+        # print("b1 values with offset:\n", b1_values_with_offset)
+        # print("b2 values with offset:\n", b2_values_with_offset)
+        # print("b3 values with offset:\n", b3_values_with_offset)
+
+        # W1_values_magn = np.array([[W1_offset[i, j].X/nn.W1[i][j] for j in range(l1_size)] for i in range(len(nn.W1))])
+        # W2_values_magn = np.array([[W2_offset[i, j].X/nn.W2[i][j] for j in range(l2_size)] for i in range(len(nn.W2))])
+        # W3_values_magn = np.array([[W3_offset[i, j].X/nn.W3[i][j] for j in range(l3_size)] for i in range(len(nn.W3))])
+        # b1_values_magn = np.array([b1_offset[j].X/nn.b1[0, j] for j in range(l1_size)])
+        # b2_values_magn = np.array([b2_offset[j].X/nn.b2[0, j] for j in range(l2_size)])
+        # b3_values_magn = np.array([b3_offset[j].X/nn.b3[0, j] for j in range(l3_size)])
+
+        # print("---------OFFSET---------")
+        # print("W1 values offset:\n", W1_values_magn)
+        # print("W2 values offset:\n", W2_values_magn)
+        # print("W3 values offset:\n", W3_values_magn)
+        # print("b1 values offset:\n", b1_values_magn)
+        # print("b2 values offset:\n", b2_values_magn)
+        # print("b3 values offset:\n", b3_values_magn)
+        
+
         vw = VerifyWeights(n, l1, l2, flp_idx, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
                     W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
                     b1_values_with_offset, b2_values_with_offset, b3_values_with_offset)
