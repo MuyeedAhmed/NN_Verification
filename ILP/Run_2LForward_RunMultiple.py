@@ -1,6 +1,9 @@
 from NN.Network import NN, RunNN
 from Gurobi_ForwardPass_L2_Indicator import ForwardPass
 
+from Weights.QuantifyVerifyWeights_L2 import VerifyWeights
+
+
 import gurobipy as gp
 from gurobipy import GRB
 
@@ -10,19 +13,23 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-output_file = "Output_88_40.txt"
+timeLimit = 5
 
 def main():
+    n = 3
+    l1 = 4
+    l2 = 2
+
     df = pd.read_csv("../Dataset/appendicitis.csv")
     X = df.iloc[:, :-1].to_numpy()
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
     y_true = df.iloc[:, -1].to_numpy().reshape(-1, 1)
-    trn = RunNN(X, y_true, hs1=8, hs2=8, out_size=1, lr = 0.1, epoch=10000)
+    trn = RunNN(X, y_true, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000)
     nn, y_predict = trn.TrainReturnWeights()
     
-    X = X[0:40]
-    y = y_predict[0:40]
+    X = X[0:n]
+    y = y_predict[0:n]
     # y = y_predict
     # print(y_true[15:25].reshape(1,-1))
     # print(y_test.reshape(1,-1))
@@ -34,13 +41,13 @@ def main():
             # if idx != 14:
             #     continue
             # t0 = time.time()
-            RunForward(nn, X, y, idx, tol)
+            RunForward(nn, X, y, idx, tol, n, l1, l2)
             # runtimes.append(time.time()-t0)
             # break 
 
     # print(np.mean(runtimes), runtimes)
 
-def RunForward(nn, X, y, flp_idx, tol):
+def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
 
     l1_size = len(nn.W1[0])
     l2_size = len(nn.W2[0])
@@ -95,7 +102,7 @@ def RunForward(nn, X, y, flp_idx, tol):
     model.addConstr(objective >= 0, "NonNegativeObjective")
     # model.setParam(GRB.Param.TimeLimit, 10)
     # model.setParam('MIPGap', 0.5)
-    model.setParam('TimeLimit', 300)
+    model.setParam('TimeLimit', timeLimit)
     model.optimize()
     # model.setParam(GRB.Param.NumericFocus, 3)
 
@@ -104,55 +111,37 @@ def RunForward(nn, X, y, flp_idx, tol):
             print("Timeout")
             return
         W1_values = np.array([[nn.W1[i][j] for j in range(l1_size)] for i in range(len(nn.W1))])
-        np.save("Weights/W1_data.npy", W1_values)
-
         W2_values = np.array([[nn.W2[i][j] for j in range(l2_size)] for i in range(len(nn.W2))])
-        np.save("Weights/W2_data.npy", W2_values)
-
         W3_values = np.array([[nn.W3[i][j] for j in range(l3_size)] for i in range(len(nn.W3))])
-        np.save("Weights/W3_data.npy", W3_values)
-
         b1_values = np.array([nn.b1[0, j] for j in range(l1_size)])
-        np.save("Weights/b1_data.npy", b1_values)
-
         b2_values = np.array([nn.b2[0, j] for j in range(l2_size)])
-        np.save("Weights/b2_data.npy", b2_values)
-
         b3_values = np.array([nn.b3[0, j] for j in range(l3_size)])
-        np.save("Weights/b3_data.npy", b3_values)
-
-
-        W1_values = np.array([[nn.W1[i][j] + W1_offset[i, j].X for j in range(l1_size)] for i in range(len(nn.W1))])
-        np.save("Weights/W1_offset_data.npy", W1_values)
-
-        W2_values = np.array([[nn.W2[i][j] + W2_offset[i, j].X for j in range(l2_size)] for i in range(len(nn.W2))])
-        np.save("Weights/W2_offset_data.npy", W2_values)
-
-        W3_values = np.array([[nn.W3[i][j] + W3_offset[i, j].X for j in range(l3_size)] for i in range(len(nn.W3))])
-        np.save("Weights/W3_offset_data.npy", W3_values)
-
-        b1_values = np.array([nn.b1[0, j] + b1_offset[j].X for j in range(l1_size)])
-        np.save("Weights/b1_offset_data.npy", b1_values)
-
-        b2_values = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
-        np.save("Weights/b2_offset_data.npy", b2_values)
-
-        b3_values = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
-        np.save("Weights/b3_offset_data.npy", b3_values)
-
         
-        with open(output_file, "a") as f:
-            print(f"----------{flp_idx}----------", file=f)
-        with open(output_file, "a") as f:
-            subprocess.run(["python", "Weights/TestWeights.py", str(flp_idx), str(len(X)), str(tol)], stdout=f, stderr=f, text=True)
+        W1_values_with_offset = np.array([[nn.W1[i][j] + W1_offset[i, j].X for j in range(l1_size)] for i in range(len(nn.W1))])
+        W2_values_with_offset = np.array([[nn.W2[i][j] + W2_offset[i, j].X for j in range(l2_size)] for i in range(len(nn.W2))])
+        W3_values_with_offset = np.array([[nn.W3[i][j] + W3_offset[i, j].X for j in range(l3_size)] for i in range(len(nn.W3))])
+        b1_values_with_offset = np.array([nn.b1[0, j] + b1_offset[j].X for j in range(l1_size)])
+        b2_values_with_offset = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
+        b3_values_with_offset = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
+        
+        vw = VerifyWeights(n, l1, l2, flp_idx, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
+                    W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
+                    b1_values_with_offset, b2_values_with_offset, b3_values_with_offset)
+        vw.main()
+
+
+        # with open(output_file, "a") as f:
+        #     print(f"----------{flp_idx}----------", file=f)
+        # with open(output_file, "a") as f:
+        #     subprocess.run(["python", "Weights/TestWeights.py", str(flp_idx), str(len(X)), str(tol)], stdout=f, stderr=f, text=True)
 
         Z3_values = [[Z3[i, j].X for j in range(l3_size)] for i in range(len(X))]
         print(y.reshape(1,-1)[0])
         print("Z3:", Z3_values)        
-    else:
-        with open(output_file, "a") as f:
-            print(f"----------{flp_idx}----------", file=f)
-            print("No feasible solution found.")
+    # else:
+        # with open(output_file, "a") as f:
+        #     print(f"----------{flp_idx}----------", file=f)
+        #     print("No feasible solution found.")
 
 
 main()
