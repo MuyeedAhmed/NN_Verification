@@ -102,7 +102,6 @@ class VerifyWeights:
         b1_magn = np.array(b1_magn)
         b2_magn = np.array(b2_magn)
         b3_magn = np.array(b3_magn)
-
         all_magns = np.concatenate([W1_magn.flatten(), W2_magn.flatten(), W3_magn.flatten(),
                                     b1_magn.flatten(), b2_magn.flatten(), b3_magn.flatten()])
 
@@ -128,7 +127,7 @@ class VerifyWeights:
                 f.write(f"{self.n},{self.tol},{self.flp_idx},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
     def save_log_in_file(self, anyflip):
-        output_file = f"Output_{self.l1}{self.l2}_{self.n}{anyflip}.txt"
+        output_file = f"Outputs/Output_{self.l1}{self.l2}_{self.n}{anyflip}.txt"
         with open(output_file, "a") as f:
             f.write(f"----------{self.flp_idx}----------\n")
 
