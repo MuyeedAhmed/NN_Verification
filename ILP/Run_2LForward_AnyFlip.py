@@ -11,10 +11,10 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 120
+timeLimit = 12
 
 def main():
-    n = 30
+    n = 12
     l1 = 4
     l2 = 4
     
@@ -137,7 +137,7 @@ def RunForward(nn, X, y, tol, n, l1, l2):
         vw = VerifyWeights(n, l1, l2, flp_idx, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
                     W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
                     b1_values_with_offset, b2_values_with_offset, b3_values_with_offset)
-        vw.main()
+        vw.main(anyflip="_Any")
 
         # W1_values = np.array([[nn.W1[i][j] for j in range(l1_size)] for i in range(len(nn.W1))])
         # np.save("Weights/W1_data.npy", W1_values)

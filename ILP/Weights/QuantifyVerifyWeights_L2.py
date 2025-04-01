@@ -82,7 +82,7 @@ class VerifyWeights:
                     missmatch += 1
         return missmatch
 
-    def quantify_magnitude(self, missmatch, write_in_csv = False):
+    def quantify_magnitude(self, missmatch, anyflip, write_in_csv = False):
         W1_magn = [[(self.W1_with_offset[i][j] - self.W1[i][j]) / (self.W1[i][j] + 10e-16)
                 for j in range(self.W1.shape[1])] for i in range(self.W1.shape[0])]
 
@@ -121,14 +121,14 @@ class VerifyWeights:
         print("Mean Magnitude:", mean_value)
 
         if write_in_csv:
-            if not os.path.exists(f"Stats/Result_{self.l1}{self.l2}_{self.n}_Any.csv"):
-                with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}_Any.csv", "w") as f:
+            if not os.path.exists(f"Stats/Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv"):
+                with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv", "w") as f:
                     f.write("Test_Length,Threshold,Flip_ID,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
-            with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}_Any.csv", "a") as f:
+            with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv", "a") as f:
                 f.write(f"{self.n},{self.tol},{self.flp_idx},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
-    def save_log_in_file(self):
-        output_file = f"Output_{self.l1}{self.l2}_{self.n}.txt"
+    def save_log_in_file(self, anyflip):
+        output_file = f"Output_{self.l1}{self.l2}_{self.n}{anyflip}.txt"
         with open(output_file, "a") as f:
             f.write(f"----------{self.flp_idx}----------\n")
 
@@ -151,8 +151,8 @@ class VerifyWeights:
             f.write("\n")
 
     
-    def main(self):
+    def main(self, anyflip=""):
         self.LoadDataset()
         missmatch = self.RunForward()
-        self.quantify_magnitude(missmatch, True)
-        self.save_log_in_file()
+        self.quantify_magnitude(missmatch, anyflip, True)
+        self.save_log_in_file(anyflip)
