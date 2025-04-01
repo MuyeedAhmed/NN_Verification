@@ -11,10 +11,10 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 12
+timeLimit = 600
 
 def main():
-    n = 12
+    n = 30
     l1 = 4
     l2 = 4
     
