@@ -83,18 +83,18 @@ class VerifyWeights:
         return missmatch
 
     def quantify_magnitude(self, missmatch, write_in_csv = False):
-        W1_magn = [[(self.W1_with_offset[i][j] - self.W1[i][j]) / self.W1[i][j] 
+        W1_magn = [[(self.W1_with_offset[i][j] - self.W1[i][j]) / (self.W1[i][j] + 10e-16)
                 for j in range(self.W1.shape[1])] for i in range(self.W1.shape[0])]
 
-        W2_magn = [[(self.W2_with_offset[i][j] - self.W2[i][j]) / self.W2[i][j] 
+        W2_magn = [[(self.W2_with_offset[i][j] - self.W2[i][j]) / (self.W2[i][j] + 10e-16)
                     for j in range(self.W2.shape[1])] for i in range(self.W2.shape[0])]
 
-        W3_magn = [[(self.W3_with_offset[i][j] - self.W3[i][j]) / self.W3[i][j] 
+        W3_magn = [[(self.W3_with_offset[i][j] - self.W3[i][j]) / (self.W3[i][j] + 10e-16)
                     for j in range(self.W3.shape[1])] for i in range(self.W3.shape[0])]
 
-        b1_magn = [(self.b1_with_offset[i] - self.b1[i]) / self.b1[i] for i in range(len(self.b1_with_offset))]
-        b2_magn = [(self.b2_with_offset[i] - self.b2[i]) / self.b2[i] for i in range(len(self.b2_with_offset))]
-        b3_magn = [(self.b3_with_offset[i] - self.b3[i]) / self.b3[i] for i in range(len(self.b3_with_offset))]
+        b1_magn = [(self.b1_with_offset[i] - self.b1[i]) / (self.b1[i] + 10e-16) for i in range(len(self.b1_with_offset))]
+        b2_magn = [(self.b2_with_offset[i] - self.b2[i]) / (self.b2[i] + 10e-16) for i in range(len(self.b2_with_offset))]
+        b3_magn = [(self.b3_with_offset[i] - self.b3[i]) / (self.b3[i] + 10e-16) for i in range(len(self.b3_with_offset))]
 
         W1_magn = np.array(W1_magn)
         W2_magn = np.array(W2_magn)
@@ -121,10 +121,10 @@ class VerifyWeights:
         print("Mean Magnitude:", mean_value)
 
         if write_in_csv:
-            if not os.path.exists(f"Stats/Result_{self.l1}{self.l2}_{self.n}.csv"):
-                with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}.csv", "w") as f:
+            if not os.path.exists(f"Stats/Result_{self.l1}{self.l2}_{self.n}_Any.csv"):
+                with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}_Any.csv", "w") as f:
                     f.write("Test_Length,Threshold,Flip_ID,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
-            with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}.csv", "a") as f:
+            with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}_Any.csv", "a") as f:
                 f.write(f"{self.n},{self.tol},{self.flp_idx},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
     def save_log_in_file(self):
