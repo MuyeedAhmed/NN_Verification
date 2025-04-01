@@ -1,6 +1,5 @@
 from NN.Network import NN, RunNN
 from Gurobi_ForwardPass_L2_Indicator import ForwardPass
-
 from Weights.QuantifyVerifyWeights_L2 import VerifyWeights
 
 
@@ -100,8 +99,6 @@ def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
     model.setObjective(objective, GRB.MINIMIZE)
     model.setParam("FeasibilityTol", 1e-9)
     model.addConstr(objective >= 0, "NonNegativeObjective")
-    # model.setParam(GRB.Param.TimeLimit, 10)
-    # model.setParam('MIPGap', 0.5)
     model.setParam('TimeLimit', timeLimit)
     model.optimize()
     # model.setParam(GRB.Param.NumericFocus, 3)
