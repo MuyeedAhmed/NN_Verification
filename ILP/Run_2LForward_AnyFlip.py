@@ -11,12 +11,12 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 60
+timeLimit = 120
 
 def main():
-    n = 15
-    l1 = 5
-    l2 = 5
+    n = 30
+    l1 = 4
+    l2 = 4
     
     df = pd.read_csv("../Dataset/appendicitis.csv")
     X = df.iloc[:, :-1].to_numpy()
@@ -110,6 +110,7 @@ def RunForward(nn, X, y, tol, n, l1, l2):
 
         if len(indices) != 1:
             print("Error: Expected exactly one value of 1 in f_values, but found", len(indices))
+            return
         else:
             flp_idx = indices[0]
         print("f values:", f_values)
