@@ -144,10 +144,10 @@ def print_magnitude(nn_before, nn_after, test_len, missmatch, threshold, f_id, w
     print("Mean Difference:", mean_value)
 
     if write_in_csv:
-        if not os.path.exists("Stats/Result_88_40.csv"):
-            with open("Stats/Result_88_40.csv", "w") as f:
+        if not os.path.exists("Stats/Result_Any.csv"):
+            with open("Stats/Result_Any.csv", "w") as f:
                 f.write("Test_Length,Threshold,Flip_ID,Mismatch,Max_Abs_Diff,Median_Diff,Mean_Diff,Sum_Abs_Diff,Geomean_Diff\n")
-        with open("Stats/Result_88_40.csv", "a") as f:
+        with open("Stats/Result_Any.csv", "a") as f:
             f.write(f"{test_len},{threshold},{f_id},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
 def main():
