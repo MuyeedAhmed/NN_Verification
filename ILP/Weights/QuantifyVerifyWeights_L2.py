@@ -75,10 +75,10 @@ class VerifyWeights:
         missmatch = 0
         for i in range(len(self.labels_after)):
             if self.labels_after[i] != self.labels_before[i]:
-                if i != self.flp_idx:
+                if i not in self.flp_idx:
                     missmatch += 1
             else:
-                if i == self.flp_idx:
+                if i in self.flp_idx:
                     missmatch += 1
         return missmatch
 
@@ -122,9 +122,15 @@ class VerifyWeights:
         if write_in_csv:
             if not os.path.exists(f"Stats/Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv"):
                 with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv", "w") as f:
-                    f.write("Test_Length,Threshold,Flip_ID,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
+                    if anyflip == "_Any":
+                        f.write("Test_Length,Threshold,Flip_Count,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
+                    else:
+                        f.write("Test_Length,Threshold,Flip_ID,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
             with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv", "a") as f:
-                f.write(f"{self.n},{self.tol},{self.flp_idx},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
+                if anyflip == "_Any":
+                    f.write(f"{self.n},{self.tol},{len(self.flp_idx)},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
+                else:
+                    f.write(f"{self.n},{self.tol},{self.flp_idx},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
     def save_log_in_file(self, anyflip):
         output_file = f"Outputs/Output_{self.l1}{self.l2}_{self.n}{anyflip}.txt"
@@ -134,7 +140,7 @@ class VerifyWeights:
         with open(output_file, "a") as f:
             f.write("Before : ")
             for i in range(len(self.labels_before)):
-                if i == self.flp_idx:
+                if i in self.flp_idx:
                     f.write(f"\033[0;32m{self.labels_before[i]}\033[0m ")
                 else:
                     f.write(f"{self.labels_before[i]} ")
@@ -150,7 +156,7 @@ class VerifyWeights:
             f.write("\n")
 
     
-    def main(self, anyflip=""):
+    def main(self, flipCount=1, anyflip=""):
         self.LoadDataset()
         missmatch = self.RunForward()
         self.quantify_magnitude(missmatch, anyflip, True)

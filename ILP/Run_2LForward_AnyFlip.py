@@ -14,10 +14,10 @@ import subprocess
 timeLimit = 600
 
 def main():
-    n = 50
+    n = 15
     l1 = 4
     l2 = 4
-    
+    flipCount = 2
     df = pd.read_csv("../Dataset/appendicitis.csv")
     X = df.iloc[:, :-1].to_numpy()
     scaler = StandardScaler()
@@ -25,17 +25,19 @@ def main():
     y_true = df.iloc[:, -1].to_numpy().reshape(-1, 1)
     trn = RunNN(X, y_true, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000)
     nn, y_predict = trn.TrainReturnWeights()
-    ns = [50, 75, 100, 40, 60]
-    for n in ns:
-        X = X[0:n]
-        y = y_predict[0:n]
+    # ns = [50, 75, 100, 40, 60]
+    # for n in ns:
+    X = X[0:n]
+    y = y_predict[0:n]
 
-        tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
-        for tol in tolerances:
-            RunForward(nn, X, y, tol, n, l1, l2)
+    # tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
+    tolerances = [5e-9, 1e-8, 5e-8]
+    for tol in tolerances:
+        for flipCount in range(1, 11):
+            RunForward(nn, X, y, tol, n, flipCount, l1, l2)
         
 
-def RunForward(nn, X, y, tol, n, l1, l2):
+def RunForward(nn, X, y, tol, n, flipCount, l1, l2):
 
     l1_size = len(nn.W1[0])
     l2_size = len(nn.W2[0])
@@ -64,7 +66,7 @@ def RunForward(nn, X, y, tol, n, l1, l2):
     f = model.addVars(len(X), vtype=GRB.BINARY, name=f"flip_i") 
     
     M = 50
-    model.addConstr(sum(f[i] for i in range(len(X))) == 1, "one_flip")
+    model.addConstr(sum(f[i] for i in range(len(X))) == flipCount, "one_flip")
 
     E = tol
     for i in range(len(X)):
@@ -91,7 +93,6 @@ def RunForward(nn, X, y, tol, n, l1, l2):
         gp.quicksum(W3_offset[i, j] * W3_offset[i, j] for i in range(len(nn.W3)) for j in range(l3_size))
     )
 
-
     model.setObjective(objective, GRB.MINIMIZE)
 
     model.setParam("FeasibilityTol", 1e-9)
@@ -108,13 +109,12 @@ def RunForward(nn, X, y, tol, n, l1, l2):
             
         f_values = [f[i].X for i in range(len(X))]
         y_g_values = [y_g[i].X for i in range(len(X))]
-        indices = [i for i, val in enumerate(f_values) if val == 1]
+        flip_idxs = [i for i, val in enumerate(f_values) if val == 1]
 
-        if len(indices) != 1:
-            print("Error: Expected exactly one value of 1 in f_values, but found", len(indices))
+        if len(flip_idxs) != flipCount:
+            print(f"Error: Expected {flipCount} value of 1 in f_values, but found {len(flip_idxs)}")
             return
-        else:
-            flp_idx = indices[0]
+
         print("f values:", f_values)
         print("y_g values:", y_g_values)
 
@@ -135,19 +135,6 @@ def RunForward(nn, X, y, tol, n, l1, l2):
         b1_values_with_offset = np.array([nn.b1[0, j] + b1_offset[j].X for j in range(l1_size)])
         b2_values_with_offset = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
         b3_values_with_offset = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
-        
-        # print("W1 values:\n", W1_values)
-        # print("W2 values:\n", W2_values)
-        # print("W3 values:\n", W3_values)
-        # print("b1 values:\n", b1_values)
-        # print("b2 values:\n", b2_values)
-        # print("b3 values:\n", b3_values)
-        # print("W1 values with offset:\n", W1_values_with_offset)
-        # print("W2 values with offset:\n", W2_values_with_offset)
-        # print("W3 values with offset:\n", W3_values_with_offset)
-        # print("b1 values with offset:\n", b1_values_with_offset)
-        # print("b2 values with offset:\n", b2_values_with_offset)
-        # print("b3 values with offset:\n", b3_values_with_offset)
 
         # W1_values_magn = np.array([[W1_offset[i, j].X/nn.W1[i][j] for j in range(l1_size)] for i in range(len(nn.W1))])
         # W2_values_magn = np.array([[W2_offset[i, j].X/nn.W2[i][j] for j in range(l2_size)] for i in range(len(nn.W2))])
@@ -156,62 +143,13 @@ def RunForward(nn, X, y, tol, n, l1, l2):
         # b2_values_magn = np.array([b2_offset[j].X/nn.b2[0, j] for j in range(l2_size)])
         # b3_values_magn = np.array([b3_offset[j].X/nn.b3[0, j] for j in range(l3_size)])
 
-        # print("---------OFFSET---------")
-        # print("W1 values offset:\n", W1_values_magn)
-        # print("W2 values offset:\n", W2_values_magn)
-        # print("W3 values offset:\n", W3_values_magn)
-        # print("b1 values offset:\n", b1_values_magn)
-        # print("b2 values offset:\n", b2_values_magn)
-        # print("b3 values offset:\n", b3_values_magn)
-        
-
-        vw = VerifyWeights(n, l1, l2, flp_idx, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
+        vw = VerifyWeights(n, l1, l2, flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
                     W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
                     b1_values_with_offset, b2_values_with_offset, b3_values_with_offset)
         vw.main(anyflip="_Any")
 
-        # W1_values = np.array([[nn.W1[i][j] for j in range(l1_size)] for i in range(len(nn.W1))])
-        # np.save("Weights/W1_data.npy", W1_values)
-
-        # W2_values = np.array([[nn.W2[i][j] for j in range(l2_size)] for i in range(len(nn.W2))])
-        # np.save("Weights/W2_data.npy", W2_values)
-
-        # W3_values = np.array([[nn.W3[i][j] for j in range(l3_size)] for i in range(len(nn.W3))])
-        # np.save("Weights/W3_data.npy", W3_values)
-
-        # b1_values = np.array([nn.b1[0, j] for j in range(l1_size)])
-        # np.save("Weights/b1_data.npy", b1_values)
-
-        # b2_values = np.array([nn.b2[0, j] for j in range(l2_size)])
-        # np.save("Weights/b2_data.npy", b2_values)
-
-        # b3_values = np.array([nn.b3[0, j] for j in range(l3_size)])
-        # np.save("Weights/b3_data.npy", b3_values)
-
-        # W1_values = np.array([[nn.W1[i][j] + W1_offset[i, j].X for j in range(l1_size)] for i in range(len(nn.W1))])
-        # np.save("Weights/W1_offset_data.npy", W1_values)
-
-        # W2_values = np.array([[nn.W2[i][j] + W2_offset[i, j].X for j in range(l2_size)] for i in range(len(nn.W2))])
-        # np.save("Weights/W2_offset_data.npy", W2_values)
-
-        # W3_values = np.array([[nn.W3[i][j] + W3_offset[i, j].X for j in range(l3_size)] for i in range(len(nn.W3))])
-        # np.save("Weights/W3_offset_data.npy", W3_values)
-
-        # b1_values = np.array([nn.b1[0, j] + b1_offset[j].X for j in range(l1_size)])
-        # np.save("Weights/b1_offset_data.npy", b1_values)
-
-        # b2_values = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
-        # np.save("Weights/b2_offset_data.npy", b2_values)
-
-        # b3_values = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
-        # np.save("Weights/b3_offset_data.npy", b3_values)
-
-        
-        
-        # with open(output_file, "a") as f:
-        #     subprocess.run(["python", "Weights/TestWeights.py"], stdout=f, stderr=f, text=True)
     else:
         print("No feasible solution found.")
 
-
-main()
+if __name__ == "__main__":
+    main()
