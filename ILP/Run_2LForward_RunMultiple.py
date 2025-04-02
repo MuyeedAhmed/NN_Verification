@@ -121,7 +121,7 @@ def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
         b2_values_with_offset = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
         b3_values_with_offset = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
         
-        vw = VerifyWeights(n, l1, l2, flp_idx, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
+        vw = VerifyWeights(n, l1, l2, [flp_idx], tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
                     W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
                     b1_values_with_offset, b2_values_with_offset, b3_values_with_offset)
         vw.main()
