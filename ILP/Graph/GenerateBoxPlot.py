@@ -34,5 +34,5 @@ for filepath in glob.glob(os.path.join(input_dir, "*.csv")):
         continue    
     plt.suptitle("")
     plt.tight_layout()
-    plt.savefig(f"{output_dir}/{base_filename}.png")
+    plt.savefig(f"{output_dir}/{base_filename}.pdf")
     plt.close()

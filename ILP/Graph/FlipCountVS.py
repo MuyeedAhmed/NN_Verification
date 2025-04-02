@@ -6,9 +6,12 @@ input_dir = "Stats/"
 output_dir = "Graph/Figures"
 os.makedirs(output_dir, exist_ok=True)
 
-filename = "Result_44_5_Multiple.csv"
-df = pd.read_csv(input_dir+filename)
+threshold = 1e-8
 
+
+filename = "Result_44_15_Any.csv"
+df = pd.read_csv(input_dir+filename)
+df = df[df['Threshold'] == threshold]
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 
 x = df['Flip_Count']
@@ -29,5 +32,5 @@ ax2.set_xticklabels(df['Flip_Count'])
 ax2.grid(axis='y')
 
 plt.tight_layout()
-plt.savefig(f"{output_dir}/FlipCountVS_{filename}.png")
+plt.savefig(f"{output_dir}/FlipCountVS_{filename}_{threshold}.pdf")
 plt.close()
