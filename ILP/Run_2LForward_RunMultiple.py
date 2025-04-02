@@ -12,11 +12,11 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 5
+timeLimit = 300
 
 def main():
-    n = 3
-    l1 = 4
+    n = 15
+    l1 = 3
     l2 = 2
 
     df = pd.read_csv("../Dataset/appendicitis.csv")
