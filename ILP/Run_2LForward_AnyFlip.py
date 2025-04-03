@@ -11,10 +11,10 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 600
+timeLimit = 6000
 
 def main():
-    n = 15
+    n = 40
     l1 = 4
     l2 = 4
     flipCount = 2
@@ -32,10 +32,14 @@ def main():
 
     # tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
     tolerances = [5e-9, 1e-8, 5e-8]
+    times = []
     for tol in tolerances:
-        for flipCount in range(1, 11):
-            RunForward(nn, X, y, tol, n, flipCount, l1, l2)
-        
+        # for flipCount in range(1, 11):
+        t0 = time.time()
+        RunForward(nn, X, y, tol, n, 1, l1, l2)
+        times.append(time.time()-t0)
+
+    print("Times:", times)
 
 def RunForward(nn, X, y, tol, n, flipCount, l1, l2):
 
