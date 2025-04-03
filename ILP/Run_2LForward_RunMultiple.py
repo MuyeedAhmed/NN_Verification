@@ -16,8 +16,8 @@ timeLimit = 300
 
 def main():
     n = 15
-    l1 = 3
-    l2 = 2
+    l1 = 4
+    l2 = 4
 
     df = pd.read_csv("../Dataset/appendicitis.csv")
     X = df.iloc[:, :-1].to_numpy()
