@@ -2,7 +2,6 @@ from NN.Network import NN, RunNN
 from Gurobi_ForwardPass_L2_Indicator import ForwardPass
 from Weights.QuantifyVerifyWeights_L2 import VerifyWeights
 
-
 import gurobipy as gp
 from gurobipy import GRB
 
@@ -31,7 +30,7 @@ def main():
     y = y_predict[0:n]
 
     # tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
-    tol = 1e-9
+    tol = 2e-9
     RunForward(nn, X, y, -1, tol, n, l1, l2)
 
 

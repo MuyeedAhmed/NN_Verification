@@ -17,7 +17,9 @@ def main():
     n = 40
     l1 = 4
     l2 = 4
-    flipCount = 2
+    flipCount = 1
+    tol = 2e-9
+
     df = pd.read_csv("../Dataset/appendicitis.csv")
     X = df.iloc[:, :-1].to_numpy()
     scaler = StandardScaler()
@@ -30,16 +32,18 @@ def main():
     X = X[0:n]
     y = y_predict[0:n]
 
-    # tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
-    tolerances = [5e-9, 1e-8, 5e-8]
-    times = []
-    for tol in tolerances:
-        # for flipCount in range(1, 11):
-        t0 = time.time()
-        RunForward(nn, X, y, tol, n, 1, l1, l2)
-        times.append(time.time()-t0)
+    RunForward(nn, X, y, tol, n, 1, l1, l2)
+    
+    # # tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
+    # tolerances = [5e-9, 1e-8, 5e-8]
+    # times = []
+    # for tol in tolerances:
+    #     # for flipCount in range(1, 11):
+    #     t0 = time.time()
+    #     RunForward(nn, X, y, tol, n, 1, l1, l2)
+    #     times.append(time.time()-t0)
 
-    print("Times:", times)
+    # print("Times:", times)
 
 def RunForward(nn, X, y, tol, n, flipCount, l1, l2):
 
