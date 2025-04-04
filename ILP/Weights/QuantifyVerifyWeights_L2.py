@@ -69,7 +69,7 @@ class VerifyWeights:
     def RunForward(self):
         nn_before = NeuralNetwork(self.W1, self.W2, self.W3, self.b1, self.b2, self.b3)
         self.labels_before = nn_before.predict(self.X_test).reshape(1, -1)[0]
-
+        
         nn_after = NeuralNetwork(self.W1_with_offset, self.W2_with_offset, self.W3_with_offset, self.b1_with_offset, self.b2_with_offset, self.b3_with_offset)
         self.labels_after = nn_after.predict(self.X_test).reshape(1, -1)[0]
         missmatch = 0
@@ -155,9 +155,46 @@ class VerifyWeights:
                     f.write(f"{self.labels_after[i]} ")
             f.write("\n")
 
-    
+
+    def RunForward_MaximizeDiff(self):
+        nn_before = NeuralNetwork(self.W1, self.W2, self.W3, self.b1, self.b2, self.b3)
+        self.labels_before = nn_before.predict(self.X_test).reshape(1, -1)[0]
+        nn_after = NeuralNetwork(self.W1_with_offset, self.W2_with_offset, self.W3_with_offset, self.b1_with_offset, self.b2_with_offset, self.b3_with_offset)
+        self.labels_after = nn_after.predict(self.X_test).reshape(1, -1)[0]
+
+        missmatch = 0
+        for i in range(len(self.labels_after)):
+            if self.labels_after[i] != self.labels_before[i]:
+                missmatch += 1
+            
+
+        diff_before = []
+        for i in range(len(self.labels_before)):
+            if self.labels_before[i] == 1:
+                diff_before.append(nn_before.A3[i] - 0.5)
+            else:
+                diff_before.append(0.5 - nn_before.A3[i])
+
+        diff_before = np.array(diff_before)
+        print("Mean Difference Before:", np.mean(diff_before))
+
+
+        diff_after = []
+        for i in range(len(self.labels_after)):
+            if self.labels_after[i] == 1:
+                diff_after.append(nn_after.A3[i] - 0.5)
+            else:
+                diff_after.append(0.5 - nn_after.A3[i])
+
+        diff_after = np.array(diff_after)
+        print("Mean Difference After:", np.mean(diff_after))
+        print("Missmatch:", missmatch)
+
+
+
     def main(self, flipCount=1, anyflip=""):
         self.LoadDataset()
-        missmatch = self.RunForward()
+        missmatch = self.RunForward() # For Flip
+        self.RunForward_MaximizeDiff() # For Maximize Difference
         self.quantify_magnitude(missmatch, anyflip, True)
         self.save_log_in_file(anyflip)
