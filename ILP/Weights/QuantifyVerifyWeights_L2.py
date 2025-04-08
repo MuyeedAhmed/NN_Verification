@@ -82,7 +82,7 @@ class VerifyWeights:
                     missmatch += 1
         return missmatch
 
-    def quantify_magnitude(self, missmatch, anyflip, write_in_csv = False, Task="Flip"):
+    def quantify_magnitude(self, missmatch, anyflip, write_in_csv = False):
         W1_magn = [[(self.W1_with_offset[i][j] - self.W1[i][j]) / (self.W1[i][j] + 10e-16)
                 for j in range(self.W1.shape[1])] for i in range(self.W1.shape[0])]
 
@@ -120,20 +120,20 @@ class VerifyWeights:
         print("Mean Magnitude:", mean_value)
 
         if write_in_csv:
-            if not os.path.exists(f"Stats/{Task}_Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv"):
-                with open(f"Stats/{Task}_Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv", "w") as f:
+            if not os.path.exists(f"Stats/Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv"):
+                with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv", "w") as f:
                     if anyflip == "_Any":
                         f.write("Test_Length,Threshold,Flip_Count,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
                     else:
                         f.write("Test_Length,Threshold,Flip_ID,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
-            with open(f"Stats/{Task}_Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv", "a") as f:
+            with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv", "a") as f:
                 if anyflip == "_Any":
                     f.write(f"{self.n},{self.tol},{len(self.flp_idx)},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
                 else:
                     f.write(f"{self.n},{self.tol},{self.flp_idx},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
-    def save_log_in_file(self, anyflip, Task="Flip"):
-        output_file = f"Outputs/{Task}_Output_{self.l1}{self.l2}_{self.n}{anyflip}.txt"
+    def save_log_in_file(self, anyflip):
+        output_file = f"Outputs/Output_{self.l1}{self.l2}_{self.n}{anyflip}.txt"
         with open(output_file, "a") as f:
             f.write(f"----------{self.flp_idx}----------\n")
 
@@ -192,9 +192,9 @@ class VerifyWeights:
 
 
 
-    def main(self, flipCount=1, anyflip="", Task="Flip"):
+    def main(self, flipCount=1, anyflip=""):
         self.LoadDataset()
         missmatch = self.RunForward() # For Flip
         self.RunForward_MaximizeDiff() # For Maximize Difference
-        self.quantify_magnitude(missmatch, anyflip, True, Task)
-        self.save_log_in_file(anyflip, Task)
+        self.quantify_magnitude(missmatch, anyflip, True)
+        self.save_log_in_file(anyflip)
