@@ -10,7 +10,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
-
+import sys
 
 timeLimit = 10
 
@@ -21,7 +21,7 @@ def main():
     if len(args) == 2:
         n = int(args[0])
         timeLimit = int(args[1])
-        
+
     l1 = 4
     l2 = 4
     flipCount = 1
