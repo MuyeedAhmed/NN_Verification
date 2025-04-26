@@ -72,17 +72,17 @@ class VerifyWeights:
         
         nn_after = NeuralNetwork(self.W1_with_offset, self.W2_with_offset, self.W3_with_offset, self.b1_with_offset, self.b2_with_offset, self.b3_with_offset)
         self.labels_after = nn_after.predict(self.X_test).reshape(1, -1)[0]
-        missmatch = 0
+        mismatch = 0
         for i in range(len(self.labels_after)):
             if self.labels_after[i] != self.labels_before[i]:
                 if i not in self.flp_idx:
-                    missmatch += 1
+                    mismatch += 1
             else:
                 if i in self.flp_idx:
-                    missmatch += 1
-        return missmatch
+                    mismatch += 1
+        return mismatch
 
-    def quantify_magnitude(self, missmatch, anyflip, write_in_csv = False):
+    def quantify_magnitude(self, mismatch, anyflip, write_in_csv = False):
         W1_magn = [[(self.W1_with_offset[i][j] - self.W1[i][j]) / (self.W1[i][j] + 10e-16)
                 for j in range(self.W1.shape[1])] for i in range(self.W1.shape[0])]
 
@@ -111,7 +111,7 @@ class VerifyWeights:
         sum_abs_value = np.sum(np.abs(all_magns))
         geomean_value = gmean(np.abs(all_magns) + 1) - 1
 
-        print("Mismatch:", missmatch)
+        print("Mismatch:", mismatch)
         print("Sum of Absolute Magnitude:", sum_abs_value)
         print("Geometric Mean of Magnitude:", geomean_value)
 
@@ -128,9 +128,9 @@ class VerifyWeights:
                         f.write("Test_Length,Threshold,Flip_ID,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
             with open(f"Stats/Result_{self.l1}{self.l2}_{self.n}{anyflip}.csv", "a") as f:
                 if anyflip == "_Any":
-                    f.write(f"{self.n},{self.tol},{len(self.flp_idx)},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
+                    f.write(f"{self.n},{self.tol},{len(self.flp_idx)},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
                 else:
-                    f.write(f"{self.n},{self.tol},{self.flp_idx},{missmatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
+                    f.write(f"{self.n},{self.tol},{self.flp_idx},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
     def save_log_in_file(self, anyflip):
         output_file = f"Outputs/Output_{self.l1}{self.l2}_{self.n}{anyflip}.txt"
@@ -162,10 +162,10 @@ class VerifyWeights:
         nn_after = NeuralNetwork(self.W1_with_offset, self.W2_with_offset, self.W3_with_offset, self.b1_with_offset, self.b2_with_offset, self.b3_with_offset)
         self.labels_after = nn_after.predict(self.X_test).reshape(1, -1)[0]
 
-        missmatch = 0
+        mismatch = 0
         for i in range(len(self.labels_after)):
             if self.labels_after[i] != self.labels_before[i]:
-                missmatch += 1
+                mismatch += 1
             
 
         diff_before = []
@@ -188,13 +188,13 @@ class VerifyWeights:
 
         diff_after = np.array(diff_after)
         print("Mean Difference After:", np.mean(diff_after))
-        print("Missmatch:", missmatch)
+        print("Mismatch, Max Diff:", mismatch)
 
 
 
     def main(self, flipCount=1, anyflip=""):
         self.LoadDataset()
-        missmatch = self.RunForward() # For Flip
+        mismatch = self.RunForward() # For Flip
         self.RunForward_MaximizeDiff() # For Maximize Difference
-        self.quantify_magnitude(missmatch, anyflip, True)
+        self.quantify_magnitude(mismatch, anyflip, True)
         self.save_log_in_file(anyflip)
