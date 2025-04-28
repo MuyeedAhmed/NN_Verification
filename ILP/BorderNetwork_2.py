@@ -14,7 +14,7 @@ import subprocess
 timeLimit = 600
 
 def main():
-    n = 100
+    n = 106
     l1 = 4
     l2 = 4
 
@@ -30,7 +30,7 @@ def main():
     y = y_predict[0:n]
 
     # tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
-    tol = 2e-9
+    tol = 15e-10
     RunForward(nn, X, y, -1, tol, n, l1, l2)
 
 
@@ -69,19 +69,54 @@ def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
             model.addConstr(Z3[i, 0] <= -tol, f"Z3_{i}_negative")
 
 
+    abs_b1 = model.addVars(l1_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_b1")
+    abs_b2 = model.addVars(l2_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_b2")
+    abs_b3 = model.addVars(l3_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_b3")
+
+    abs_W1 = model.addVars(len(nn.W1), l1_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_W1")
+    abs_W2 = model.addVars(len(nn.W2), l2_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_W2")
+    abs_W3 = model.addVars(len(nn.W3), l3_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_W3")
+
+    for i in range(l1_size):
+        model.addConstr(abs_b1[i] >= b1_offset[i])
+        model.addConstr(abs_b1[i] >= -b1_offset[i])
+
+    for i in range(l2_size):
+        model.addConstr(abs_b2[i] >= b2_offset[i])
+        model.addConstr(abs_b2[i] >= -b2_offset[i])
+
+    for i in range(l3_size):
+        model.addConstr(abs_b3[i] >= b3_offset[i])
+        model.addConstr(abs_b3[i] >= -b3_offset[i])
+
+    for i in range(len(nn.W1)):
+        for j in range(l1_size):
+            model.addConstr(abs_W1[i, j] >= W1_offset[i, j])
+            model.addConstr(abs_W1[i, j] >= -W1_offset[i, j])
+
+    for i in range(len(nn.W2)):
+        for j in range(l2_size):
+            model.addConstr(abs_W2[i, j] >= W2_offset[i, j])
+            model.addConstr(abs_W2[i, j] >= -W2_offset[i, j])
+
+    for i in range(len(nn.W3)):
+        for j in range(l3_size):
+            model.addConstr(abs_W3[i, j] >= W3_offset[i, j])
+            model.addConstr(abs_W3[i, j] >= -W3_offset[i, j])
+
     objective = (
-        gp.quicksum(b1_offset[i] * b1_offset[i] for i in range(l1_size)) + 
-        gp.quicksum(b2_offset[i] * b2_offset[i] for i in range(l2_size)) + 
-        gp.quicksum(b3_offset[i] * b3_offset[i] for i in range(l3_size)) +
-        gp.quicksum(W1_offset[i, j] * W1_offset[i, j] for i in range(len(nn.W1)) for j in range(l1_size)) +
-        gp.quicksum(W2_offset[i, j] * W2_offset[i, j] for i in range(len(nn.W2)) for j in range(l2_size)) +
-        gp.quicksum(W3_offset[i, j] * W3_offset[i, j] for i in range(len(nn.W3)) for j in range(l3_size))
+        gp.quicksum(abs_b1[i] for i in range(l1_size)) +
+        gp.quicksum(abs_b2[i] for i in range(l2_size)) +
+        gp.quicksum(abs_b3[i] for i in range(l3_size)) +
+        gp.quicksum(abs_W1[i, j] for i in range(len(nn.W1)) for j in range(l1_size)) +
+        gp.quicksum(abs_W2[i, j] for i in range(len(nn.W2)) for j in range(l2_size)) +
+        gp.quicksum(abs_W3[i, j] for i in range(len(nn.W3)) for j in range(l3_size))
     )
-
+    model.addConstr(objective <= 10000, "ObjectiveUpperBound")
     model.setObjective(objective, GRB.MAXIMIZE)
-
+    # model.setParam("Method", 2)
     model.setParam("FeasibilityTol", 1e-9)
-    model.addConstr(objective >= 0, "NonNegativeObjective")
+    # model.addConstr(objective >= 0, "NonNegativeObjective")
     model.setParam('TimeLimit', timeLimit)
     model.optimize()
     # model.setParam(GRB.Param.NumericFocus, 3)

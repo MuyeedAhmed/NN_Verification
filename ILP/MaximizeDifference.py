@@ -14,7 +14,7 @@ import subprocess
 timeLimit = 600
 
 def main():
-    n = 100
+    n = 106
     l1 = 4
     l2 = 4
 
@@ -68,17 +68,13 @@ def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
         else:
             model.addConstr(Z3[i, 0] <= -tol, f"Z3_{i}_negative")
 
+    # objective = gp.quicksum(float(2 * y[i] - 1) * Z3[i, 0] for i in range(n))
+    abs_Z3 = model.addVars(n, vtype=GRB.CONTINUOUS, name="abs_Z3")
 
-    # objective = (
-    #     gp.quicksum(b1_offset[i] * b1_offset[i] for i in range(l1_size)) + 
-    #     gp.quicksum(b2_offset[i] * b2_offset[i] for i in range(l2_size)) + 
-    #     gp.quicksum(b3_offset[i] * b3_offset[i] for i in range(l3_size)) +
-    #     gp.quicksum(W1_offset[i, j] * W1_offset[i, j] for i in range(len(nn.W1)) for j in range(l1_size)) +
-    #     gp.quicksum(W2_offset[i, j] * W2_offset[i, j] for i in range(len(nn.W2)) for j in range(l2_size)) +
-    #     gp.quicksum(W3_offset[i, j] * W3_offset[i, j] for i in range(len(nn.W3)) for j in range(l3_size))
-    # )
-
-    objective = gp.quicksum(float(2 * y[i] - 1) * Z3[i, 0] for i in range(n))
+    for i in range(n):
+        model.addGenConstrAbs(abs_Z3[i], Z3[i, 0], name=f"abs_constraint_{i}")
+    
+    objective = gp.quicksum(abs_Z3[i] for i in range(n))
 
     model.setObjective(objective, GRB.MAXIMIZE)
 
