@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 600
+timeLimit = 6000
 
 def main():
     n = 106
