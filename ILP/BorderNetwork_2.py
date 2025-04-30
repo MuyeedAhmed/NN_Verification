@@ -30,7 +30,7 @@ def main():
     y = y_predict[0:n]
 
     # tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
-    tol = 15e-10
+    tol = 1e-9
     RunForward(nn, X, y, -1, tol, n, l1, l2)
 
 
