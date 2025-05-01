@@ -179,6 +179,23 @@ def RunForward(nn, X, y, tol, n, flipCount, l1, l2):
         b2_values_with_offset = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
         b3_values_with_offset = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
 
+
+        W1_offset_array = np.array([[W1_offset[i, j].X for j in range(l1_size)] for i in range(len(nn.W1))])
+        W2_offset_array = np.array([[W2_offset[i, j].X for j in range(l2_size)] for i in range(len(nn.W2))])
+        W3_offset_array = np.array([[W3_offset[i, j].X for j in range(l3_size)] for i in range(len(nn.W3))])
+
+        b1_offset_array = np.array([b1_offset[j].X for j in range(l1_size)])
+        b2_offset_array = np.array([b2_offset[j].X for j in range(l2_size)])
+        b3_offset_array = np.array([b3_offset[j].X for j in range(l3_size)])
+
+        print("W1_offset:\n", W1_offset_array)
+        print("W2_offset:\n", W2_offset_array)
+        print("W3_offset:\n", W3_offset_array)
+        print("b1_offset:", b1_offset_array)
+        print("b2_offset:", b2_offset_array)
+        print("b3_offset:", b3_offset_array)
+
+
         # W1_values_magn = np.array([[W1_offset[i, j].X/nn.W1[i][j] for j in range(l1_size)] for i in range(len(nn.W1))])
         # W2_values_magn = np.array([[W2_offset[i, j].X/nn.W2[i][j] for j in range(l2_size)] for i in range(len(nn.W2))])
         # W3_values_magn = np.array([[W3_offset[i, j].X/nn.W3[i][j] for j in range(l3_size)] for i in range(len(nn.W3))])
