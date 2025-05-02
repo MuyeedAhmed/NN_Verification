@@ -8,7 +8,7 @@ from Network import RunNN
 
 from FlipStability import RunForward_L2
 
-input_folder = "../../Datasets"
+input_folder = "../../Dataset"
 output_file = "nn_config_results.csv"
 
 layer_options = [2]
@@ -34,7 +34,7 @@ pd.DataFrame(columns=columns).to_csv(output_file, index=False)
 for filename in os.listdir(input_folder):
     if not filename.endswith(".csv"):
         continue
-    if filename != "flare.csv" or filename != "PieChart3.csv" or filename != "fri_c1_1000_50.csv":
+    if filename != "flare.csv" and filename != "PieChart3.csv" and filename != "fri_c1_1000_50.csv":
         continue
 
 
