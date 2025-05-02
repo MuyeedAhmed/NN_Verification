@@ -127,7 +127,7 @@ class VerifyWeights:
         return max_abs_value, mean_value, sum_abs_value
 
     
-    def save_log_in_file(self, activateion):
+    def save_log_in_file(self, activation):
         output_file = f"Mismatch_Output_{self.l1}{self.l2}_{activation}.txt"
         with open(output_file, "a") as f:
             f.write(f"----------{self.flp_idx}----------\n")
@@ -157,5 +157,5 @@ class VerifyWeights:
         max_abs_value, mean_value, sum_abs_value = self.quantify_magnitude()
         if mismatch > 0:
             print(f"Mismatch: {mismatch} out of {self.n}")
-            self.save_log_in_file(activation)
+            # self.save_log_in_file(activation)
         return mismatch, max_abs_value, mean_value, sum_abs_value
