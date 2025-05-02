@@ -34,6 +34,9 @@ pd.DataFrame(columns=columns).to_csv(output_file, index=False)
 for filename in os.listdir(input_folder):
     if not filename.endswith(".csv"):
         continue
+    if filename != "flare.csv" or filename != "PieChart3.csv" or filename != "fri_c1_1000_50.csv":
+        continue
+
 
     path = os.path.join(input_folder, filename)
     data = pd.read_csv(path)
@@ -62,7 +65,7 @@ for filename in os.listdir(input_folder):
                     if np.isnan(nn.W[0]).any() or np.isnan(nn.b[0]).any() or np.isnan(nn.W[1]).any() or np.isnan(nn.b[1]).any():
                         print("NaN in weights, skipping...")
                         continue
-                        
+
                     val_preds = nn.predict(X_val)
                     test_preds = nn.predict(X_test)
 
