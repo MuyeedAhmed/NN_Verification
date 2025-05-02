@@ -128,7 +128,7 @@ class VerifyWeights:
 
     
     def save_log_in_file(self, activateion):
-        output_file = f"Outputs/Output_{self.l1}{self.l2}_{activation}.txt"
+        output_file = f"Mismatch_Output_{self.l1}{self.l2}_{activation}.txt"
         with open(output_file, "a") as f:
             f.write(f"----------{self.flp_idx}----------\n")
 

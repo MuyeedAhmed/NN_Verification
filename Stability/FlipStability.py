@@ -4,7 +4,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-timeLimit = 60
+timeLimit = 10
 
 def RunForward_L2(nn, X, y, activation, tol, n, flipCount, l1, l2):
     l1_size = nn.W[0].shape[1]
@@ -95,14 +95,14 @@ def RunForward_L2(nn, X, y, activation, tol, n, flipCount, l1, l2):
     
     if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
         if model.SolCount == 0:
-            return
+            return 0, 0, 0, -1
 
         f_values = [f[i].X for i in range(len(X))]
         y_g_values = [y_g[i].X for i in range(len(X))]
         flip_idxs = [i for i, val in enumerate(f_values) if val == 1]
 
         if len(flip_idxs) != flipCount:
-            return
+            return 0, 0, 0, len(flip_idxs)
 
         Z3_values = [[Z3[i, j].X for j in range(l3_size)] for i in range(len(X))]
 
@@ -127,4 +127,4 @@ def RunForward_L2(nn, X, y, activation, tol, n, flipCount, l1, l2):
 
         return max_abs_value, mean_value, sum_abs_value, mismatch
     else:
-        return 0, 0, 0, 0
+        return 0, 0, 0, -1
