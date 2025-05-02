@@ -4,7 +4,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-timeLimit = 20
+timeLimit = 60
 
 def RunForward_L2(nn, X, y, activation, tol, n, flipCount, l1, l2):
     l1_size = nn.W[0].shape[1]
@@ -124,10 +124,7 @@ def RunForward_L2(nn, X, y, activation, tol, n, flipCount, l1, l2):
                               W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
                               b1_values_with_offset, b2_values_with_offset, b3_values_with_offset)
         mismatch, max_abs_value, mean_value, sum_abs_value = vw.main(X, activation)
-        if mismatch:
-            print("Mismatch found")
-            return max_abs_value, f"Mismatch{mismatch}", sum_abs_value
-            
-        return max_abs_value, mean_value, sum_abs_value
+
+        return max_abs_value, mean_value, sum_abs_value, mismatch
     else:
-        return "None", "None", "None"
+        return 0, 0, 0, 0

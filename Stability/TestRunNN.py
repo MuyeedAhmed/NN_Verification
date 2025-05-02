@@ -23,7 +23,7 @@ columns = [
     "Train Accuracy", "Train F1 Score",
     "Val Accuracy", "Val F1 Score",
     "Test Accuracy", "Test F1 Score", 
-    "Stability_MaxMagn", "Stability_MeanMagn", "Stability_SumMagn"
+    "Stability_MaxMagn", "Stability_MeanMagn", "Stability_SumMagn", "Mismatch"
 ]
 
 if os.path.exists(output_file):
@@ -69,7 +69,7 @@ for filename in os.listdir(input_folder):
                     val_preds = nn.predict(X_val)
                     test_preds = nn.predict(X_test)
 
-                    max_abs_value, mean_value, sum_abs_value = RunForward_L2(nn, X_val, val_preds, activation, 1e-9, len(X_val), flipCount=1, l1=node_count, l2=node_count)
+                    max_abs_value, mean_value, sum_abs_value, mismatch = RunForward_L2(nn, X_val, val_preds, activation, 1e-9, len(X_val), flipCount=1, l1=node_count, l2=node_count)
 
                     train_acc = accuracy_score(y_train, train_preds)
                     train_f1 = f1_score(y_train, train_preds)
@@ -96,7 +96,7 @@ for filename in os.listdir(input_folder):
                         val_acc,
                         val_f1,
                         test_acc,
-                        test_f1, max_abs_value, mean_value, sum_abs_value
+                        test_f1, max_abs_value, mean_value, sum_abs_value, mismatch
                     ]], columns=columns)
 
                     row.to_csv(output_file, mode="a", header=False, index=False)
