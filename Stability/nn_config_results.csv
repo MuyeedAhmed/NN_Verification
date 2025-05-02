@@ -1,0 +1,5 @@
+Dataset,Shape,Train Size,Validation Size,Test Size,Hidden Layers,Nodes per Layer,Hidden Sizes,Activation,Learning Rate,Train Accuracy,Train F1 Score,Val Accuracy,Val F1 Score,Test Accuracy,Test F1 Score,Stability_MaxMagn,Stability_MeanMagn,Stability_SumMagn
+flare.csv,1066x10,711,50,305,2,3,"[3, 3]",relu,0.01,0.829817158931083,0.0,0.82,0.0,0.8295081967213115,0.0,max_abs_value,mean_value,sum_abs_value
+flare.csv,1066x10,711,50,305,2,3,"[3, 3]",relu,0.1,0.829817158931083,0.0,0.82,0.0,0.8295081967213115,0.0,max_abs_value,mean_value,sum_abs_value
+flare.csv,1066x10,711,50,305,2,3,"[3, 3]",sigmoid,0.01,0.829817158931083,0.0,0.82,0.0,0.8295081967213115,0.0,max_abs_value,mean_value,sum_abs_value
+flare.csv,1066x10,711,50,305,2,3,"[3, 3]",sigmoid,0.1,0.829817158931083,0.0,0.82,0.0,0.8295081967213115,0.0,max_abs_value,mean_value,sum_abs_value
