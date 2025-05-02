@@ -158,4 +158,4 @@ class VerifyWeights:
         if mismatch > 0:
             print(f"Mismatch: {mismatch} out of {self.n}")
             self.save_log_in_file(activation)
-        return max_abs_value, mean_value, sum_abs_value
+        return mismatch, max_abs_value, mean_value, sum_abs_value
