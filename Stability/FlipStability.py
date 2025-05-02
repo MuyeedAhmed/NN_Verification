@@ -4,7 +4,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-timeLimit = 10
+timeLimit = 60
 
 def RunForward_L2(nn, X, y, activation, tol, n, flipCount, l1, l2):
     l1_size = nn.W[0].shape[1]
