@@ -1,5 +1,5 @@
 from NN.Network_PresetWeights import NN_preset, RunNN_preset
-from Gurobi_ForwardPass_L2_Indicator import ForwardPass
+from Gurobi_ForwardPass_L2_ReLU import ForwardPass
 from Weights.QuantifyVerifyWeights_L2 import VerifyWeights
 
 import gurobipy as gp

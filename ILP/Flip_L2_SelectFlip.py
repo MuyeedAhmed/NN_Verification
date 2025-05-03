@@ -1,5 +1,5 @@
 from NN.Network import NN, RunNN
-from Gurobi_ForwardPass_L2_Indicator import ForwardPass
+from Gurobi_ForwardPass_L2_ReLU import ForwardPass
 
 import gurobipy as gp
 from gurobipy import GRB

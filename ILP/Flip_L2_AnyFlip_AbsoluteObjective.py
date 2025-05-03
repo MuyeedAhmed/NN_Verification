@@ -1,5 +1,5 @@
 from NN.Network import NN, RunNN
-from Gurobi_ForwardPass_L2_Indicator import ForwardPass
+from Gurobi_ForwardPass_L2_ReLU import ForwardPass
 from Weights.QuantifyVerifyWeights_L2 import VerifyWeights
 
 import gurobipy as gp
@@ -11,10 +11,10 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 6000
+timeLimit = 3000
 
 def main():
-    n = 40
+    n = 106
     l1 = 4
     l2 = 4
     flipCount = 1
@@ -92,13 +92,48 @@ def RunForward(nn, X, y, tol, n, flipCount, l1, l2):
 
         
                     
-    objective = ( 
-        gp.quicksum(b1_offset[i] * b1_offset[i] for i in range(l1_size)) + 
-        gp.quicksum(b2_offset[i] * b2_offset[i] for i in range(l2_size)) + 
-        gp.quicksum(b3_offset[i] * b3_offset[i] for i in range(l3_size)) +
-        gp.quicksum(W1_offset[i, j] * W1_offset[i, j] for i in range(len(nn.W1)) for j in range(l1_size)) +
-        gp.quicksum(W2_offset[i, j] * W2_offset[i, j] for i in range(len(nn.W2)) for j in range(l2_size)) +
-        gp.quicksum(W3_offset[i, j] * W3_offset[i, j] for i in range(len(nn.W3)) for j in range(l3_size))
+    abs_b1 = model.addVars(l1_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_b1")
+    abs_b2 = model.addVars(l2_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_b2")
+    abs_b3 = model.addVars(l3_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_b3")
+
+    abs_W1 = model.addVars(len(nn.W1), l1_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_W1")
+    abs_W2 = model.addVars(len(nn.W2), l2_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_W2")
+    abs_W3 = model.addVars(len(nn.W3), l3_size, lb=0.0, vtype=GRB.CONTINUOUS, name="abs_W3")
+
+    for i in range(l1_size):
+        model.addConstr(abs_b1[i] >= b1_offset[i])
+        model.addConstr(abs_b1[i] >= -b1_offset[i])
+
+    for i in range(l2_size):
+        model.addConstr(abs_b2[i] >= b2_offset[i])
+        model.addConstr(abs_b2[i] >= -b2_offset[i])
+
+    for i in range(l3_size):
+        model.addConstr(abs_b3[i] >= b3_offset[i])
+        model.addConstr(abs_b3[i] >= -b3_offset[i])
+
+    for i in range(len(nn.W1)):
+        for j in range(l1_size):
+            model.addConstr(abs_W1[i, j] >= W1_offset[i, j])
+            model.addConstr(abs_W1[i, j] >= -W1_offset[i, j])
+
+    for i in range(len(nn.W2)):
+        for j in range(l2_size):
+            model.addConstr(abs_W2[i, j] >= W2_offset[i, j])
+            model.addConstr(abs_W2[i, j] >= -W2_offset[i, j])
+
+    for i in range(len(nn.W3)):
+        for j in range(l3_size):
+            model.addConstr(abs_W3[i, j] >= W3_offset[i, j])
+            model.addConstr(abs_W3[i, j] >= -W3_offset[i, j])
+
+    objective = (
+        gp.quicksum(abs_b1[i] for i in range(l1_size)) +
+        gp.quicksum(abs_b2[i] for i in range(l2_size)) +
+        gp.quicksum(abs_b3[i] for i in range(l3_size)) +
+        gp.quicksum(abs_W1[i, j] for i in range(len(nn.W1)) for j in range(l1_size)) +
+        gp.quicksum(abs_W2[i, j] for i in range(len(nn.W2)) for j in range(l2_size)) +
+        gp.quicksum(abs_W3[i, j] for i in range(len(nn.W3)) for j in range(l3_size))
     )
 
     model.setObjective(objective, GRB.MINIMIZE)
@@ -143,6 +178,23 @@ def RunForward(nn, X, y, tol, n, flipCount, l1, l2):
         b1_values_with_offset = np.array([nn.b1[0, j] + b1_offset[j].X for j in range(l1_size)])
         b2_values_with_offset = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
         b3_values_with_offset = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
+
+
+        W1_offset_array = np.array([[W1_offset[i, j].X for j in range(l1_size)] for i in range(len(nn.W1))])
+        W2_offset_array = np.array([[W2_offset[i, j].X for j in range(l2_size)] for i in range(len(nn.W2))])
+        W3_offset_array = np.array([[W3_offset[i, j].X for j in range(l3_size)] for i in range(len(nn.W3))])
+
+        b1_offset_array = np.array([b1_offset[j].X for j in range(l1_size)])
+        b2_offset_array = np.array([b2_offset[j].X for j in range(l2_size)])
+        b3_offset_array = np.array([b3_offset[j].X for j in range(l3_size)])
+
+        print("W1_offset:\n", W1_offset_array)
+        print("W2_offset:\n", W2_offset_array)
+        print("W3_offset:\n", W3_offset_array)
+        print("b1_offset:", b1_offset_array)
+        print("b2_offset:", b2_offset_array)
+        print("b3_offset:", b3_offset_array)
+
 
         # W1_values_magn = np.array([[W1_offset[i, j].X/nn.W1[i][j] for j in range(l1_size)] for i in range(len(nn.W1))])
         # W2_values_magn = np.array([[W2_offset[i, j].X/nn.W2[i][j] for j in range(l2_size)] for i in range(len(nn.W2))])
