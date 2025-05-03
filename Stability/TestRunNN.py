@@ -34,8 +34,8 @@ pd.DataFrame(columns=columns).to_csv(output_file, index=False)
 for filename in os.listdir(input_folder):
     if not filename.endswith(".csv"):
         continue
-    if filename != "flare.csv" and filename != "PieChart3.csv" and filename != "fri_c1_1000_50.csv":
-        continue
+    # if filename != "flare.csv" and filename != "PieChart3.csv" and filename != "fri_c1_1000_50.csv":
+    #     continue
 
 
     path = os.path.join(input_folder, filename)
@@ -63,7 +63,7 @@ for filename in os.listdir(input_folder):
                     runner = RunNN(X_train, y_train, hidden_sizes=hidden_sizes, epoch=10000, activation=activation, lr=lr)
                     nn, train_preds = runner.TrainReturnWeights()
                     if np.isnan(nn.W[0]).any() or np.isnan(nn.b[0]).any() or np.isnan(nn.W[1]).any() or np.isnan(nn.b[1]).any():
-                        print("NaN in weights, skipping...")
+                        print("ErroR: NaN in weights/biases")
                         continue
 
                     val_preds = nn.predict(X_val)
@@ -73,7 +73,7 @@ for filename in os.listdir(input_folder):
 
                     train_acc = accuracy_score(y_train, train_preds)
                     train_f1 = f1_score(y_train, train_preds)
-                    print("Train Accuracy:", train_acc)
+
                     val_acc = accuracy_score(y_val, val_preds)
                     val_f1 = f1_score(y_val, val_preds)
 
@@ -101,4 +101,4 @@ for filename in os.listdir(input_folder):
 
                     row.to_csv(output_file, mode="a", header=False, index=False)
                     print(f"Done: {filename} | Layers: {num_layers} | Nodes: {node_count} | Act: {activation} | LR: {lr}")
-    continue
+
