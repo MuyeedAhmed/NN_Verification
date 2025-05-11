@@ -2,6 +2,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
+timeLimit = 100
 X_data = np.load("input_features_logits.npz")
 X = X_data["X"]
 Z3_target = X_data["Z3"]
@@ -114,7 +115,7 @@ objective = gp.quicksum(abs_W1[i, j] for i in range(W1.shape[0]) for j in range(
 model.setObjective(objective, GRB.MINIMIZE)    
 model.addConstr(objective >= 0, "NonNegativeObjective")
 
-model.setParam('TimeLimit', 10)
+model.setParam('TimeLimit', timeLimit)
 model.optimize()
 
 if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
