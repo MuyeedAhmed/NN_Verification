@@ -3,7 +3,7 @@ from gurobipy import GRB
 import numpy as np
 
 
-timeLimit = 43200
+timeLimit = 60
 
 X_data = np.load("input_features_logits.npz")
 X = X_data["X"]
