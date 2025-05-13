@@ -15,8 +15,8 @@ class SimpleCNN(nn.Module):
         # self.fc2 = nn.Linear(120, 84)
         # self.fc3 = nn.Linear(84, 10)
 
-        self.fc1 = nn.Linear(16 * 4 * 4, 20)
-        self.fc2 = nn.Linear(20, 10)
+        self.fc1 = nn.Linear(16 * 4 * 4, 10)
+        self.fc2 = nn.Linear(10, 10)
         self.fc3 = nn.Linear(10, 10)
 
     def forward(self, x):
@@ -33,13 +33,13 @@ trainset = datasets.MNIST(root='./data', train=True, download=True, transform=tr
 trainloader = DataLoader(trainset, batch_size=64, shuffle=True)
 
 testset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
-testloader = DataLoader(testset, batch_size=5, shuffle=False)
+testloader = DataLoader(testset, batch_size=15, shuffle=False)
 
 model = SimpleCNN()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 criterion = nn.CrossEntropyLoss()
 
-for epoch in range(3):
+for epoch in range(5):
     model.train()
     for inputs, targets in trainloader:
         optimizer.zero_grad()
