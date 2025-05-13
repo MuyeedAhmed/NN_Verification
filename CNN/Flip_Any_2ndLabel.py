@@ -3,7 +3,7 @@ from gurobipy import GRB
 import numpy as np
 
 
-timeLimit = 43200
+timeLimit = 15000
 
 X_data = np.load("input_features_logits.npz")
 X = X_data["X"]
@@ -40,7 +40,7 @@ def add_relu(model, Z, A, h, name_prefix):
 is_modified = model.addVars(n_samples, vtype=GRB.BINARY, name="is_modified")
 model.addConstr(gp.quicksum(is_modified[s] for s in range(n_samples)) == 1)
 
-epsilon = 1e-4
+epsilon = 1e-6
 Z3_outputs = {}
 
 for s in range(n_samples):

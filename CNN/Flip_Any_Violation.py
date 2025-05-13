@@ -2,8 +2,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-
-timeLimit = 43200
+timeLimit = 7200
 
 X_data = np.load("input_features_logits.npz")
 X = X_data["X"]
@@ -37,16 +36,13 @@ def add_relu(model, Z, A, h, name_prefix):
         model.addConstr((h[i] == 0) >> (Z[i] <= 0), name=f"{name_prefix}_neg_{i}")
         model.addConstr((h[i] == 0) >> (A[i] == 0), name=f"{name_prefix}_zero_{i}")
 
-is_modified = model.addVars(n_samples, vtype=GRB.BINARY, name="is_modified")
-model.addConstr(gp.quicksum(is_modified[s] for s in range(n_samples)) == 1)
-
-epsilon = 1e-4
-Z3_outputs = {}
+misclassified_flags = model.addVars(n_samples, vtype=GRB.BINARY, name="misclassified_flags")
+epsilon = 1e-6
 
 for s in range(n_samples):
     x_sample = X[s]
-    label = int(np.argmax(Z3_target[s]))
-    second_label = int(np.argsort(Z3_target[s])[-2])
+    label = np.argmax(Z3_target[s])
+    label_2nd = np.argsort(Z3_target[s])[-2]
 
     Z1 = model.addVars(l1_size, lb=-GRB.INFINITY, name=f"Z1_{s}")
     A1 = model.addVars(l1_size, lb=0, name=f"A1_{s}")
@@ -71,7 +67,6 @@ for s in range(n_samples):
     add_relu(model, Z2, A2, h2, f"relu2_{s}")
 
     Z3 = model.addVars(l3_size, lb=-GRB.INFINITY, name=f"Z3_{s}")
-    Z3_outputs[s] = Z3
     for j in range(l3_size):
         expr = gp.LinExpr()
         for i in range(l2_size):
@@ -79,18 +74,27 @@ for s in range(n_samples):
         expr += b3[j] + b3_offset[j]
         model.addConstr(Z3[j] == expr)
 
-    for k in range(l3_size):
-        if k != second_label:
-            model.addConstr((is_modified[s] == 1) >> (Z3[second_label] >= Z3[k] + epsilon), name=f"Decision_{s}_{k}")
-        if k != label:
-            model.addConstr((is_modified[s] == 0) >> (Z3[label] >= Z3[k] + epsilon), name=f"Decision_{s}_{k}")
 
-abs_W1 = model.addVars(*W1.shape, lb=0)
-abs_b1 = model.addVars(l1_size, lb=0)
-abs_W2 = model.addVars(*W2.shape, lb=0)
-abs_b2 = model.addVars(l2_size, lb=0)
-abs_W3 = model.addVars(*W3.shape, lb=0)
-abs_b3 = model.addVars(l3_size, lb=0)
+    violations = model.addVars(l3_size, vtype=GRB.BINARY, name=f"violations_{s}")
+    for k in range(l3_size):
+        if k != label:
+            model.addConstr((violations[k] == 1) >> (Z3[label] <= Z3[k] - epsilon), name=f"violation_1flip_{s}_{k}")
+            model.addConstr((violations[k] == 0) >> (Z3[label] >= Z3[k] + epsilon), name=f"violation_0flip_{s}_{k}")
+        else:
+            model.addConstr(violations[k] == 0, name=f"violation_0_{s}_{k}")
+
+    model.addConstr(gp.quicksum(violations[k] for k in range(l3_size)) >= misclassified_flags[s])
+    model.addConstr(gp.quicksum(violations[k] for k in range(l3_size)) <= (l3_size - 1) * misclassified_flags[s])
+
+
+model.addConstr(gp.quicksum(misclassified_flags[s] for s in range(n_samples)) == 1, name="exactly_one_misclassified")
+
+abs_W1 = model.addVars(*W1.shape, lb=0, name="abs_W1")
+abs_b1 = model.addVars(l1_size, lb=0, name="abs_b1")
+abs_W2 = model.addVars(*W2.shape, lb=0, name="abs_W2")
+abs_b2 = model.addVars(l2_size, lb=0, name="abs_b2")
+abs_W3 = model.addVars(*W3.shape, lb=0, name="abs_W3")
+abs_b3 = model.addVars(l3_size, lb=0, name="abs_b3")
 
 for i in range(W1.shape[0]):
     for j in range(W1.shape[1]):
@@ -127,19 +131,10 @@ model.setObjective(objective, GRB.MINIMIZE)
 model.setParam("TimeLimit", timeLimit)
 model.optimize()
 
-if model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL]:
+if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
     if model.SolCount == 0:
-        print("Timeout")
+        print("Timeout: No feasible solution.")
     else:
-        print("\nModified sample (is_modified):")
-        print([int(round(is_modified[s].X)) for s in range(n_samples)])
-
-        print("\nZ3 values from Gurobi:")
-        for s in range(n_samples):
-            z3_vals = [Z3_outputs[s][j].X for j in range(l3_size)]
-            print(f"Sample {s}: {np.round(z3_vals, 4)}")
-
-        # Apply offsets
         W1_off = np.array([[W1_offset[i, j].X for j in range(W1.shape[1])] for i in range(W1.shape[0])])
         b1_off = np.array([b1_offset[i].X for i in range(l1_size)])
         W2_off = np.array([[W2_offset[i, j].X for j in range(W2.shape[1])] for i in range(W2.shape[0])])
@@ -154,31 +149,14 @@ if model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL]:
         W3_new = W3 + W3_off
         b3_new = b3 + b3_off
 
-
-        # W1_new = W1
-        # b1_new = b1
-        # W2_new = W2
-        # b2_new = b2
-        # W3_new = W3
-        # b3_new = b3
-
         def relu(x): return np.maximum(0, x)
-
-        print("\nZ3 values from NumPy forward pass:")
-        for i in range(n_samples):
-            x = X[i]
-            z1 = relu(W1_new @ x + b1_new)
-            z2 = relu(W2_new @ z1 + b2_new)
-            z3 = W3_new @ z2 + b3_new
-            print(f"Sample {i}: {np.round(z3, 4)}")
-
 
         misclassified_indices = []
         predictions = []
         labels = []
         for i in range(n_samples):
-            x = X[i]
             label = np.argmax(Z3_target[i])
+            x = X[i]
 
             z1 = W1_new @ x + b1_new
             a1 = relu(z1)
@@ -194,11 +172,11 @@ if model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL]:
 
             if not correct:
                 misclassified_indices.append(i)
-                # print(f"Sample {i} misclassified: true={label}, pred={pred}")
+                print(f"Sample {i} misclassified: true={label}, pred={pred}")
 
         print("Predictions:", predictions)
         print("Labels:", labels)
-        # print(f"Misclassified: {len(misclassified_indices)}")
+        print(f"Misclassified: {len(misclassified_indices)}")
 
 else:
     print("No solution found.")
