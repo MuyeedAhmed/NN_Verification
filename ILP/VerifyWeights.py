@@ -11,7 +11,8 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 class NeuralNetwork:
-    def __init__(self, W1, W2, W3, b1, b2, b3):
+    def __init__(self, W1, W2, W3, b1, b2, b3, activation):
+        self.activation = activation
         self.W1 = W1
         self.W2 = W2
         self.W3 = W3
@@ -21,10 +22,16 @@ class NeuralNetwork:
 
     def forward(self, X):
         self.Z1 = X @ self.W1 + self.b1
-        self.A1 = relu(self.Z1)
+        if self.activation == "sigmoid":
+            self.A1 = sigmoid(self.Z1)
+        elif self.activation == "relu":
+            self.A1 = relu(self.Z1)
 
         self.Z2 = self.A1 @ self.W2 + self.b2
-        self.A2 = relu(self.Z2)
+        if self.activation == "sigmoid":
+            self.A2 = sigmoid(self.Z2)
+        elif self.activation == "relu":
+            self.A2 = relu(self.Z2)
         
         self.Z3 = self.A2 @ self.W3 + self.b3
         self.A3 = sigmoid(self.Z3)
@@ -34,12 +41,15 @@ class NeuralNetwork:
         return (self.forward(X) >= 0.5).astype(int)
 
 class VerifyWeights:
-    def __init__(self, X, y, n, l1, l2, flp_idx, tol, W1, W2, W3, b1, b2, b3, W1_with_offset, W2_with_offset, W3_with_offset, b1_with_offset, b2_with_offset, b3_with_offset):
+    def __init__(self, X, y, n, l1, l2, activation, flp_idx, tol, W1, W2, W3, b1, b2, b3, W1_with_offset, W2_with_offset, W3_with_offset, b1_with_offset, b2_with_offset, b3_with_offset, y_gt=None):
         self.X_test = X
         self.y_test = y
+        if y_gt is not None:
+            self.y_gt = y_gt
         self.n = n
         self.l1 = l1
         self.l2 = l2
+        self.activation = activation
         self.flp_idx = flp_idx
         self.tol = tol
         
@@ -58,11 +68,13 @@ class VerifyWeights:
         self.b3_with_offset = b3_with_offset
 
     def RunForward(self):
-        nn_before = NeuralNetwork(self.W1, self.W2, self.W3, self.b1, self.b2, self.b3)
+        nn_before = NeuralNetwork(self.W1, self.W2, self.W3, self.b1, self.b2, self.b3, self.activation)
         self.labels_before = nn_before.predict(self.X_test).reshape(1, -1)[0]
         
-        nn_after = NeuralNetwork(self.W1_with_offset, self.W2_with_offset, self.W3_with_offset, self.b1_with_offset, self.b2_with_offset, self.b3_with_offset)
+        nn_after = NeuralNetwork(self.W1_with_offset, self.W2_with_offset, self.W3_with_offset, self.b1_with_offset, self.b2_with_offset, self.b3_with_offset, self.activation)
         self.labels_after = nn_after.predict(self.X_test).reshape(1, -1)[0]
+
+        return nn_before, nn_after
 
     def DetectMismatch(self):
         mismatch = 0
@@ -179,11 +191,17 @@ class VerifyWeights:
         print("Sum of Absolute Magnitude:", np.sum(np.abs(diff_after)))
         print("Mean Difference After:", np.mean(diff_after))
 
-
+    def print_loss(self, nn_before, nn_after):
+        loss_before = np.sum(np.abs(nn_before.A3 - self.y_test))
+        loss_after = np.sum(np.abs(nn_after.A3 - self.y_test))
+        print("Loss Before:", loss_before)
+        print("Loss After:", loss_after)
 
     def main(self, Task, removed_feature=None):
-        self.RunForward() 
+        nn_before, nn_after = self.RunForward()
         mismatch = self.DetectMismatch()
+        if Task == "BorderNetwork":
+            self.print_loss(nn_before, nn_after)
         if Task == "MaximizeDifference":
             self.OutputDiffernce() # For Maximize Difference
         self.quantify_magnitude(mismatch, Task, removed_feature, True)

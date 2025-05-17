@@ -162,7 +162,7 @@ def RunForward(nn, X, y, tol, n, flipCount, l1, l2, feature):
         # b2_values_magn = np.array([b2_offset[j].X/nn.b2[0, j] for j in range(l2_size)])
         # b3_values_magn = np.array([b3_offset[j].X/nn.b3[0, j] for j in range(l3_size)])
 
-        vw = VerifyWeights(X, y, n, l1, l2, flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
+        vw = VerifyWeights(X, y, n, l1, l2, "relu", flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
                     W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
                     b1_values_with_offset, b2_values_with_offset, b3_values_with_offset)
         vw.main(Task="Feature_Selection", removed_feature=feature)
