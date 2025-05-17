@@ -43,8 +43,8 @@ class NeuralNetwork:
 class VerifyWeights:
     def __init__(self, X, y, n, l1, l2, activation, flp_idx, tol, W1, W2, W3, b1, b2, b3, 
                 W1_with_offset, W2_with_offset, W3_with_offset, b1_with_offset, b2_with_offset, b3_with_offset, 
-                y_gt=None, dataset=""):
-        self.dataset = dataset
+                y_gt=None, file_name=""):
+        self.file_name = file_name
         self.X_test = X
         self.y_test = y
         if y_gt is not None:
@@ -139,16 +139,16 @@ class VerifyWeights:
             
             with open(f"Stats/{Task}_{self.l1}{self.l2}.csv", "a") as f:
                 if Task == "Flip_Any":
-                    f.write(f"{self.dataset},{self.n},{self.tol},{len(self.flp_idx)},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
+                    f.write(f"{self.file_name},{self.n},{self.tol},{len(self.flp_idx)},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
                 elif Task == "Flip_Select":
-                    f.write(f"{self.dataset},{self.n},{self.tol},{self.flp_idx},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
+                    f.write(f"{self.file_name},{self.n},{self.tol},{self.flp_idx},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
                 elif Task == "Feature_Selection":
-                    f.write(f"{self.dataset},{self.n},{removed_feature},{self.tol},{self.flp_idx},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
+                    f.write(f"{self.file_name},{self.n},{removed_feature},{self.tol},{self.flp_idx},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
     def save_log_in_file(self, Task, removed_feature=None):
         output_file = f"Outputs/{Task}_Output_{self.l1}{self.l2}_{self.n}.txt"
         with open(output_file, "a") as f:
-            f.write(f"----------{self.flp_idx}-----{self.dataset}-----\n")
+            f.write(f"----------{self.flp_idx}-----{self.file_name}-----\n")
             if removed_feature is not None:
                 f.write(f"Removed Feature: {removed_feature}\n")
         with open(output_file, "a") as f:

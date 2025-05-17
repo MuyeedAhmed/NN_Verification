@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 240
+timeLimit = 300
 accuracy_file = "accuracy.csv"
 
 def main():
@@ -37,7 +37,8 @@ def main():
 
         if not (50 <= len(df) <= 200):
             continue
-
+        # if file_name != "dbworld-bodies-stemmed.csv":
+        #     continue
         print(f"Running dataset: {file_name} with {len(df)} rows")
 
         X = df.iloc[:, :-1].to_numpy()
@@ -52,11 +53,11 @@ def main():
 
         with open(accuracy_file, "a") as f:
             f.write(f"{file_name},{len(X)},{X.shape[1]},0,{np.mean(y_gt == y_predict):.4f}\n")
-        try:
-            RunForward(file_name, nn, X, y, y_gt, tol, len(X), 1, l1, l2, 1)
-        except Exception as e:
-            print(f"Error processing {file_name}: {e}")
-            continue
+        # try:
+        RunForward(file_name, nn, X, y, y_gt, tol, len(X), 1, l1, l2, 1)
+        # except Exception as e:
+        #     print(f"Error processing {file_name}: {e}")
+        #     continue
     
 
 def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
@@ -157,15 +158,13 @@ def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
     model.addConstr(objective >= 0, "NonNegativeObjective")
     model.setParam('TimeLimit', timeLimit)
     model.optimize()
-    # model.setParam(GRB.Param.NumericFocus, 3)
 
-    # if model.status == GRB.OPTIMAL:
     if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
         if model.SolCount == 0:
             print("Timeout")
             return
-        with open("Solved_Flip.txt", "a") as f:
-            f.write(f"{file_name}-----\n")
+        with open("Solved_Flip.txt", "a") as file:
+            file.write(f"{file_name}-----\n")
 
         f_values = [f[i].X for i in range(len(X))]
         y_g_values = [y_g[i].X for i in range(len(X))]
@@ -178,9 +177,9 @@ def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
         print("f values:", f_values)
         print("y_g values:", y_g_values)
 
-        Z3_values = [[Z3[i, j].X for j in range(l3_size)] for i in range(len(X))]
-        print("y_pred:", y.reshape(1,-1)[0])
-        print("Z3:", Z3_values)
+        # Z3_values = [[Z3[i, j].X for j in range(l3_size)] for i in range(len(X))]
+        # print("y_pred:", y.reshape(1,-1)[0])
+        # print("Z3:", Z3_values)
         
         W1_values = np.array([[nn.W1[i][j] for j in range(l1_size)] for i in range(len(nn.W1))])
         W2_values = np.array([[nn.W2[i][j] for j in range(l2_size)] for i in range(len(nn.W2))])
@@ -195,6 +194,13 @@ def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
         b1_values_with_offset = np.array([nn.b1[0, j] + b1_offset[j].X for j in range(l1_size)])
         b2_values_with_offset = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
         b3_values_with_offset = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
+
+        np.save("Weights/W1_offset_data.npy", W1_values_with_offset)
+        np.save("Weights/W2_offset_data.npy", W2_values_with_offset)
+        np.save("Weights/W3_offset_data.npy", W3_values_with_offset)
+        np.save("Weights/b1_offset_data.npy", b1_values_with_offset)
+        np.save("Weights/b2_offset_data.npy", b2_values_with_offset)
+        np.save("Weights/b3_offset_data.npy", b3_values_with_offset)
 
         vw = VerifyWeights(X, y, n, l1, l2, "relu", flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
             W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
