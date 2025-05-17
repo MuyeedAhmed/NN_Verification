@@ -5,6 +5,7 @@ from VerifyWeights import VerifyWeights
 
 import gurobipy as gp
 from gurobipy import GRB
+import os
 
 import numpy as np
 import pandas as pd
@@ -13,44 +14,52 @@ import time
 import subprocess
 
 timeLimit = 30
-accuracy_file = "accuracy.txt"
+accuracy_file = "accuracy.csv"
+
 def main():
-    n = 106
     l1 = 4
     l2 = 4
     flipCount = 1
     tol = 2e-6
 
-    df = pd.read_csv("../Dataset/appendicitis.csv")
-    X = df.iloc[:, :-1].to_numpy()
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
-    y_gt = df.iloc[:, -1].to_numpy().reshape(-1, 1)
-    trn = RunNN_preset(X, y_gt, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000)
-    nn, y_predict = trn.TrainReturnWeights()
-    # ns = [50, 75, 100, 40, 60]
-    # for n in ns:
-    X = X[0:n]
-    y = y_predict[0:n]
+    dataset_dir = "../../Dataset"
+    if not os.path.exists(accuracy_file):
+        with open(accuracy_file, "w") as f:
+            f.write("Dataset,n,col_size,Iteration,Accuracy\n")
+
+
+    for file_name in os.listdir(dataset_dir):
+        if not file_name.endswith(".csv"):
+            continue
+
+        file_path = os.path.join(dataset_dir, file_name)
+        df = pd.read_csv(file_path)
+
+        if not (50 <= len(df) <= 200):
+            continue
+
+        print(f"Running dataset: {file_name} with {len(df)} rows")
+
+        X = df.iloc[:, :-1].to_numpy()
+        scaler = StandardScaler()
+        X = scaler.fit_transform(X)
+        y_gt = df.iloc[:, -1].to_numpy().reshape(-1, 1)
+
+        trn = RunNN_preset(X, y_gt, hs1=l1, hs2=l2, out_size=1, lr=0.1, epoch=10000)
+        nn, y_predict = trn.TrainReturnWeights()
+        save_weights(nn, file_name, 0)
+        y = y_predict
+
+        with open(accuracy_file, "a") as f:
+            f.write(f"{file_name},{len(X)},{X.shape[1]},0,{np.mean(y_gt == y_predict):.4f}\n")
+        try:
+            RunForward(file_name, nn, X, y, y_gt, tol, len(X), 1, l1, l2, 1)
+        except Exception as e:
+            print(f"Error processing {file_name}: {e}")
+            continue
     
-    with open(accuracy_file, "a") as f:
-        f.write(f"Iteration: 0,  Accuracy: {np.mean(y_gt == y_predict):.4f}\n")
 
-    y_gt = y_gt[0:n]
-    RunForward(nn, X, y, y_gt, tol, n, 1, l1, l2, 0)
-    
-    # # tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
-    # tolerances = [5e-9, 1e-8, 5e-8]
-    # times = []
-    # for tol in tolerances:
-    #     # for flipCount in range(1, 11):
-    #     t0 = time.time()
-    #     RunForward(nn, X, y, tol, n, 1, l1, l2)
-    #     times.append(time.time()-t0)
-
-    # print("Times:", times)
-
-def RunForward(nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
+def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
 
     l1_size = len(nn.W1[0])
     l2_size = len(nn.W2[0])
@@ -185,36 +194,39 @@ def RunForward(nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
         b2_values_with_offset = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
         b3_values_with_offset = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
 
-        np.save("Weights/W1_offset_data.npy", W1_values_with_offset)
-        np.save("Weights/W2_offset_data.npy", W2_values_with_offset)
-        np.save("Weights/W3_offset_data.npy", W3_values_with_offset)
-        np.save("Weights/b1_offset_data.npy", b1_values_with_offset)
-        np.save("Weights/b2_offset_data.npy", b2_values_with_offset)
-        np.save("Weights/b3_offset_data.npy", b3_values_with_offset)
-        
-        
-        # vw = VerifyWeights(n, l1, l2, flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
-        #             W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
-        #             b1_values_with_offset, b2_values_with_offset, b3_values_with_offset)
-        # vw.main(anyflip="_Any")
-
         vw = VerifyWeights(X, y, n, l1, l2, "relu", flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
             W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
-            b1_values_with_offset, b2_values_with_offset, b3_values_with_offset, y_gt=y_gt)
+            b1_values_with_offset, b2_values_with_offset, b3_values_with_offset, y_gt=y_gt, file_name = file_name)
         vw.main(Task="Flip")
+
+
+        trn = RunNN_preset(X, y_gt, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000, preset_weights=True)
+        nn, y_predict = trn.TrainReturnWeights()
+        save_weights(nn, file_name, iter)
+        with open(accuracy_file, "a") as f:
+            f.write(f"{file_name},{len(X)},{X.shape[1]},{iter},{np.mean(y_gt == y_predict):.4f}\n")
 
         if iter == 3:
             return
         else:
-            trn = RunNN_preset(X, y_gt, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000, preset_weights=True)
-            nn, y_predict = trn.TrainReturnWeights()
-            with open(accuracy_file, "a") as f:
-                f.write(f"Iteration: {iter},  Accuracy: {np.mean(y_gt == y_predict):.4f}\n")
-
-            RunForward(nn, X, y, y_gt, tol, n, 1, l1, l2, iter+1)
+            RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter+1)
 
     else:
         print("No feasible solution found.")
+
+
+def save_weights(nn, file_name, iter):
+    file_name = file_name.split(".")[0]
+    if not os.path.exists(f"Weights/{file_name}"):
+        os.makedirs(f"Weights/{file_name}")
+    np.save(f"Weights/{file_name}/W1_{iter}.npy", nn.W1)
+    np.save(f"Weights/{file_name}/W2_{iter}.npy", nn.W2)
+    np.save(f"Weights/{file_name}/W3_{iter}.npy", nn.W3)
+    np.save(f"Weights/{file_name}/b1_{iter}.npy", nn.b1)
+    np.save(f"Weights/{file_name}/b2_{iter}.npy", nn.b2)
+    np.save(f"Weights/{file_name}/b3_{iter}.npy", nn.b3)
+
+
 
 if __name__ == "__main__":
     main()

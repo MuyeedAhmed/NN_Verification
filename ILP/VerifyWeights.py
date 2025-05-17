@@ -41,7 +41,10 @@ class NeuralNetwork:
         return (self.forward(X) >= 0.5).astype(int)
 
 class VerifyWeights:
-    def __init__(self, X, y, n, l1, l2, activation, flp_idx, tol, W1, W2, W3, b1, b2, b3, W1_with_offset, W2_with_offset, W3_with_offset, b1_with_offset, b2_with_offset, b3_with_offset, y_gt=None):
+    def __init__(self, X, y, n, l1, l2, activation, flp_idx, tol, W1, W2, W3, b1, b2, b3, 
+                W1_with_offset, W2_with_offset, W3_with_offset, b1_with_offset, b2_with_offset, b3_with_offset, 
+                y_gt=None, dataset=""):
+        self.dataset = dataset
         self.X_test = X
         self.y_test = y
         if y_gt is not None:
@@ -125,27 +128,27 @@ class VerifyWeights:
         print("Mean Magnitude:", mean_value)
 
         if write_in_csv:
-            if not os.path.exists(f"Stats/{Task}_{self.l1}{self.l2}_{self.n}.csv"):
-                with open(f"Stats/{Task}_{self.l1}{self.l2}_{self.n}.csv", "w") as f:
+            if not os.path.exists(f"Stats/{Task}_{self.l1}{self.l2}.csv"):
+                with open(f"Stats/{Task}_{self.l1}{self.l2}.csv", "w") as f:
                     if Task == "Flip_Any":
-                        f.write("N_samples,Threshold,Flip_Count,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
+                        f.write("Dataset,N_samples,Threshold,Flip_Count,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
                     elif Task == "Flip_Select":
-                        f.write("N_samples,Threshold,Flip_ID,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
+                        f.write("Dataset,N_samples,Threshold,Flip_ID,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
                     elif Task == "Feature_Selection":
-                        f.write("N_samples,Removed_Feature,Threshold,Flip_ID,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
+                        f.write("Dataset,N_samples,Removed_Feature,Threshold,Flip_ID,Mismatch,Max_Abs_magn,Median_magn,Mean_magn,Sum_Abs_magn,Geomean_magn\n")
             
-            with open(f"Stats/{Task}_{self.l1}{self.l2}_{self.n}.csv", "a") as f:
+            with open(f"Stats/{Task}_{self.l1}{self.l2}.csv", "a") as f:
                 if Task == "Flip_Any":
-                    f.write(f"{self.n},{self.tol},{len(self.flp_idx)},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
+                    f.write(f"{self.dataset},{self.n},{self.tol},{len(self.flp_idx)},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
                 elif Task == "Flip_Select":
-                    f.write(f"{self.n},{self.tol},{self.flp_idx},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
+                    f.write(f"{self.dataset},{self.n},{self.tol},{self.flp_idx},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
                 elif Task == "Feature_Selection":
-                    f.write(f"{self.n},{removed_feature},{self.tol},{self.flp_idx},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
+                    f.write(f"{self.dataset},{self.n},{removed_feature},{self.tol},{self.flp_idx},{mismatch},{max_abs_value},{median_value},{mean_value},{sum_abs_value},{geomean_value}\n")
 
     def save_log_in_file(self, Task, removed_feature=None):
         output_file = f"Outputs/{Task}_Output_{self.l1}{self.l2}_{self.n}.txt"
         with open(output_file, "a") as f:
-            f.write(f"----------{self.flp_idx}----------\n")
+            f.write(f"----------{self.flp_idx}-----{self.dataset}-----\n")
             if removed_feature is not None:
                 f.write(f"Removed Feature: {removed_feature}\n")
         with open(output_file, "a") as f:
@@ -204,5 +207,6 @@ class VerifyWeights:
             self.print_loss(nn_before, nn_after)
         if Task == "MaximizeDifference":
             self.OutputDiffernce() # For Maximize Difference
-        self.quantify_magnitude(mismatch, Task, removed_feature, True)
+        self.quantify_magnitude(mismatch, Task, removed_feature, write_in_csv=True)
         self.save_log_in_file(Task, removed_feature)
+
