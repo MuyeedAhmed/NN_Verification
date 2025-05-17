@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 120
+timeLimit = 240
 accuracy_file = "accuracy.csv"
 
 def main():
@@ -47,7 +47,7 @@ def main():
 
         trn = RunNN_preset(X, y_gt, hs1=l1, hs2=l2, out_size=1, lr=0.1, epoch=10000)
         nn, y_predict = trn.TrainReturnWeights()
-        save_weights(nn, file_name, 0)
+        
         y = y_predict
 
         with open(accuracy_file, "a") as f:
@@ -164,7 +164,9 @@ def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
         if model.SolCount == 0:
             print("Timeout")
             return
-        
+        with open("Solved_Flip.txt", "a") as f:
+            f.write(f"{file_name}-----\n")
+
         f_values = [f[i].X for i in range(len(X))]
         y_g_values = [y_g[i].X for i in range(len(X))]
         flip_idxs = [i for i, val in enumerate(f_values) if val == 1]
@@ -198,7 +200,9 @@ def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
             W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
             b1_values_with_offset, b2_values_with_offset, b3_values_with_offset, y_gt=y_gt, file_name = file_name)
         vw.main(Task="Flip")
-
+    
+        if not os.path.exists(f"Weights/{file_name}"):
+            save_weights(nn, file_name, 0)
 
         trn = RunNN_preset(X, y_gt, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000, preset_weights=True)
         nn, y_predict = trn.TrainReturnWeights()
