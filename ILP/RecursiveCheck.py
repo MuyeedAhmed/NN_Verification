@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 30
+timeLimit = 120
 accuracy_file = "accuracy.csv"
 
 def main():
