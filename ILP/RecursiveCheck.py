@@ -1,6 +1,7 @@
 from NN.Network_PresetWeights import NN_preset, RunNN_preset
 from Gurobi_ForwardPass_L2_ReLU import ForwardPass
-from Weights.QuantifyVerifyWeights_L2 import VerifyWeights
+# from Weights.QuantifyVerifyWeights_L2 import VerifyWeights
+from VerifyWeights import VerifyWeights
 
 import gurobipy as gp
 from gurobipy import GRB
@@ -11,30 +12,32 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 6000
+timeLimit = 30
 accuracy_file = "accuracy.txt"
 def main():
     n = 106
     l1 = 4
     l2 = 4
     flipCount = 1
-    tol = 2e-9
+    tol = 2e-6
 
     df = pd.read_csv("../Dataset/appendicitis.csv")
     X = df.iloc[:, :-1].to_numpy()
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
-    y_true = df.iloc[:, -1].to_numpy().reshape(-1, 1)
-    trn = RunNN_preset(X, y_true, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000)
+    y_gt = df.iloc[:, -1].to_numpy().reshape(-1, 1)
+    trn = RunNN_preset(X, y_gt, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000)
     nn, y_predict = trn.TrainReturnWeights()
     # ns = [50, 75, 100, 40, 60]
     # for n in ns:
     X = X[0:n]
     y = y_predict[0:n]
+    
     with open(accuracy_file, "a") as f:
-        f.write(f"Iteration: 0,  Accuracy: {np.mean(y_true == y_predict):.4f}\n")
+        f.write(f"Iteration: 0,  Accuracy: {np.mean(y_gt == y_predict):.4f}\n")
 
-    RunForward(nn, X, y, y_true, tol, n, 1, l1, l2, 0)
+    y_gt = y_gt[0:n]
+    RunForward(nn, X, y, y_gt, tol, n, 1, l1, l2, 0)
     
     # # tolerances = [1e-9, 5e-9, 1e-8, 5e-8, 1e-7]
     # tolerances = [5e-9, 1e-8, 5e-8]
@@ -47,7 +50,7 @@ def main():
 
     # print("Times:", times)
 
-def RunForward(nn, X, y, y_true, tol, n, flipCount, l1, l2, iter):
+def RunForward(nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
 
     l1_size = len(nn.W1[0])
     l2_size = len(nn.W2[0])
@@ -141,7 +144,7 @@ def RunForward(nn, X, y, y_true, tol, n, flipCount, l1, l2, iter):
 
     model.setObjective(objective, GRB.MINIMIZE)
 
-    model.setParam("FeasibilityTol", 1e-9)
+    # model.setParam("FeasibilityTol", 1e-9)
     model.addConstr(objective >= 0, "NonNegativeObjective")
     model.setParam('TimeLimit', timeLimit)
     model.optimize()
@@ -190,20 +193,25 @@ def RunForward(nn, X, y, y_true, tol, n, flipCount, l1, l2, iter):
         np.save("Weights/b3_offset_data.npy", b3_values_with_offset)
         
         
-        vw = VerifyWeights(n, l1, l2, flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
-                    W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
-                    b1_values_with_offset, b2_values_with_offset, b3_values_with_offset)
-        vw.main(anyflip="_Any")
+        # vw = VerifyWeights(n, l1, l2, flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
+        #             W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
+        #             b1_values_with_offset, b2_values_with_offset, b3_values_with_offset)
+        # vw.main(anyflip="_Any")
+
+        vw = VerifyWeights(X, y, n, l1, l2, "relu", flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
+            W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
+            b1_values_with_offset, b2_values_with_offset, b3_values_with_offset, y_gt=y_gt)
+        vw.main(Task="Flip")
 
         if iter == 3:
             return
         else:
-            trn = RunNN_preset(X, y_true, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000, preset_weights=True)
+            trn = RunNN_preset(X, y_gt, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000, preset_weights=True)
             nn, y_predict = trn.TrainReturnWeights()
             with open(accuracy_file, "a") as f:
-                f.write(f"Iteration: {iter},  Accuracy: {np.mean(y_true == y_predict):.4f}\n")
+                f.write(f"Iteration: {iter},  Accuracy: {np.mean(y_gt == y_predict):.4f}\n")
 
-            RunForward(nn, X, y, y_true, tol, n, 1, l1, l2, iter+1)
+            RunForward(nn, X, y, y_gt, tol, n, 1, l1, l2, iter+1)
 
     else:
         print("No feasible solution found.")

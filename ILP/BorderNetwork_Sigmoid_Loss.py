@@ -1,6 +1,7 @@
 from NN.Network_Sigmoid import NN, RunNN
 from Gurobi_ForwardPass_L2_Sigmoid import ForwardPass
-from Weights.QuantifyVerifyWeights_L2_Sigmoid import VerifyWeights
+# from Weights.QuantifyVerifyWeights_L2_Sigmoid import VerifyWeights
+from VerifyWeights import VerifyWeights
 
 import gurobipy as gp
 from gurobipy import GRB
@@ -11,7 +12,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 60
+timeLimit = 20
 
 def main():
     n = 106
@@ -22,19 +23,19 @@ def main():
     X = df.iloc[:, :-1].to_numpy()
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
-    y_true = df.iloc[:, -1].to_numpy().reshape(-1, 1)
-    trn = RunNN(X, y_true, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000)
+    y_gt = df.iloc[:, -1].to_numpy().reshape(-1, 1)
+    trn = RunNN(X, y_gt, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000)
     nn, y_predict = trn.TrainReturnWeights()
     
     X = X[0:n]
     y = y_predict[0:n]
 
     tol = 2e-6
-    RunForward(nn, X, y, -1, tol, n, l1, l2)
+    RunForward(nn, X, y, y_gt, -1, tol, n, l1, l2)
 
 
 
-def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
+def RunForward(nn, X, y, y_gt, flp_idx, tol, n, l1, l2):
 
     l1_size = len(nn.W1[0])
     l2_size = len(nn.W2[0])
@@ -67,22 +68,22 @@ def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
 
 
     """ L1 loss """
-    # abs_diffs = []
-    # for i in range(len(X)):
-    #     diff = model.addVar(lb=0.0, name=f"abs_diff_{i}")
-    #     model.addConstr(diff >= Z3[i, 0] - float(y[i]), name=f"abs_upper_{i}")
-    #     model.addConstr(diff >= float(y[i]) - Z3[i, 0], name=f"abs_lower_{i}")
-    #     abs_diffs.append(diff)
-    # l1_loss = gp.quicksum(abs_diffs)
-    # model.addConstr(l1_loss <= 10000, "ObjectiveUpperBound")
-    # model.setObjective(l1_loss, GRB.MAXIMIZE)
+    abs_diffs = []
+    for i in range(len(X)):
+        diff = model.addVar(lb=0.0, name=f"abs_diff_{i}")
+        model.addConstr(diff >= Z3[i, 0] - float(y[i]), name=f"abs_upper_{i}")
+        model.addConstr(diff >= float(y[i]) - Z3[i, 0], name=f"abs_lower_{i}")
+        abs_diffs.append(diff)
+    l1_loss = gp.quicksum(abs_diffs)
+    model.addConstr(l1_loss <= 10000, "ObjectiveUpperBound")
+    model.setObjective(l1_loss, GRB.MAXIMIZE)
 
     """ L2 loss """
-    objective  = gp.quicksum(((Z3[i, 0] - float(y[i])) * (Z3[i, 0] - float(y[i]))) for i in range(len(X)))
+    # objective  = gp.quicksum(((Z3[i, 0] - float(y[i])) * (Z3[i, 0] - float(y[i]))) for i in range(len(X)))
 
-    model.addConstr(objective <= 10000, "ObjectiveUpperBound")
-    model.setObjective(objective, GRB.MAXIMIZE)
-    # model.setParam("Method", 2)
+    # model.addConstr(objective <= 10000, "ObjectiveUpperBound")
+    # model.setObjective(objective, GRB.MAXIMIZE)
+
 
     model.setParam('TimeLimit', timeLimit)
     model.optimize()
@@ -105,14 +106,15 @@ def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
         b2_values_with_offset = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
         b3_values_with_offset = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
         
-        vw = VerifyWeights(n, l1, l2, [flp_idx], tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
-                    W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
-                    b1_values_with_offset, b2_values_with_offset, b3_values_with_offset)
-        vw.main()
+        vw = VerifyWeights(X, y, n, l1, l2, "sigmoid", [], tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
+            W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
+            b1_values_with_offset, b2_values_with_offset, b3_values_with_offset, y_gt=y_gt)
+        vw.main(Task="BorderNetwork")
 
-        Z3_values = [[Z3[i, j].X for j in range(l3_size)] for i in range(len(X))]
-        print(y.reshape(1,-1)[0])
-        print("Z3:", Z3_values)
+
+        # Z3_values = [[Z3[i, j].X for j in range(l3_size)] for i in range(len(X))]
+        # print(y.reshape(1,-1)[0])
+        # print("Z3:", Z3_values)
 
 
 main()
