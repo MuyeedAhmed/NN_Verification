@@ -53,11 +53,11 @@ def main():
 
         with open(accuracy_file, "a") as f:
             f.write(f"{file_name},{len(X)},{X.shape[1]},0,{np.mean(y_gt == y_predict):.4f}\n")
-        # try:
-        RunForward(file_name, nn, X, y, y_gt, tol, len(X), 1, l1, l2, 1)
-        # except Exception as e:
-        #     print(f"Error processing {file_name}: {e}")
-        #     continue
+        try:
+            RunForward(file_name, nn, X, y, y_gt, tol, len(X), 1, l1, l2, 1)
+        except Exception as e:
+            print(f"Error processing {file_name}: {e}")
+            continue
     
 
 def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
