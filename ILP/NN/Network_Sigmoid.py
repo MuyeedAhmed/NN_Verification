@@ -60,8 +60,6 @@ class NN:
             output = self.forward(X)
             self.backward(X, y, output)
             if epoch % 100 == 0:
-                print(y)
-                print(output)
                 loss = -np.mean(y * np.log(output + 1e-8) + (1 - y) * np.log(1 - output + 1e-8))
                 # print(f"Epoch {epoch}, Loss: {loss:.4f}")
 
