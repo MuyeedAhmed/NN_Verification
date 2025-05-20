@@ -13,8 +13,8 @@ from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
 
-timeLimit = 300
-accuracy_file = "accuracy.csv"
+timeLimit = 900
+accuracy_file = "accuracy_200.csv"
 
 def main():
     l1 = 4
@@ -35,7 +35,7 @@ def main():
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
 
-        if not (50 <= len(df) <= 200):
+        if not (201 <= len(df) <= 300):
             continue
         # if file_name != "dbworld-bodies-stemmed.csv":
         #     continue
@@ -163,7 +163,7 @@ def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
         if model.SolCount == 0:
             print("Timeout")
             return
-        with open("Solved_Flip.txt", "a") as file:
+        with open("Solved_Flip_200.txt", "a") as file:
             file.write(f"{file_name}-----\n")
 
         f_values = [f[i].X for i in range(len(X))]
