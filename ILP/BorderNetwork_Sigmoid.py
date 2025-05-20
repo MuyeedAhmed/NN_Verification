@@ -12,9 +12,8 @@ import time
 import subprocess
 
 timeLimit = 6000
-global y_true
+
 def main():
-    global y_true
     n = 106
     l1 = 4
     l2 = 4
@@ -33,9 +32,7 @@ def main():
     tol = 2e-6
     RunForward(nn, X, y, -1, tol, n, l1, l2)
 
-def loss(output, y):
-    loss = -np.mean(y * np.log(output + 1e-8) + (1 - y) * np.log(1 - output + 1e-8))
-    return loss
+
 
 def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
 
@@ -53,18 +50,12 @@ def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
     b2_offset = model.addVars(l2_size, lb=0.0, vtype=GRB.CONTINUOUS, name="b2_offset")
     b3_offset = model.addVars(l3_size, lb=0.0, vtype=GRB.CONTINUOUS, name="b3_offset")
 
-
     NewW1 = [[nn.W1[i][j] + W1_offset[i, j] for j in range(l1_size)] for i in range(len(nn.W1))]
     NewW2 = [[nn.W2[i][j] + W2_offset[i, j] for j in range(l2_size)] for i in range(len(nn.W2))]
     NewW3 = [[nn.W3[i][j] + W3_offset[i, j] for j in range(l3_size)] for i in range(len(nn.W3))]
     Newb1 = [[nn.b1[0, i] + b1_offset[i] for i in range(l1_size)]]
     Newb2 = [[nn.b2[0, i] + b2_offset[i] for i in range(l2_size)]]
     Newb3 = [[nn.b3[0, i] + b3_offset[i] for i in range(l3_size)]]
-
-    print(nn.W1)
-    print(NewW1)
-    print("==========================")
-    print("==========================")
 
     Z3 = ForwardPass(model, X, NewW1, NewW2, NewW3, Newb1, Newb2, Newb3)
         
@@ -73,6 +64,7 @@ def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
             model.addConstr(Z3[i, 0] >= tol, f"Z3_{i}_positive")
         else:
             model.addConstr(Z3[i, 0] <= -tol, f"Z3_{i}_negative")
+
 
     
     objective = ( 
@@ -90,31 +82,8 @@ def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
 
     model.setParam('TimeLimit', timeLimit)
     model.optimize()
-    
     # model.setParam(GRB.Param.NumericFocus, 3)
 
-    print("New loss vs Old loss")
-    NewW1_value = np.array([[nn.W1[i][j] + W1_offset[i, j].X for j in range(l1_size)] for i in range(len(nn.W1))])
-    NewW2_value = np.array([[nn.W2[i][j] + W2_offset[i, j].X for j in range(l2_size)] for i in range(len(nn.W2))])
-    NewW3_value = np.array([[nn.W3[i][j] + W3_offset[i, j].X for j in range(l3_size)] for i in range(len(nn.W3))])
-    Newb1_value = np.array([[nn.b1[0, i] + b1_offset[i].X for i in range(l1_size)]])
-    Newb2_value = np.array([[nn.b2[0, i] + b2_offset[i].X for i in range(l2_size)]])
-    Newb3_value = np.array([[nn.b3[0, i] + b3_offset[i].X for i in range(l3_size)]])
-    old_output = nn.forward(X)
-    new_nn = NN(input_size=X.shape[1], hidden_size1=4, hidden_size2=4, output_size=1, learning_rate=0.1)
-    new_nn.W1 = NewW1_value
-    new_nn.W2 = NewW2_value
-    new_nn.W3 = NewW3_value
-    new_nn.b1 = Newb1_value
-    new_nn.b2 = Newb2_value
-    new_nn.b3 = Newb3_value
-    new_output = new_nn.forward(X)
-    print(old_output)
-    print(y_true)
-    old_loss = loss(old_output, y_true)
-    new_loss = loss(new_output, y_true)
-    print("Old: ", old_loss)
-    print("New: ", new_loss)
     if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
         if model.SolCount == 0:
             print("Timeout")
@@ -141,8 +110,6 @@ def RunForward(nn, X, y, flp_idx, tol, n, l1, l2):
         Z3_values = [[Z3[i, j].X for j in range(l3_size)] for i in range(len(X))]
         print(y.reshape(1,-1)[0])
         print("Z3:", Z3_values)
-        print("Old: ", old_loss)
-        print("New: ", new_loss)
 
 
 main()
