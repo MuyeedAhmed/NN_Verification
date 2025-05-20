@@ -12,9 +12,10 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import time
 import subprocess
+import pandas as pd
 
-timeLimit = 900
-accuracy_file = "accuracy_200.csv"
+timeLimit = 300
+accuracy_file = "Stats/RecursiveCheck_Accuracy.csv"
 
 def main():
     l1 = 4
@@ -27,18 +28,20 @@ def main():
         with open(accuracy_file, "w") as f:
             f.write("Dataset,n,col_size,Iteration,Accuracy\n")
 
+    df = pd.read_csv("accuracy.csv")
+    check_datasets = set(df["Dataset"].unique())  
 
     for file_name in os.listdir(dataset_dir):
         if not file_name.endswith(".csv"):
+            continue
+        if file_name not in check_datasets:
             continue
 
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
 
-        if not (201 <= len(df) <= 300):
+        if not (50 <= len(df) <= 200):
             continue
-        # if file_name != "dbworld-bodies-stemmed.csv":
-        #     continue
         print(f"Running dataset: {file_name} with {len(df)} rows")
 
         X = df.iloc[:, :-1].to_numpy()
@@ -163,7 +166,7 @@ def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
         if model.SolCount == 0:
             print("Timeout")
             return
-        with open("Solved_Flip_200.txt", "a") as file:
+        with open("Stats/Solved_Flip.txt", "a") as file:
             file.write(f"{file_name}-----\n")
 
         f_values = [f[i].X for i in range(len(X))]
@@ -207,19 +210,19 @@ def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
             b1_values_with_offset, b2_values_with_offset, b3_values_with_offset, y_gt=y_gt, file_name = file_name)
         vw.main(Task="Flip")
     
-        if not os.path.exists(f"Weights/{file_name}"):
-            save_weights(nn, file_name, 0)
+        # if not os.path.exists(f"Weights/{file_name}"):
+        save_weights(nn, file_name, 0)
 
         trn = RunNN_preset(X, y_gt, hs1=l1, hs2=l2, out_size=1, lr = 0.1, epoch=10000, preset_weights=True)
-        nn, y_predict = trn.TrainReturnWeights()
-        save_weights(nn, file_name, iter)
+        nn_iter, y_predict = trn.TrainReturnWeights()
+        save_weights(nn_iter, file_name, iter)
         with open(accuracy_file, "a") as f:
             f.write(f"{file_name},{len(X)},{X.shape[1]},{iter},{np.mean(y_gt == y_predict):.4f}\n")
 
-        if iter == 3:
-            return
-        else:
-            RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter+1)
+        # if iter == 3:
+        #     return
+        # else:
+        #     RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter+1)
 
     else:
         print("No feasible solution found.")
