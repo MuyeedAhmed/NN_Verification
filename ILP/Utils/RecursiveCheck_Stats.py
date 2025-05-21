@@ -1,6 +1,82 @@
 import pandas as pd
 import os
 import numpy as np
+from sklearn.metrics.cluster import adjusted_rand_score
+from sklearn.preprocessing import StandardScaler
+
+
+dataset_dir = "../../Dataset"
+
+
+def relu(x):
+    return np.maximum(0, x)
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+class NeuralNetwork:
+    def __init__(self, W1, W2, W3, b1, b2, b3, activation):
+        self.activation = activation
+        self.W1 = W1
+        self.W2 = W2
+        self.W3 = W3
+        self.b1 = b1
+        self.b2 = b2
+        self.b3 = b3
+
+    def forward(self, X):
+        self.Z1 = X @ self.W1 + self.b1
+        if self.activation == "sigmoid":
+            self.A1 = sigmoid(self.Z1)
+        elif self.activation == "relu":
+            self.A1 = relu(self.Z1)
+
+        self.Z2 = self.A1 @ self.W2 + self.b2
+        if self.activation == "sigmoid":
+            self.A2 = sigmoid(self.Z2)
+        elif self.activation == "relu":
+            self.A2 = relu(self.Z2)
+        
+        self.Z3 = self.A2 @ self.W3 + self.b3
+        self.A3 = sigmoid(self.Z3)
+        return self.A3
+
+    def predict(self, X):
+        return (self.forward(X) >= 0.5).astype(int)
+
+def getARI(file_name):
+    file_path = os.path.join(dataset_dir, file_name)
+    if not os.path.exists(file_path):
+        return -2
+    df = pd.read_csv(file_path)
+    X = df.iloc[:, :-1].to_numpy()
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
+    y_gt = df.iloc[:, -1].to_numpy().reshape(-1, 1)
+    
+    W1_0 = np.load(f"Weights/{file_name.split('.')[0]}/W1_0.npy")
+    W2_0 = np.load(f"Weights/{file_name.split('.')[0]}/W2_0.npy")
+    W3_0 = np.load(f"Weights/{file_name.split('.')[0]}/W3_0.npy")
+    b1_0 = np.load(f"Weights/{file_name.split('.')[0]}/b1_0.npy")
+    b2_0 = np.load(f"Weights/{file_name.split('.')[0]}/b2_0.npy")
+    b3_0 = np.load(f"Weights/{file_name.split('.')[0]}/b3_0.npy")
+    W1_1 = np.load(f"Weights/{file_name.split('.')[0]}/W1_1.npy")
+    W2_1 = np.load(f"Weights/{file_name.split('.')[0]}/W2_1.npy")
+    W3_1 = np.load(f"Weights/{file_name.split('.')[0]}/W3_1.npy")
+    b1_1 = np.load(f"Weights/{file_name.split('.')[0]}/b1_1.npy")
+    b2_1 = np.load(f"Weights/{file_name.split('.')[0]}/b2_1.npy")
+    b3_1 = np.load(f"Weights/{file_name.split('.')[0]}/b3_1.npy")
+
+
+    nn_0 = NeuralNetwork(W1_0, W2_0, W3_0, b1_0, b2_0, b3_0, "relu")
+    nn_1 = NeuralNetwork(W1_1, W2_1, W3_1, b1_1, b2_1, b3_1, "relu")
+    y_predict_0 = nn_0.predict(X).reshape(1, -1)[0]
+    y_predict_1 = nn_1.predict(X).reshape(1, -1)[0]
+    
+    ari = adjusted_rand_score(y_predict_1, y_predict_0)
+    return ari
+        
+
 
 def compare_files(folder_path, prefixes, i1, i2):
     for prefix in prefixes:
@@ -51,6 +127,7 @@ def generate_summary(input_csv, weights_base_path, output_csv):
             'Delta_1': delta,
             'WeightChange_0_1': weights_status,
             'BiasChange_0_1': biases_status,
+            'ARI': getARI(name)
         })
 
     summary_df = pd.DataFrame(output_data)
@@ -59,6 +136,6 @@ def generate_summary(input_csv, weights_base_path, output_csv):
 if __name__ == "__main__":
     input_csv = "Stats/RecursiveCheck_Accuracy.csv"
     weights_base_path = "Weights"
-    output_csv = "Stats/RecursiveCheck_Accuracy_Summary.csv"
+    output_csv = "Stats/RecursiveCheck_Accuracy_Summary_ARI.csv"
     generate_summary(input_csv, weights_base_path, output_csv)
 
