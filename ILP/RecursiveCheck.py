@@ -14,7 +14,7 @@ import time
 import subprocess
 import pandas as pd
 
-timeLimit = 300
+timeLimit = 1500
 accuracy_file = "Stats/RecursiveCheck_Accuracy.csv"
 
 def main():
@@ -28,7 +28,7 @@ def main():
         with open(accuracy_file, "w") as f:
             f.write("Dataset,n,col_size,Iteration,Accuracy\n")
 
-    df = pd.read_csv("accuracy.csv")
+    df = pd.read_csv("Accuracy_200.csv")
     check_datasets = set(df["Dataset"].unique())  
 
     for file_name in os.listdir(dataset_dir):
@@ -40,9 +40,9 @@ def main():
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
 
-        if not (50 <= len(df) <= 200):
+        if not (200 <= len(df) <= 300):
             continue
-        print(f"Running dataset: {file_name} with {len(df)} rows")
+        print(f"----------------\nRunning dataset: {file_name} with {len(df)} rows\n----------------")
 
         X = df.iloc[:, :-1].to_numpy()
         scaler = StandardScaler()
