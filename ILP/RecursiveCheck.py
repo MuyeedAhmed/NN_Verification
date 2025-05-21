@@ -34,7 +34,7 @@ def main():
     for file_name in os.listdir(dataset_dir):
         if not file_name.endswith(".csv"):
             continue
-        if file_name not in check_datasets:
+        if file_name in check_datasets:
             continue
 
         file_path = os.path.join(dataset_dir, file_name)
