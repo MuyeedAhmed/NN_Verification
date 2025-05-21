@@ -48,3 +48,12 @@ vineyard.csv-----
 visualizing_hamster.csv-----
 visualizing_livestock.csv-----
 witmer_census_1980.csv-----
+analcatdata_reviewer.csv-----
+badges2.csv-----
+fri_c0_250_10.csv-----
+fri_c4_250_10.csv-----
+fri_c4_250_25.csv-----
+lungcancer_GSE31210.csv-----
+prnn_crabs.csv-----
+sonar.csv-----
+tecator.csv-----
