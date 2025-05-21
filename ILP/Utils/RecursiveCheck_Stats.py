@@ -47,7 +47,7 @@ class NeuralNetwork:
 def getARI(file_name):
     file_path = os.path.join(dataset_dir, file_name)
     if not os.path.exists(file_path):
-        return -2
+        return -2, "", -1, -1
     df = pd.read_csv(file_path)
     X = df.iloc[:, :-1].to_numpy()
     scaler = StandardScaler()
@@ -70,11 +70,24 @@ def getARI(file_name):
 
     nn_0 = NeuralNetwork(W1_0, W2_0, W3_0, b1_0, b2_0, b3_0, "relu")
     nn_1 = NeuralNetwork(W1_1, W2_1, W3_1, b1_1, b2_1, b3_1, "relu")
+
+    
+
     y_predict_0 = nn_0.predict(X).reshape(1, -1)[0]
     y_predict_1 = nn_1.predict(X).reshape(1, -1)[0]
     
+    loss_0 = np.sum(np.abs(nn_0.A3 - y_gt))
+    loss_1 = np.sum(np.abs(nn_1.A3 - y_gt))
+
+    loss_delta = (
+        'Increased' if loss_1 > loss_0 else
+        'Decreased' if loss_1 < loss_0 else
+        'Same'
+    )
+
     ari = adjusted_rand_score(y_predict_1, y_predict_0)
-    return ari
+    # print(ari, loss_delta, loss_0, loss_1)
+    return ari, loss_delta, loss_0, loss_1
         
 
 
@@ -97,6 +110,7 @@ def generate_summary(input_csv, weights_base_path, output_csv):
     output_data = []
 
     for name, group in grouped:
+        print(f"Processing {name}")
         if 0 not in group['Iteration'].values or 1 not in group['Iteration'].values:
             continue
 
@@ -118,6 +132,8 @@ def generate_summary(input_csv, weights_base_path, output_csv):
         weights_status = compare_files(folder_path, ['W1', 'W2', 'W3'], 0, 1)
         biases_status = compare_files(folder_path, ['b1', 'b2', 'b3'], 0, 1)
 
+        ari, loss_delta, loss_0, loss_1 = getARI(name)
+
         output_data.append({
             'Dataset': name,
             'n': iter_group['n'].iloc[0],
@@ -127,7 +143,10 @@ def generate_summary(input_csv, weights_base_path, output_csv):
             'Delta_1': delta,
             'WeightChange_0_1': weights_status,
             'BiasChange_0_1': biases_status,
-            'ARI': getARI(name)
+            'ARI': ari,
+            'LossDelta': loss_delta,
+            'Loss_0': loss_0,
+            'Loss_1': loss_1
         })
 
     summary_df = pd.DataFrame(output_data)
