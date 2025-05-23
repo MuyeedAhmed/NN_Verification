@@ -23,6 +23,8 @@ import torch
 
 Test = "Test1_l44_Tr80_Val20"
 accuracy_file = f"Stats/{Test}.csv"
+files_already_tested_path = "Stats/Tested.csv"
+
 
 timeLimit = 300
 
@@ -66,6 +68,11 @@ def main():
     if not os.path.exists(accuracy_file):
         with open(accuracy_file, "w") as f:
             f.write("Dataset,n,col_size,Iteration,Accuracy\n")
+    if not os.path.exists(files_already_tested_path):
+        with open(files_already_tested_path, "w") as f:
+            f.write("Dataset\n")
+    else:
+        files_already_tested = pd.read_csv(files_already_tested_path)
 
     for file_name in os.listdir(dataset_dir):
         if not file_name.endswith(".csv"):
@@ -75,11 +82,16 @@ def main():
         df = pd.read_csv(file_path)
         if not os.path.exists(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}"):
             continue
-
+        if file_name in files_already_tested.values:
+            print(f"Already tested: {file_name}")
+            continue
         if not (50 <= len(df) <= 400):
             continue
         print(f"----------------\nRunning dataset: {file_name} with {len(df)} rows\n----------------")
-
+        
+        with open(files_already_tested_path, "a") as file:
+            file.write(f"{file_name}\n")
+        
         X = df.iloc[:, :-1].to_numpy()
         scaler = StandardScaler()
         X = scaler.fit_transform(X)
