@@ -125,7 +125,8 @@ if __name__ == "__main__":
     for file_name in os.listdir(dataset_dir):
         if not file_name.endswith(".csv"):
             continue
-
+        if os.path.exists(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}"):
+            continue
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
 
@@ -141,10 +142,12 @@ if __name__ == "__main__":
             os.makedirs(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}")
         if not os.path.exists(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}"):
             os.makedirs(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}")
-
-        model, final_metrics_A = train_model(X, y_gt, 4, 4, save_path=TrainA_Path, max_epochs=2000)
-        model, final_metrics_B = train_model(X, y_gt, 4, 4, save_path=TrainB_Path, preset_weights_path=TrainA_Path, max_epochs=2000)
-
+        try:
+            model, final_metrics_A = train_model(X, y_gt, 4, 4, save_path=TrainA_Path, max_epochs=2000)
+            model, final_metrics_B = train_model(X, y_gt, 4, 4, save_path=TrainB_Path, preset_weights_path=TrainA_Path, max_epochs=2000)
+        except Exception as e:
+            print(f"Error processing {file_name}: {e}")
+            continue
         np.save(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy", final_metrics_A['train_preds'])
         np.save(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}/train_preds.npy", final_metrics_B['train_preds'])
         np.save(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/val_preds.npy", final_metrics_A['val_preds'])
