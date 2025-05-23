@@ -3,6 +3,7 @@ import os
 import numpy as np
 from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.preprocessing import StandardScaler
+from NN.Network_PresetWeights import NN_preset, RunNN_preset
 
 
 dataset_dir = "../../Dataset"
@@ -47,13 +48,22 @@ class NeuralNetwork:
 def getARI(file_name):
     file_path = os.path.join(dataset_dir, file_name)
     if not os.path.exists(file_path):
-        return -2, "", -1, -1
+        return -2, "", "", -1, -1, -1, -1
     df = pd.read_csv(file_path)
     X = df.iloc[:, :-1].to_numpy()
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
     y_gt = df.iloc[:, -1].to_numpy().reshape(-1, 1)
     
+    """Train with 20000 epochs"""
+    l1 = 4
+    l2 = 4
+    trn = RunNN_preset(X, y_gt, hs1=l1, hs2=l2, out_size=1, lr=0.1, epoch=20000)
+    nn_20k, y_predict_20k = trn.TrainReturnWeights()
+    accuracy_20k = np.sum(y_predict_20k == y_gt) / len(y_gt)
+    loss_20k = np.sum(np.abs(nn_20k.A3 - y_gt))
+    y_predict_20k = y_predict_20k.reshape(1, -1)[0]
+
     W1_0 = np.load(f"Weights/{file_name.split('.')[0]}/W1_0.npy")
     W2_0 = np.load(f"Weights/{file_name.split('.')[0]}/W2_0.npy")
     W3_0 = np.load(f"Weights/{file_name.split('.')[0]}/W3_0.npy")
@@ -85,9 +95,15 @@ def getARI(file_name):
         'Same'
     )
 
-    ari = adjusted_rand_score(y_predict_1, y_predict_0)
+    loss_delta_20k = (
+        'Increased' if loss_1 > loss_20k else
+        'Decreased' if loss_1 < loss_20k else
+        'Same'
+    )
+
+    ari = adjusted_rand_score(y_predict_1, y_predict_20k)
     # print(ari, loss_delta, loss_0, loss_1)
-    return ari, loss_delta, loss_0, loss_1
+    return ari, loss_delta, loss_delta_20k, loss_0, loss_1, loss_20k, accuracy_20k
         
 
 
@@ -119,10 +135,18 @@ def generate_summary(input_csv, weights_base_path, output_csv):
 
         acc_0 = iter_group[iter_group['Iteration'] == 0]['Accuracy'].values[0]
         acc_1 = iter_group[iter_group['Iteration'] == 1]['Accuracy'].values[0]
+        
+        ari, loss_delta, loss_delta_20k, loss_0, loss_1, loss_20k, accuracy_20k = getARI(name)
 
         delta = (
             'Increased' if acc_1 > acc_0 else
             'Decreased' if acc_1 < acc_0 else
+            'Same'
+        )
+
+        delta_20k = (
+            'Increased' if acc_1 > accuracy_20k else
+            'Decreased' if acc_1 < accuracy_20k else
             'Same'
         )
 
@@ -132,7 +156,7 @@ def generate_summary(input_csv, weights_base_path, output_csv):
         weights_status = compare_files(folder_path, ['W1', 'W2', 'W3'], 0, 1)
         biases_status = compare_files(folder_path, ['b1', 'b2', 'b3'], 0, 1)
 
-        ari, loss_delta, loss_0, loss_1 = getARI(name)
+        
 
         output_data.append({
             'Dataset': name,
@@ -140,20 +164,24 @@ def generate_summary(input_csv, weights_base_path, output_csv):
             'col_size': iter_group['col_size'].iloc[0],
             'Accuracy_0': acc_0,
             'Accuracy_1': acc_1,
-            'Delta_1': delta,
+            'Accuracy_20k': accuracy_20k,
+            'Accuracy_Delta': delta,
+            'Accuracy_Delta_20k': delta_20k,
             'WeightChange_0_1': weights_status,
             'BiasChange_0_1': biases_status,
             'ARI': ari,
             'LossDelta': loss_delta,
+            'LossDelta_20k': loss_delta_20k,
             'Loss_0': loss_0,
-            'Loss_1': loss_1
+            'Loss_1': loss_1,
+            'Loss_20k': loss_20k
         })
 
     summary_df = pd.DataFrame(output_data)
     summary_df.to_csv(output_csv, index=False)
 
 if __name__ == "__main__":
-    input_csv = "Stats/RecursiveCheck_Accuracy.csv"
+    input_csv = "Stats/RecursiveCheck_Accuracy_Flip2.csv"
     weights_base_path = "Weights"
     output_csv = "Stats/RecursiveCheck_Accuracy_Summary_ARI.csv"
     generate_summary(input_csv, weights_base_path, output_csv)

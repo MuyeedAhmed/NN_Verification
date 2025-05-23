@@ -29,7 +29,7 @@ def main():
     
     X = X[0:n]
     y = y_predict[0:n]
-
+    print(y)
     tol = 2e-6
     RunForward(nn, X, y, y_gt, -1, tol, n, l1, l2)
 
@@ -41,6 +41,13 @@ def RunForward(nn, X, y, y_gt, flp_idx, tol, n, l1, l2):
     l2_size = len(nn.W2[0])
     l3_size = len(nn.W3[0])
 
+    print(nn.W1.shape)
+    print(nn.W2.shape)
+    print(nn.W3.shape)
+    print(nn.b1.shape)
+    print(nn.b2.shape)
+    print(nn.b3.shape)
+    return
     model = gp.Model("Minimize_b")
 
     W1_offset = model.addVars(len(nn.W1), l1_size, lb=0.0, vtype=GRB.CONTINUOUS, name="W1_offset")
