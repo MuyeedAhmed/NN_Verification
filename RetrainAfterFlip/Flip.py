@@ -81,11 +81,9 @@ def main():
 
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
-        if not os.path.exists(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}"):
+        if not os.path.exists(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy"):
             continue
-        if file_name in files_already_tested.values:
-            print(f"Already tested: {file_name}")
-            continue
+        
         if not (50 <= len(df) <= 400):
             continue
         print(f"----------------\nRunning dataset: {file_name} with {len(df)} rows\n----------------")
@@ -100,14 +98,20 @@ def main():
         X_train, X_val, y_train, y_val = train_test_split(X, y_gt, test_size=0.2, random_state=42)
         X = X_train
         y_gt = y_train
-        y_train_pred = np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy")
-        y_val_pred = np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/val_preds.npy")
+        try:
+            y_train_pred = np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy")
+            y_val_pred = np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/val_preds.npy")
         
-        nn = extract_weights(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth")
-
+            nn = extract_weights(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth")
+        except Exception as e:
+            print(f"Error loading weights for {file_name}: {e}")
+            continue
 
         try:
             RunForward(file_name, nn, X, y_train_pred, y_gt, tol, len(X), 1, l1, l2, 1)
+            if file_name in files_already_tested.values:
+                print(f"Already tested: {file_name}")
+                continue
         except Exception as e:
             print(f"Error processing {file_name}: {e}")
             continue
