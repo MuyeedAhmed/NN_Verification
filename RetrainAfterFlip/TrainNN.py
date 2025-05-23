@@ -143,8 +143,8 @@ if __name__ == "__main__":
         if not os.path.exists(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}"):
             os.makedirs(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}")
         try:
-            model, final_metrics_A = train_model(X, y_gt, 4, 4, save_path=TrainA_Path, max_epochs=2000)
-            model, final_metrics_B = train_model(X, y_gt, 4, 4, save_path=TrainB_Path, preset_weights_path=TrainA_Path, max_epochs=2000)
+            model, final_metrics_A = train_model(X, y_gt, 4, 4, save_path=TrainA_Path, max_epochs=10000)
+            model, final_metrics_B = train_model(X, y_gt, 4, 4, save_path=TrainB_Path, preset_weights_path=TrainA_Path, max_epochs=10000)
         except Exception as e:
             print(f"Error processing {file_name}: {e}")
             continue
