@@ -68,6 +68,7 @@ def main():
     if not os.path.exists(accuracy_file):
         with open(accuracy_file, "w") as f:
             f.write("Dataset,n,col_size,Iteration,Accuracy\n")
+    files_already_tested = pd.DataFrame(columns=["Dataset"])
     if not os.path.exists(files_already_tested_path):
         with open(files_already_tested_path, "w") as f:
             f.write("Dataset\n")
