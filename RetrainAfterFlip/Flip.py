@@ -26,7 +26,7 @@ accuracy_file = f"Stats/{Test}.csv"
 files_already_tested_path = "Stats/Tested.csv"
 
 
-timeLimit = 300
+timeLimit = 1500
 
 
 def extract_weights(load_path, transpose=True):
@@ -84,6 +84,10 @@ def main():
         if not os.path.exists(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy"):
             continue
         
+        if os.path.exists(f"Weights/{Test}/TrainC/{file_name.split('.')[0]}/model.npy"):
+            print("-----Already ran gurobi for this file:", file_name)
+            continue
+
         if not (50 <= len(df) <= 400):
             continue
         print(f"----------------\nRunning dataset: {file_name} with {len(df)} rows\n----------------")
@@ -109,9 +113,9 @@ def main():
 
         try:
             RunForward(file_name, nn, X, y_train_pred, y_gt, tol, len(X), 1, l1, l2, 1)
-            if file_name in files_already_tested.values:
-                print(f"Already tested: {file_name}")
-                continue
+            # if file_name in files_already_tested.values:
+            #     print(f"Already tested: {file_name}")
+            #     continue
         except Exception as e:
             print(f"Error processing {file_name}: {e}")
             continue
@@ -265,7 +269,7 @@ def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
         original_state_dict['model.8.weight'] = W3_torch
         original_state_dict['model.8.bias'] = b3_torch
 
-        SavePath = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}"
+        SavePath = f"Weights/{Test}/TrainE/{file_name.split('.')[0]}" # Change after testing for 1500 seconds
         if not os.path.exists(SavePath):
             os.makedirs(SavePath)
         torch.save(original_state_dict, f'{SavePath}/model.pth')
