@@ -113,6 +113,8 @@ def train_model(X, y_gt, l1, l2, save_path=None, preset_weights_path=None, max_e
 if __name__ == "__main__":
     Test = "Test1_l44_Tr80_Val20"
     dataset_dir = "../../Dataset"
+    l1 = 4
+    l2 = 4
     # dataset_dir = "../Dataset"
     accuracy_file = f"Stats/{Test}.csv"
     
@@ -125,17 +127,21 @@ if __name__ == "__main__":
 
         if not (50 <= len(df) <= 400):
             continue
-        print("File:", file_name)
+        # print("File:", file_name)
         X = df.iloc[:, :-1]
         y_gt = df.iloc[:, -1]
 
         TrainC_Path = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}/model.pth"
         TrainD_Path = f"Weights/{Test}/TrainD/{file_name.split('.')[0]}/model.pth"
-
+        
+        if not os.path.exists(f"Weights/{Test}/TrainC/{file_name.split('.')[0]}"):
+            continue
+        else:
+            print(f"File {file_name} found")    
         if not os.path.exists(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}"):
             os.makedirs(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}")
 
-        model, final_metrics_D = train_model(X, y_gt, 4, 4, save_path=TrainD_Path, preset_weights_path=TrainC_Path, max_epochs=2000)
+        model, final_metrics_D = train_model(X, y_gt, l1, l2, save_path=TrainD_Path, preset_weights_path=TrainC_Path, max_epochs=10000)
 
         np.save(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}/train_preds.npy", final_metrics_D['train_preds'])
         np.save(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}/val_preds.npy", final_metrics_D['val_preds'])
