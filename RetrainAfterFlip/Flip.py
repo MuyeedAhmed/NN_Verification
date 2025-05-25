@@ -281,18 +281,10 @@ def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
         # vw.main(Task="Flip")
     
         # if not os.path.exists(f"Weights/{file_name}"):
-        save_weights(nn, file_name, 0)
 
     else:
         print("No feasible solution found.")
 
-
-
-def save_weights(nn, file_name, iter):
-    file_name = file_name.split(".")[0]
-    if not os.path.exists(f"Weights/{file_name}"):
-        os.makedirs(f"Weights/{file_name}")
-    
 
 
 
