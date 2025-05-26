@@ -112,7 +112,7 @@ def main():
             continue
 
         try:
-            RunForward(file_name, nn, X, y_train_pred, y_gt, tol, len(X), 1, l1, l2, 1)
+            RunForward(file_name, nn, X, y_train_pred, y_gt, tol, len(X), flipCount, l1, l2, 1)
             # if file_name in files_already_tested.values:
             #     print(f"Already tested: {file_name}")
             #     continue
