@@ -89,8 +89,6 @@ def train_model(X, y_gt, l1, l2, val_size, save_path=None, preset_weights_path=N
             if trigger_times >= patience:
                 break
 
-    torch.save(model.state_dict(), save_path)
-    
     model.eval()
     with torch.no_grad():
         train_preds = model(X_train_tensor).numpy().flatten()
@@ -108,10 +106,12 @@ def train_model(X, y_gt, l1, l2, val_size, save_path=None, preset_weights_path=N
         "train_accuracy": float(train_acc),
         "val_loss": float(val_loss),
         "val_accuracy": float(val_acc),
-        "train_preds": y_train_tensor.numpy().flatten(),
-        "val_preds": y_val_tensor.numpy().flatten()
+        "train_preds": train_preds,
+        "train_labels": y_train_tensor.numpy().flatten(),
+        "val_preds": val_preds
     }
 
+    torch.save(model.state_dict(), save_path)
     return model, final_metrics
     
 def extract_weights(load_path, transpose=True):
@@ -320,7 +320,7 @@ if __name__ == "__main__":
     val_size = 0.2
     epoch_count = 50000
     flipCount = 1
-    tol = 2e-6
+    tol = 3e-6
 
     Test = f"Test1_l{l1}{l2}_Variable"
     
@@ -337,6 +337,7 @@ if __name__ == "__main__":
         files_already_tested = pd.read_csv(accuracy_file)['Dataset'].unique()
 
     for file_name in os.listdir(dataset_dir):
+        val_size = 0.2
         if not file_name.endswith(".csv"):
             continue
         if file_name in files_already_tested:
@@ -388,7 +389,7 @@ if __name__ == "__main__":
                 '''Step 2: Run Gurobi Flip'''        
                 try:
                     X_train, _, y_train, _ = train_test_split(X, y_gt, test_size=val_size, random_state=42)
-                    y_train_pred = np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy")
+                    y_train_pred = np.round(np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy"))
                     scaler = StandardScaler()
                     X_train = scaler.fit_transform(X_train)
 
