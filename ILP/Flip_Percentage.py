@@ -334,7 +334,6 @@ if __name__ == "__main__":
         if file_name in files_already_tested:
             print(f"Skipping {file_name} as it has already been processed.")
             continue
-        
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
 
@@ -343,7 +342,8 @@ if __name__ == "__main__":
         print("File:", file_name)
         X = df.iloc[:, :-1]
         y_gt = df.iloc[:, -1]
-
+        if not (set(y_gt.unique()) <= {0, 1}):
+            continue
         '''Step 1: Train the model'''
         TrainA_Path = f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth"
         TrainC_Path = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}/model.pth"
@@ -368,8 +368,7 @@ if __name__ == "__main__":
             print(f"Error processing {file_name}: {e}")
             with open(error_file, "a") as f:
                 f.write(f"------------\n{file_name}\nStep 1: {e}\n---------------\n")
-            break
-        
+            continue
         '''Step 2: Run Gurobi Flip'''        
         try:
             y_train_load = np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy")
@@ -384,7 +383,7 @@ if __name__ == "__main__":
         except Exception as e:
             with open(error_file, "a") as f:
                 f.write(f"------------\n{file_name}\nStep 1: {e}\n---------------\n")
-            break
+            continue
         '''Step 3: If a solution is found, check flip percentage'''
         if solution_found:
             model = BinaryClassifier(X.shape[1], l1, l2)
@@ -399,3 +398,4 @@ if __name__ == "__main__":
             with open(flipPercentageSummary, "a") as f:
                 flipped_count = np.sum(y_pred_binary != y_train_pred)
                 f.write(f"{file_name},{len(X)},{flipped_count},{(flipped_count / len(X)) * 100:.2f}\n")
+
