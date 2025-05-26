@@ -245,7 +245,7 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
 
         if len(flip_idxs) != flipCount:
             print(f"Error: Expected {flipCount} value of 1 in f_values, but found {len(flip_idxs)}")
-            return
+            return False
 
         print("f values:", f_values)
         print("y_g values:", y_g_values)
@@ -337,7 +337,9 @@ if __name__ == "__main__":
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
 
-        if not (100 <= len(df) <= 400):
+        # if not (100 <= len(df) <= 400):
+        #     continue
+        if not (400 < len(df) <= 1000):
             continue
         print("File:", file_name)
         X = df.iloc[:, :-1]
