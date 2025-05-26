@@ -269,7 +269,7 @@ def RunForward(file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, iter):
         original_state_dict['model.8.weight'] = W3_torch
         original_state_dict['model.8.bias'] = b3_torch
 
-        SavePath = f"Weights/{Test}/TrainE/{file_name.split('.')[0]}" # Change after testing for 1500 seconds
+        SavePath = f"Weights/{Test}/TrainD/{file_name.split('.')[0]}"
         if not os.path.exists(SavePath):
             os.makedirs(SavePath)
         torch.save(original_state_dict, f'{SavePath}/model.pth')
