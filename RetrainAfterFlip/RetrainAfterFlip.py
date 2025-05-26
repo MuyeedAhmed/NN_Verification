@@ -324,8 +324,8 @@ if __name__ == "__main__":
 
     Test = f"Test1_l{l1}{l2}_Variable"
     
-    # dataset_dir = "../../Dataset"
-    dataset_dir = "../Dataset"
+    dataset_dir = "../../Dataset"
+    # dataset_dir = "../Dataset"
     accuracy_file = f"Stats/{Test}.csv"
     error_file = f"Stats/Error_{Test}.txt"
 
