@@ -311,7 +311,7 @@ if __name__ == "__main__":
     flipCount = 1
     tol = 3e-6
 
-    Test = f"FlipPercentage_l{l1}{l2}"
+    Test = f"FlipPercentage_l{l1}{l2}_10pct"
     flipPercentageSummary = f"Stats/{Test}_FlipPercentageSummary.csv"
     dataset_dir = "../../Dataset"
     # dataset_dir = "../Dataset"
