@@ -1,0 +1,524 @@
+------------
+695_chatfield_4.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+207_autoPrice.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+195_auto_price.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+solar_flare_1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+calendarDOW.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+rsctc2010_4.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+658_fri_c3_250_25.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+new_thyroid.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+229_pwLinear.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+breast-tissue.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+210_cloud.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+schizo.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+cleveland_nominal.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+AP_Prostate_Lung.csv
+Step 1: Expected more than 1 value per channel when training, got input size torch.Size([1, 4])
+---------------
+------------
+analcatdata_broadwaymult.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+cleveland.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+breastTumor.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+Smartphone-Based_Recognition_of_Human_Activities.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+hungarian.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+strogatz_lv1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+624_fri_c0_100_5.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+pharynx.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+519_vinnie.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+penguins.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+bridges.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+hayes-roth.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+auto.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+chscase_funds.csv
+Step 1: Expected more than 1 value per channel when training, got input size torch.Size([1, 4])
+---------------
+------------
+644_fri_c4_250_25.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+GCM.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+rsctc2010_1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+230_machine_cpu.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+BurkittLymphoma.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+621_fri_c0_100_10.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+robot-failures-lp5.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+seeds.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+strogatz_vdp1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+teachingAssistant.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+594_fri_c2_100_5.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+strogatz_predprey1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+breast-cancer.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+vertebra-column.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+lymphography.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+pbc.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+665_sleuth_case2002.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+hepatitisC.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+560_bodyfat.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+634_fri_c2_100_10.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+strogatz_barmag1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+635_fri_c0_250_10.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+autos.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+robot-failures-lp4.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+breast-cancer-dropped-missing-attributes-values.csv
+Step 1: Expected more than 1 value per channel when training, got input size torch.Size([1, 4])
+---------------
+------------
+601_fri_c1_250_5.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+MyIris.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+leaf.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+strogatz_barmag2.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+678_visualizing_environmental.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+657_fri_c2_250_10.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+horse_colic.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+596_fri_c2_250_5.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+dermatology.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+591_fri_c1_100_10.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+561_cpu.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+analcatdata_germangss.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+analcatdata_draft.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+cleveland-nominal.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+colic.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+651_fri_c0_100_25.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+648_fri_c1_250_50.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+strogatz_glider1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+strogatz_predprey2.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+flags.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+biomed.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+523_analcatdata_neavote.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+cars1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+heart-long-beach.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+heart-switzerland.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+zoo.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+autoHorse.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+505_tecator.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+cholesterol.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+613_fri_c3_250_5.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+analcatdata_birthday.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+variousCancers_final.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+analcatdata_gsssexsurvey.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+primary-tumor.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+strogatz_shearflow2.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+strogatz_lv2.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+603_fri_c0_250_50.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+hayes_roth.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+Engine1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+autoMpg.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+712_chscase_geyser1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+Olivetti_Faces.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+analcatdata_homerun.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+chscase_whale.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+AP_Lung_Kidney.csv
+Step 1: Expected more than 1 value per channel when training, got input size torch.Size([1, 4])
+---------------
+------------
+615_fri_c4_250_10.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+wine_recognition.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+echoMonths.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+strogatz_glider2.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+strogatz_vdp2.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+movement_libras.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+690_visualizing_galaxy.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+audiology.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+lymph.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+analcatdata_marketing.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+prnn_fglass.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+602_fri_c3_250_10.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+autoUniv-au6-400.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+647_fri_c1_250_10.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+AP_Ovary_Uterus.csv
+Step 1: Expected more than 1 value per channel when training, got input size torch.Size([1, 4])
+---------------
+------------
+ovarianTumour.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+663_rabe_266.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+mouseType.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+579_fri_c0_250_5.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+rsctc2010_2.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+ecoli.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+hepatitis.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+heart-h.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+strogatz_shearflow1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+611_fri_c3_100_5.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+656_fri_c1_100_5.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+strogatz_bacres2.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+heart-c.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+605_fri_c2_250_25.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+seismic-bumps.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+strogatz_bacres1.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+thyroid-new.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
+------------
+653_fri_c0_250_25.csv
+Step 1: all elements of target should be between 0 and 1
+---------------
