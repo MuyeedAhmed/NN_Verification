@@ -94,3 +94,55 @@ Step 1: all elements of input should be between 0 and 1
 schizo.csv
 Step 1: all elements of input should be between 0 and 1
 ---------------
+------------
+PieChart1.csv
+Step 1: Expected more than 1 value per channel when training, got input size torch.Size([1, 4])
+---------------
+------------
+anneal.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+braziltourism.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+breast-w.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+cars.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+credit-approval.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+dresses-sales.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+cylinder-bands.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+irish.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+kdd_el_nino-small.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+meta.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+vote.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+water-treatment.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
