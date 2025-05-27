@@ -381,18 +381,18 @@ if __name__ == "__main__":
             continue
         
         '''Step 2: Run Gurobi Flip'''        
-        # try:
-        X_train, _, y_train, _ = train_test_split(X, y_gt, test_size=val_size, random_state=42)
-        y_train_pred = np.round(np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy"))
-        scaler = StandardScaler()
-        X_train = scaler.fit_transform(X_train)
+        try:
+            X_train, _, y_train, _ = train_test_split(X, y_gt, test_size=val_size, random_state=42)
+            y_train_pred = np.round(np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy"))
+            scaler = StandardScaler()
+            X_train = scaler.fit_transform(X_train)
 
-        extracted_weights = extract_weights(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth")
-        solution_found = RunForward(Test, file_name, extracted_weights, X_train, y_train_pred, y_train, tol, len(X), 1, l1, l2)
-        # except Exception as e:
-        #     with open(error_file, "a") as f:
-        #         f.write(f"------------\n{file_name}\nStep 2: {e}\n---------------\n")
-        #     continue
+            extracted_weights = extract_weights(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth")
+            solution_found = RunForward(Test, file_name, extracted_weights, X_train, y_train_pred, y_train, tol, len(X), 1, l1, l2)
+        except Exception as e:
+            with open(error_file, "a") as f:
+                f.write(f"------------\n{file_name}\nStep 2: {e}\n---------------\n")
+            continue
         if solution_found:
             '''Step 3: Retrain with the new weights'''
             TrainC_Path = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}/model.pth"
