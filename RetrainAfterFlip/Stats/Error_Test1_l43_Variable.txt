@@ -522,3 +522,15 @@ Step 1: all elements of target should be between 0 and 1
 653_fri_c0_250_25.csv
 Step 1: all elements of target should be between 0 and 1
 ---------------
+------------
+AP_Endometrium_Uterus.csv
+Step 1: Expected more than 1 value per channel when training, got input size torch.Size([1, 4])
+---------------
+------------
+AP_Endometrium_Ovary.csv
+Step 1: Expected more than 1 value per channel when training, got input size torch.Size([1, 4])
+---------------
+------------
+glass.csv
+Step 1: all elements of target should be between 0 and 1
+---------------

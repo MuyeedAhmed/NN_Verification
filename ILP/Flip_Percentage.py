@@ -233,9 +233,10 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
     model.optimize()
 
     if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
+        mismatch = -1
         if model.SolCount == 0:
             print("Timeout")
-            return False
+            return False, mismatch
         with open("Stats/Solved_Flip.txt", "a") as file:
             file.write(f"{file_name}-----\n")
 
@@ -245,7 +246,7 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
 
         if len(flip_idxs) != flipCount:
             print(f"Error: Expected {flipCount} value of 1 in f_values, but found {len(flip_idxs)}")
-            return False
+            return False, mismatch
 
         print("f values:", f_values)
         print("y_g values:", y_g_values)
@@ -296,10 +297,10 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
             b1_values_with_offset, b2_values_with_offset, b3_values_with_offset, y_gt=y_gt, file_name = file_name)
         vw.main(Task="Flip")
     
-        return True
+        return True, mismatch
     else:
         print("No feasible solution found.")
-        return False
+        return False, mismatch
 
 
 
@@ -310,7 +311,7 @@ if __name__ == "__main__":
     flipCount = 1
     tol = 3e-6
 
-    Test = f"FlipPercentage_l{l1}{l2}"
+    Test = f"FlipPercentage_l{l1}{l2}_10pct"
     flipPercentageSummary = f"Stats/{Test}_FlipPercentageSummary.csv"
     dataset_dir = "../../Dataset"
     # dataset_dir = "../Dataset"
@@ -324,7 +325,7 @@ if __name__ == "__main__":
             f.write("Dataset,Row,Col,Type,Tr_Acc,Val_Acc,Tr_loss,Val_loss\n")
     if not os.path.exists(flipPercentageSummary):
         with open(flipPercentageSummary, "w") as f:
-            f.write("Dataset,N,Flipped,Flip_Percentage\n")
+            f.write("Dataset,N,Mismatch,FlipTry,Flipped,Flip_Percentage\n")
     else:
         files_already_tested = pd.read_csv(accuracy_file)['Dataset'].unique()
 
@@ -337,10 +338,10 @@ if __name__ == "__main__":
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
 
-        # if not (100 <= len(df) <= 400):
-        #     continue
-        if not (400 < len(df) <= 1000):
+        if not (100 <= len(df) <= 400):
             continue
+        # if not (400 < len(df) <= 1000):
+        #     continue
         print("File:", file_name)
         X = df.iloc[:, :-1]
         y_gt = df.iloc[:, -1]
@@ -379,8 +380,8 @@ if __name__ == "__main__":
             X_train_gb, _, y_train_pred_gb, _ = train_test_split(X_train, y_train_pred, test_size=0.9, random_state=42)
 
             extracted_weights = extract_weights(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth")
-
-            solution_found = RunForward(Test, file_name, extracted_weights, X_train_gb, y_train_pred_gb, y_gt, tol, len(X), 1, l1, l2)
+            flipCount = int(len(X_train_gb) / 10)
+            solution_found, mismatch = RunForward(Test, file_name, extracted_weights, X_train_gb, y_train_pred_gb, y_gt, tol, len(X), flipCount, l1, l2)
 
         except Exception as e:
             with open(error_file, "a") as f:
@@ -398,6 +399,6 @@ if __name__ == "__main__":
                 y_pred_binary = np.round(y_pred)
             
             with open(flipPercentageSummary, "a") as f:
-                flipped_count = np.sum(y_pred_binary != y_train_pred)
-                f.write(f"{file_name},{len(X)},{flipped_count},{(flipped_count / len(X)) * 100:.2f}\n")
+                flipped_count_total = np.sum(y_pred_binary != y_train_pred)
+                f.write(f"{file_name},{len(X)},{mismatch},{flipCount},{flipped_count_total},{(flipped_count_total / len(X)) * 100:.2f}\n")
 
