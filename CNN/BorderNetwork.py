@@ -3,7 +3,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-timeLimit = 600
+timeLimit = 1800
 X_data = np.load("input_features_logits.npz")
 X = X_data["X"]
 Z3_target = X_data["Z3"]
@@ -143,28 +143,24 @@ if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
         for i in range(n_samples):
             x = X[i]
             label = int(np.argmax(Z3_target[i]))
-
-            # --- Forward pass to get z3 ---
             z1 = W1_new @ x + b1_new
             a1 = relu(z1)
             z2 = W2_new @ a1 + b2_new
             a2 = relu(z2)
             z3 = W3_new @ a2 + b3_new
 
-            # --- Compute softmax for both Z3_target and z3 ---
             def softmax(logits):
-                e = np.exp(logits - np.max(logits))  # stability
+                e = np.exp(logits - np.max(logits))
                 return e / np.sum(e)
 
             pred_probs = softmax(z3)
             target_probs = softmax(Z3_target[i])
 
-            # --- Cross-entropy loss against ground-truth label ---
             ce_loss_pred += -np.log(pred_probs[label] + 1e-12)
             ce_loss_target += -np.log(target_probs[label] + 1e-12)
 
-        print("Average CE loss (Z3 vs labels):", ce_loss_target / n_samples)
-        print("Average CE loss (z3 vs labels):", ce_loss_pred / n_samples)
+        print("Average Cross Entropy loss (Z3 vs labels):", ce_loss_target / n_samples)
+        print("Average Cross Entropy loss (z3 vs labels):", ce_loss_pred / n_samples)
 
 else:
     print("No solution found.")
