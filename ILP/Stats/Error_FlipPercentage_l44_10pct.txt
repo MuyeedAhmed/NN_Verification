@@ -1,0 +1,120 @@
+------------
+schizo.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+cleveland.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+breastTumor.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+hungarian.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+pharynx.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+bridges.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+sleuth_case2002.csv
+Step 1: local variable 'mismatch' referenced before assignment
+---------------
+------------
+AP_Endometrium_Kidney.csv
+Step 1: Expected more than 1 value per channel when training, got input size torch.Size([1, 4])
+---------------
+------------
+wisconsin.csv
+Step 1: local variable 'mismatch' referenced before assignment
+---------------
+------------
+chscase_geyser1.csv
+Step 1: local variable 'mismatch' referenced before assignment
+---------------
+------------
+breast-cancer.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+molecular_biology_promoters.csv
+Step 1: local variable 'mismatch' referenced before assignment
+---------------
+------------
+pbc.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+analcatdata_draft.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+colic.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+blogger.csv
+Step 1: local variable 'mismatch' referenced before assignment
+---------------
+------------
+biomed.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+autoHorse.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+cholesterol.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+analcatdata_birthday.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+AP_Prostate_Uterus.csv
+Step 1: Expected more than 1 value per channel when training, got input size torch.Size([1, 4])
+---------------
+------------
+analcatdata_gsssexsurvey.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+autoMpg.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+chscase_whale.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+echoMonths.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+mc2.csv
+Step 1: Expected more than 1 value per channel when training, got input size torch.Size([1, 4])
+---------------
+------------
+heart_h.csv
+Step 1: local variable 'mismatch' referenced before assignment
+---------------
+------------
+hepatitis.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+heart-c.csv
+Step 1: all elements of input should be between 0 and 1
+---------------
+------------
+visualizing_galaxy.csv
+Step 1: local variable 'mismatch' referenced before assignment
+---------------
