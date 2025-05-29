@@ -3,13 +3,13 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-timeLimit = 1800
+timeLimit = 18000
 
 import torch
 import numpy as np
 
-X_fc = torch.load("fc_data/X_fc.pt")[0:5].numpy()
-labels = torch.load("fc_data/labels.pt")[0:5].numpy()
+X_fc = torch.load("fc_data/X_fc.pt")[0:50].numpy()
+labels = torch.load("fc_data/labels.pt")[0:50].numpy()
 print("labels", labels)
 
 weights = torch.load("fc_data/weights.pt")
