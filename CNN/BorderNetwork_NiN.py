@@ -8,8 +8,8 @@ timeLimit = 18000
 import torch
 import numpy as np
 
-X_fc = torch.load("fc_data/X_fc.pt")[0:50].numpy()
-labels = torch.load("fc_data/labels.pt")[0:50].numpy()
+X_fc = torch.load("fc_data/X_fc.pt")[0:40].numpy()
+labels = torch.load("fc_data/labels.pt")[0:40].numpy()
 print("labels", labels)
 
 weights = torch.load("fc_data/weights.pt")
@@ -52,6 +52,9 @@ b1_offset = model.addVars(l1_size, lb=-GRB.INFINITY, name="b1_offset")
 W2_offset = model.addVars(*W2.shape, lb=-GRB.INFINITY, name="W2_offset")
 b2_offset = model.addVars(l2_size, lb=-GRB.INFINITY, name="b2_offset")
 
+
+def relu(x): return np.maximum(0, x)
+
 def add_relu(model, Z, A, h, name_prefix):
     for i in range(len(Z)):
         model.addConstr((h[i] == 1) >> (Z[i] >= 0), name=f"{name_prefix}_pos_{i}")
@@ -76,7 +79,7 @@ for s in range(n_samples):
         expr += b1[j] + b1_offset[j]
         model.addConstr(Z1[j] == expr)
     add_relu(model, Z1, A1, h1, f"relu1_{s}")
-
+    
     Z2 = model.addVars(l2_size, lb=-GRB.INFINITY, name=f"Z2_{s}")
     for j in range(l2_size):
         expr = gp.LinExpr()

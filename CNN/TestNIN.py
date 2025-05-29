@@ -24,13 +24,13 @@ class CifarNIN(nn.Module):
             nn.Conv2d(192, 192, 3, 1, 1), nn.ReLU(),
             nn.Conv2d(192, 192, 1), nn.ReLU(),
             # nn.Conv2d(192, 10, 1), nn.ReLU()
-            nn.Conv2d(192, 4, 1), nn.ReLU()
+            nn.Conv2d(192, 2, 1), nn.ReLU()
         )
         self.flatten = nn.Flatten()
         # self.fc_hidden = nn.Linear(10 * 8 * 8, 256)
         # self.classifier = nn.Linear(256, num_classes)
-        self.fc_hidden = nn.Linear(4 * 8 * 8, 16)
-        self.classifier = nn.Linear(16, num_classes)
+        self.fc_hidden = nn.Linear(2 * 8 * 8, 12)
+        self.classifier = nn.Linear(12, num_classes)
 
 
     def forward(self, x, return_hidden_input=False):
