@@ -29,9 +29,9 @@ class NINNetwork(nn.Module):
         )
 
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(16 * 4 * 4, 10)   # 256 → 10
-        self.fc2 = nn.Linear(10, 10)           # 10 → 10
-        self.classifier = nn.Linear(10, num_classes)  # 10 → 10 (for MNIST)
+        self.fc1 = nn.Linear(16 * 4 * 4, 10)
+        self.fc2 = nn.Linear(10, 10)
+        self.classifier = nn.Linear(10, num_classes)
 
     def forward(self, x):
         x = self.block1(x)
@@ -51,7 +51,7 @@ trainset = datasets.MNIST(root='./data', train=True, download=True, transform=tr
 trainloader = DataLoader(trainset, batch_size=64, shuffle=True)
 
 testset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
-testloader = DataLoader(testset, batch_size=15, shuffle=False)
+testloader = DataLoader(testset, batch_size=12, shuffle=False)
 print(len(trainloader))
 print(len(testset))
 model = NINNetwork()
