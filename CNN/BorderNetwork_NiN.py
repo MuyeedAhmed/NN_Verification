@@ -8,7 +8,7 @@ timeLimit = 18000
 import torch
 import numpy as np
 
-X_fc = torch.load("fc_data/X_fc.pt")[0:40].numpy()
+X = torch.load("fc_data/X_fc.pt")[0:40].numpy()
 labels = torch.load("fc_data/labels.pt")[0:40].numpy()
 print("labels", labels)
 
@@ -19,20 +19,12 @@ W2 = weights["classifier_weight"].numpy()
 b2 = weights["classifier_bias"].numpy()
 
 
-print(X_fc)
-Z1 = np.maximum(0, X_fc @ W1.T + b1)
+# print(X)
+Z1 = np.maximum(0, X @ W1.T + b1)
 Z2 = Z1 @ W2.T + b2
-# print(Z2)
-np.savez("input_features_logits.npz", X=X_fc, Z2=Z2)
-np.savez("cnn_fc_weights.npz", fc1_w=W1, fc1_b=b1, fc2_w=W2, fc2_b=b2)
 
-
-
-X_data = np.load("input_features_logits.npz")
-X = X_data["X"]
-Z2_target = X_data["Z2"]
-for i in range(len(Z2_target)):
-    print("Z2_target", np.argmax(Z2_target[i]))
+# for i in range(len(Z2_target)):
+#     print("Z2_target", np.argmax(Z2_target[i]))
 
 
 W_data = np.load("cnn_fc_weights.npz")
