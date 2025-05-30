@@ -221,6 +221,6 @@ def step3_finetune_modified_model():
 
 # === Run the Full Pipeline ===
 if __name__ == "__main__":
-    # step1_train_and_save()
-    step2_optimize_final_layer()
+    step1_train_and_save()
+    # step2_optimize_final_layer()
     # step3_finetune_modified_model()
