@@ -36,8 +36,8 @@ class BinaryClassifier(nn.Module):
     def forward(self, x):
         return self.model(x)
 
-def train_model(X, y_gt, l1, l2, val_size, save_path=None, preset_weights_path=None, max_epochs=500):
-    X_train, X_val, y_train, y_val = train_test_split(X, y_gt, test_size=val_size, random_state=42)
+def train_model(X, y_gt, l1, l2, val_size, save_path=None, preset_weights_path=None, max_epochs=500, run_no=0):
+    X_train, X_val, y_train, y_val = train_test_split(X, y_gt, test_size=val_size, random_state=run_no*10)
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_val = scaler.transform(X_val)
@@ -149,7 +149,7 @@ def save_weights(nn, file_name):
         os.makedirs(f"Weights/{file_name}")
 
 
-def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
+def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, l1, l2, run_no):
     y = y.reshape(-1, 1)
     l1_size = len(nn.W1[0])
     l2_size = len(nn.W2[0])
@@ -199,8 +199,8 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
         if model.SolCount == 0:
             print("Timeout")
             return False
-        with open("Stats/Solved.txt", "a") as file:
-            file.write(f"{file_name}-----\n")
+        # with open("Stats/Solved.txt", "a") as file:
+        #     file.write(f"{file_name}-----\n")
         
         W1_values = np.array([[nn.W1[i][j] for j in range(l1_size)] for i in range(len(nn.W1))])
         W2_values = np.array([[nn.W2[i][j] for j in range(l2_size)] for i in range(len(nn.W2))])
@@ -216,7 +216,7 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
         b2_values_with_offset = np.array([nn.b2[0, j] + b2_offset[j].X for j in range(l2_size)])
         b3_values_with_offset = np.array([nn.b3[0, j] + b3_offset[j].X for j in range(l3_size)])
 
-        original_model_path = f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth"
+        original_model_path = f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model_{run_no}.pth"
         original_state_dict = torch.load(original_model_path)  
 
         W1_torch = torch.tensor(W1_values_with_offset.T, dtype=torch.float32) 
@@ -236,7 +236,7 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
         SavePath = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}"
         if not os.path.exists(SavePath):
             os.makedirs(SavePath)
-        torch.save(original_state_dict, f'{SavePath}/model.pth')
+        torch.save(original_state_dict, f'{SavePath}/model_{run_no}.pth')
         
 
         # vw = VerifyWeights(X, y, n, l1, l2, "relu", flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
@@ -256,31 +256,33 @@ if __name__ == "__main__":
     l2 = 4
     val_size = 0.2
     epoch_count = 50000
-    flipCount = 1
     tol = 3e-6
-
-    Test = f"RetrainAfterBorder_l{l1}{l2}_Variable"
+    restarts = 10
+    Test = f"RetrainAfterBorder_l{l1}{l2}_Restarts10"
     
     dataset_dir = "../../Dataset"
     # dataset_dir = "../Dataset"
     accuracy_file = f"Stats/{Test}.csv"
     error_file = f"Stats/Error_{Test}.txt"
+    summary_file_already_ran_once = pd.read_csv(f"Stats/RetrainAfterBorder_l44_Variable_Summary.csv")['Dataset'].unique()
 
     files_already_tested = pd.DataFrame(columns=["Dataset"])
     if not os.path.exists(accuracy_file):
         with open(accuracy_file, "w") as f:
-            f.write("Dataset,Row,Col,Val_Size,Type,Tr_Acc,Val_Acc,Tr_loss,Val_loss\n")
+            f.write("Dataset,Row,Col,Run_No,Val_Size,Type,Tr_Acc,Val_Acc,Tr_loss,Val_loss\n")
     else:
         files_already_tested = pd.read_csv(accuracy_file)['Dataset'].unique()
 
     for file_name in os.listdir(dataset_dir):
-        val_size = 0.2
         if not file_name.endswith(".csv"):
             continue
-        if file_name in files_already_tested:
-            print(f"Skipping {file_name} as it has already been processed.")
+        # if file_name in files_already_tested:
+        #     print(f"Skipping {file_name} as it has already been processed.")
+        #     continue
+
+        if file_name not in summary_file_already_ran_once:
             continue
-        
+
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
 
@@ -293,72 +295,67 @@ if __name__ == "__main__":
         if not (set(y_gt.unique()) <= {0, 1}):
             continue
 
-        TrainA_Path = f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth"
-        TrainB_Path = f"Weights/{Test}/TrainB/{file_name.split('.')[0]}/model.pth"
-        if not os.path.exists(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}"):
-            os.makedirs(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}")
-        if not os.path.exists(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}"):
-            os.makedirs(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}")
-        try:
-            # while True:
-            '''Step 1: Train A and B'''
+        for run_no in range(restarts):
+            TrainA_Path = f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model_{run_no}.pth"
+            TrainB_Path = f"Weights/{Test}/TrainB/{file_name.split('.')[0]}/model_{run_no}.pth"
+            if not os.path.exists(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}"):
+                os.makedirs(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}")
+            if not os.path.exists(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}"):
+                os.makedirs(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}")
             try:
-                model, final_metrics_A = train_model(X, y_gt, l1, l2, val_size, save_path=TrainA_Path, max_epochs=epoch_count)
-                model, final_metrics_B = train_model(X, y_gt, l1, l2, val_size, save_path=TrainB_Path, preset_weights_path=TrainA_Path, max_epochs=epoch_count*2)
-            
-                np.save(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy", final_metrics_A['train_preds'])
-                np.save(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}/train_preds.npy", final_metrics_B['train_preds'])
-                np.save(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/val_preds.npy", final_metrics_A['val_preds'])
-                np.save(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}/val_preds.npy", final_metrics_B['val_preds'])
+                '''Step 1: Train A and B'''
+                try:
+                    model, final_metrics_A = train_model(X, y_gt, l1, l2, val_size, save_path=TrainA_Path, max_epochs=epoch_count, run_no=run_no)
+                    model, final_metrics_B = train_model(X, y_gt, l1, l2, val_size, save_path=TrainB_Path, preset_weights_path=TrainA_Path, max_epochs=epoch_count*2, run_no=run_no)
                 
-                with open(accuracy_file, "a") as f:
-                    f.write(f"{file_name},{len(X)},{X.shape[1]},{val_size},TrainA,{final_metrics_A['train_accuracy']},{final_metrics_A['val_accuracy']},{final_metrics_A['train_loss']},{final_metrics_A['val_loss']}\n")
-                    f.write(f"{file_name},{len(X)},{X.shape[1]},{val_size},TrainB,{final_metrics_B['train_accuracy']},{final_metrics_B['val_accuracy']},{final_metrics_B['train_loss']},{final_metrics_B['val_loss']}\n")
+                    np.save(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds_{run_no}.npy", final_metrics_A['train_preds'])
+                    np.save(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}/train_preds_{run_no}.npy", final_metrics_B['train_preds'])
+                    np.save(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/val_preds_{run_no}.npy", final_metrics_A['val_preds'])
+                    np.save(f"Weights/{Test}/TrainB/{file_name.split('.')[0]}/val_preds_{run_no}.npy", final_metrics_B['val_preds'])
+                    
+                    with open(accuracy_file, "a") as f:
+                        f.write(f"{file_name},{len(X)},{X.shape[1]},{run_no},{val_size},TrainA,{final_metrics_A['train_accuracy']},{final_metrics_A['val_accuracy']},{final_metrics_A['train_loss']},{final_metrics_A['val_loss']}\n")
+                        f.write(f"{file_name},{len(X)},{X.shape[1]},{run_no},{val_size},TrainB,{final_metrics_B['train_accuracy']},{final_metrics_B['val_accuracy']},{final_metrics_B['train_loss']},{final_metrics_B['val_loss']}\n")
+                    
+                except Exception as e:
+                    print(f"Error processing {file_name}: {e}")
+                    with open(error_file, "a") as f:
+                        f.write(f"------------\n{file_name}\nStep 1: {e}\n---------------\n")
+                    continue
                 
+                '''Step 2: Run Gurobi Flip'''        
+                try:
+                    X_train, _, y_train, _ = train_test_split(X, y_gt, test_size=val_size, random_state=run_no*10)
+                    y_train_pred = np.round(np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds_{run_no}.npy"))
+                    scaler = StandardScaler()
+                    X_train = scaler.fit_transform(X_train)
+
+                    extracted_weights = extract_weights(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model_{run_no}.pth")
+                    solution_found = RunForward(Test, file_name, extracted_weights, X_train, y_train_pred, y_train, tol, len(X), l1, l2, run_no)
+                except Exception as e:
+                    with open(error_file, "a") as f:
+                        f.write(f"------------\n{file_name}\nStep 1: {e}\n---------------\n")
+                    continue
+                if solution_found:
+                    '''Step 3: Retrain with the new weights'''
+                    TrainC_Path = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}/model_{run_no}.pth"
+                    TrainD_Path = f"Weights/{Test}/TrainD/{file_name.split('.')[0]}/model_{run_no}.pth"
+                    if not os.path.exists(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}"):
+                        os.makedirs(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}")
+                    model, final_metrics_D = train_model(X, y_gt, l1, l2, val_size, save_path=TrainD_Path, preset_weights_path=TrainC_Path, max_epochs=epoch_count, run_no=run_no)
+
+                    
+                    np.save(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}/train_preds_{run_no}.npy", final_metrics_D['train_preds'])
+                    np.save(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}/val_preds_{run_no}.npy", final_metrics_D['val_preds'])
+                    
+                    with open(accuracy_file, "a") as f:
+                        f.write(f"{file_name},{len(X)},{X.shape[1]},{run_no},{val_size},TrainD,{final_metrics_D['train_accuracy']},{final_metrics_D['val_accuracy']},{final_metrics_D['train_loss']},{final_metrics_D['val_loss']}\n")
+                    
             except Exception as e:
                 print(f"Error processing {file_name}: {e}")
                 with open(error_file, "a") as f:
-                    f.write(f"------------\n{file_name}\nStep 1: {e}\n---------------\n")
+                    f.write(f"------------\n{file_name}\n{e}\n---------------\n")
                 continue
-            
-            '''Step 2: Run Gurobi Flip'''        
-            try:
-                X_train, _, y_train, _ = train_test_split(X, y_gt, test_size=val_size, random_state=42)
-                y_train_pred = np.round(np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy"))
-                scaler = StandardScaler()
-                X_train = scaler.fit_transform(X_train)
-
-                extracted_weights = extract_weights(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth")
-                solution_found = RunForward(Test, file_name, extracted_weights, X_train, y_train_pred, y_train, tol, len(X), 1, l1, l2)
-            except Exception as e:
-                with open(error_file, "a") as f:
-                    f.write(f"------------\n{file_name}\nStep 1: {e}\n---------------\n")
-                continue
-            if solution_found:
-                '''Step 3: Retrain with the new weights'''
-                TrainC_Path = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}/model.pth"
-                TrainD_Path = f"Weights/{Test}/TrainD/{file_name.split('.')[0]}/model.pth"
-                if not os.path.exists(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}"):
-                    os.makedirs(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}")
-                model, final_metrics_D = train_model(X, y_gt, l1, l2, val_size, save_path=TrainD_Path, preset_weights_path=TrainC_Path, max_epochs=epoch_count)
-
-                
-                np.save(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}/train_preds.npy", final_metrics_D['train_preds'])
-                np.save(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}/val_preds.npy", final_metrics_D['val_preds'])
-                
-                with open(accuracy_file, "a") as f:
-                    f.write(f"{file_name},{len(X)},{X.shape[1]},{val_size},TrainD,{final_metrics_D['train_accuracy']},{final_metrics_D['val_accuracy']},{final_metrics_D['train_loss']},{final_metrics_D['val_loss']}\n")
-                
-                # else:
-                #     val_size += 0.1
-                #     if val_size > 0.5:
-                #         break
-                #     print("Increasing validation size to:", val_size)
-        except Exception as e:
-            print(f"Error processing {file_name}: {e}")
-            with open(error_file, "a") as f:
-                f.write(f"------------\n{file_name}\n{e}\n---------------\n")
-            continue
 
         
 
