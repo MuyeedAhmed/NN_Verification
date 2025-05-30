@@ -88,9 +88,9 @@ with torch.no_grad():
         correct += predicted.eq(labels).sum().item()
 print(f"Test Accuracy after initial training: {100. * correct / total:.2f}%")
 
-os.makedirs("./checkpoints", exist_ok=True)
-torch.save(model.features[12].weight.data.clone(), "./checkpoints/last_weight_original.pt")
-torch.save(model.features[12].bias.data.clone(), "./checkpoints/last_bias_original.pt")
+os.makedirs("./checkpoints/CIFER10", exist_ok=True)
+torch.save(model.features[12].weight.data.clone(), "./checkpoints/CIFER10/last_weight_original.pt")
+torch.save(model.features[12].bias.data.clone(), "./checkpoints/CIFER10/last_bias_original.pt")
 
 model.eval()
 X_fc = []
@@ -103,5 +103,68 @@ with torch.no_grad():
         Y_true.append(labels.cpu())
 
 X_fc = torch.cat(X_fc, dim=0).view(len(test_dataset), -1)
-torch.save(X_fc, "./checkpoints/fc_inputs.pt")
-torch.save(torch.cat(Y_true, dim=0), "./checkpoints/fc_labels.pt")
+torch.save(X_fc, "./checkpoints/CIFER10/fc_inputs.pt")
+torch.save(torch.cat(Y_true, dim=0), "./checkpoints/CIFER10/fc_labels.pt")
+
+
+# # Step 2: Modify last weights and evaluate mismatches
+# original_weight = torch.load("./checkpoints/CIFER10/last_weight_original.pt").to(device)
+# original_bias = torch.load("./checkpoints/CIFER10/last_bias_original.pt").to(device)
+# modified_weight = original_weight + 0.01 * torch.randn_like(original_weight)
+# modified_bias = original_bias.clone()
+# model.features[12].weight.data.copy_(modified_weight)
+# model.features[12].bias.data.copy_(modified_bias)
+
+# model.eval()
+# mismatches = 0
+# total = 0
+# with torch.no_grad():
+#     for inputs, labels in test_loader:
+#         inputs, labels = inputs.to(device), labels.to(device)
+#         outputs = model(inputs)
+#         preds = outputs.argmax(dim=1)
+#         mismatches += (preds != labels).sum().item()
+#         total += labels.size(0)
+
+# print(f"Mismatches after modifying last weights: {mismatches}/{total} ({100*mismatches/total:.2f}%)")
+
+# # Step 3: Fine-tune with modified last layer for 100 more epochs
+# model.train()
+# optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9, weight_decay=5e-4)
+# scheduler = CosineAnnealingLR(optimizer, T_max=100)
+# for epoch in range(100):
+#     running_loss = 0.0
+#     correct = 0
+#     total = 0
+#     for inputs, labels in tqdm(train_loader, desc=f"Finetune Epoch {epoch+1}/100"):
+#         inputs, labels = inputs.to(device), labels.to(device)
+#         optimizer.zero_grad()
+#         outputs = model(inputs)
+#         loss = criterion(outputs, labels)
+#         loss.backward()
+#         optimizer.step()
+
+#         _, predicted = outputs.max(1)
+#         total += labels.size(0)
+#         correct += predicted.eq(labels).sum().item()
+#         running_loss += loss.item()
+
+#     scheduler.step()
+#     print(f"Epoch {epoch+1}, Loss: {running_loss/len(train_loader):.4f}, Train Accuracy: {100.*correct/total:.2f}%")
+
+# # Evaluate on test set after fine-tuning
+# model.eval()
+# correct = 0
+# total = 0
+# with torch.no_grad():
+#     for inputs, labels in test_loader:
+#         inputs, labels = inputs.to(device), labels.to(device)
+#         outputs = model(inputs)
+#         _, predicted = outputs.max(1)
+#         total += labels.size(0)
+#         correct += predicted.eq(labels).sum().item()
+# print(f"Test Accuracy after fine-tuning: {100. * correct / total:.2f}%")
+
+# # Save fine-tuned model
+# torch.save(model.state_dict(), "./checkpoints/CIFER10/nin_finetuned.pth")
+
