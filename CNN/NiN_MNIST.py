@@ -59,7 +59,7 @@ def step1_train_and_save():
     optimizer = optim.SGD(model.parameters(), lr=0.05, momentum=0.9, weight_decay=1e-4)
     scheduler = CosineAnnealingLR(optimizer, T_max=30)
 
-    for epoch in range(30):
+    for epoch in range(1):
         model.train()
         correct = 0
         total = 0
@@ -87,37 +87,73 @@ def step1_train_and_save():
         correct += predicted.eq(labels).sum().item()
     print(f"Test Accuracy after initial training: {100. * correct / total:.2f}%")
 
-    os.makedirs("./checkpoints/MNIST", exist_ok=True)
+    os.makedirs("./checkpoints", exist_ok=True)
     for module in model.features:
         if isinstance(module, nn.Conv2d) and module.out_channels == 10:
             final_conv = module
             break
 
-    torch.save(final_conv.weight.data.clone(), "./checkpoints/MNIST/last_weight_original.pt")
-    torch.save(final_conv.bias.data.clone(), "./checkpoints/MNIST/last_bias_original.pt")
+    torch.save(final_conv.weight.data.clone(), "./checkpoints/last_weight_original.pt")
+    torch.save(final_conv.bias.data.clone(), "./checkpoints/last_bias_original.pt")
 
     model.eval()
     X_fc = []
     Y_true = []
     for inputs, labels in test_loader:
         inputs, labels = inputs.to(device), labels.to(device)
-        _, fc_input = model(inputs, extract_fc_input=True)
+        __, fc_input = model(inputs, extract_fc_input=True)
+        torch.save(fc_input.cpu(), "./checkpoints/fc_inputs_raw.pt")
+        fc_input = torch.nn.functional.adaptive_avg_pool2d(fc_input, (1, 1)).view(fc_input.size(0), -1)
         X_fc.append(fc_input.cpu())
         Y_true.append(labels.cpu())
-    X_fc = torch.cat(X_fc, dim=0).view(len(test_dataset), -1)
-    torch.save(X_fc, "./checkpoints/MNIST/fc_inputs.pt")
-    torch.save(torch.cat(Y_true, dim=0), "./checkpoints/MNIST/fc_labels.pt")
+    X_fc = torch.cat(X_fc, dim=0)
+    torch.save(X_fc, "./checkpoints/fc_inputs.pt")
+    torch.save(torch.cat(Y_true, dim=0), "./checkpoints/fc_labels.pt")
 
+    model.eval()
+    all_preds = []
+    with torch.no_grad():
+        for inputs, _ in test_loader:
+            inputs = inputs.to(device)
+            outputs = model(inputs)
+            preds = outputs.argmax(dim=1)
+            all_preds.append(preds.cpu())
+    torch.save(torch.cat(all_preds, dim=0), "./checkpoints/fc_preds.pt")
+
+# === Step 2: Optimize Final Layer Using Gurobi ===
 def step2_optimize_final_layer():
-    X_fc = torch.load("./checkpoints/MNIST/fc_inputs.pt").numpy()
-    labels = torch.load("./checkpoints/MNIST/fc_labels.pt").numpy()
-    W = torch.load("./checkpoints/MNIST/last_weight_original.pt").view(10, -1).numpy()
-    b = torch.load("./checkpoints/MNIST/last_bias_original.pt").numpy()
+    X_fc = torch.load("./checkpoints/fc_inputs.pt")
+    if X_fc.dim() == 4:
+        X_fc = torch.nn.functional.adaptive_avg_pool2d(X_fc, (1, 1)).view(X_fc.size(0), -1)
+    X_fc = X_fc.numpy()
+    labels = torch.load("./checkpoints/fc_labels.pt").numpy()
+    preds_trained = torch.load("./checkpoints/fc_preds.pt").numpy()
+    W = torch.load("./checkpoints/last_weight_original.pt").squeeze(-1).squeeze(-1).numpy()
+    b = torch.load("./checkpoints/last_bias_original.pt").numpy()
+    print("Labels: ", labels[0:15])
+    print("Predic: ", preds_trained[0:15])
 
-    Z2_target = X_fc @ W.T + b
+    W_conv = torch.load("./checkpoints/last_weight_original.pt")
+    b_conv = torch.load("./checkpoints/last_bias_original.pt")
+    X_fc_tensor = torch.load("./checkpoints/fc_inputs_raw.pt")  # shape: [N, 64, H, W]
+
+    with torch.no_grad():
+        out = torch.nn.functional.conv2d(X_fc_tensor, W_conv, b_conv)
+        out = torch.nn.functional.adaptive_avg_pool2d(out, (1, 1))
+        out = out.view(out.size(0), -1)
+        Z2_target = out.numpy()
+    preds_orig = Z2_target.argmax(axis=1)
+    print(preds_orig[0:15])
+
+    mismatches_orig = (preds_orig != labels).sum()
+    print(f"Mismatches with original weights: {mismatches_orig}/{len(labels)} ({100. * mismatches_orig / len(labels):.2f}%)")
+    pred_vs_label_diff = (preds_orig != preds_trained).sum()
+    print(f"Difference between Z2_target argmax and model predictions: {pred_vs_label_diff}/{len(labels)} ({100. * pred_vs_label_diff / len(labels):.2f}%)")
+
     n_samples = len(X_fc)
     l1_size = W.shape[1]
     l2_size = W.shape[0]
+
 
     model_gp = gp.Model()
     model_gp.setParam("OutputFlag", 1)
@@ -157,8 +193,11 @@ def step2_optimize_final_layer():
         W2_new = W + W2_off
         b2_new = b + b2_off
 
-        torch.save(torch.tensor(W2_new), "./checkpoints/MNIST/last_weight_optimized.pt")
-        torch.save(torch.tensor(b2_new), "./checkpoints/MNIST/last_bias_optimized.pt")
+        torch.save(torch.tensor(W2_new), "./checkpoints/last_weight_optimized.pt")
+        torch.save(torch.tensor(b2_new), "./checkpoints/last_bias_optimized.pt")
+
+        
+
 # === Step 3: Fine-Tune with Modified Weights ===
 def step3_finetune_modified_model():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -172,15 +211,15 @@ def step3_finetune_modified_model():
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=100, shuffle=False, num_workers=0)
 
     model = NIN(num_classes=10).to(device)
-    model.load_state_dict(torch.load("./checkpoints/MNIST/nin_finetuned.pth", map_location=device), strict=False)
+    model.load_state_dict(torch.load("./checkpoints/nin_finetuned.pth", map_location=device), strict=False)
 
     for module in model.features:
         if isinstance(module, nn.Conv2d) and module.out_channels == 10:
             final_conv = module
             break
 
-    final_conv.weight.data.copy_(torch.load("./checkpoints/MNIST/last_weight_optimized.pt").view_as(final_conv.weight))
-    final_conv.bias.data.copy_(torch.load("./checkpoints/MNIST/last_bias_optimized.pt"))
+    final_conv.weight.data.copy_(torch.load("./checkpoints/last_weight_optimized.pt").view_as(final_conv.weight))
+    final_conv.bias.data.copy_(torch.load("./checkpoints/last_bias_optimized.pt"))
 
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
     scheduler = CosineAnnealingLR(optimizer, T_max=20)
@@ -217,10 +256,10 @@ def step3_finetune_modified_model():
             correct += predicted.eq(labels).sum().item()
     print(f"Test Accuracy after fine-tuning: {100. * correct / total:.2f}%")
 
-    torch.save(model.state_dict(), "./checkpoints/MNIST/nin_finetuned.pth")
+    torch.save(model.state_dict(), "./checkpoints/nin_finetuned.pth")
 
 # === Run the Full Pipeline ===
 if __name__ == "__main__":
-    step1_train_and_save()
-    # step2_optimize_final_layer()
+    # step1_train_and_save()
+    step2_optimize_final_layer()
     # step3_finetune_modified_model()
