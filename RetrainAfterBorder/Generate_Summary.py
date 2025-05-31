@@ -211,10 +211,193 @@ def generate_summary(input_csv, weights_base_path, output_csv):
     summary_df.to_csv(output_csv, index=False)
     # print(count)
 
+def generate_summary_restart(input_csv, weights_base_path, output_csv):
+    df = pd.read_csv(input_csv)
+    grouped = df.groupby('Dataset')
+    output_data = []
+    count = 0
+
+    for name, group in grouped:
+        if "TrainD" not in group['Type'].values:
+            print(f"{name}: no TrainD data")
+            continue
+
+        Training_Accuracy_A_all = []
+        Training_Loss_A_all = []
+        Validation_Accuracy_A_all = []
+        Validation_Loss_A_all = []
+        Training_Accuracy_B_all = []
+        Training_Loss_B_all = []
+        Validation_Accuracy_B_all = []
+        Validation_Loss_B_all = []
+        Training_Accuracy_D_all = []
+        Training_Loss_D_all = []
+        Validation_Accuracy_D_all = []
+        Validation_Loss_D_all = []
+        
+        Training_Accuracy_Win_Count = 0
+        Training_Loss_Win_Count = 0
+        Validation_Accuracy_Win_Count = 0
+        Validation_Loss_Win_Count = 0
+        Training_Accuracy_Lose_Count = 0
+        Training_Loss_Lose_Count = 0
+        Validation_Accuracy_Lose_Count = 0
+        Validation_Loss_Lose_Count = 0
+        Training_Accuracy_Same_Count = 0
+        Training_Loss_Same_Count = 0
+        Validation_Accuracy_Same_Count = 0
+        Validation_Loss_Same_Count = 0
+
+        for restart in range(10):
+            row = group['Row'].values[0]
+            col = group['Col'].values[0]
+            Training_Accuracy_A = group[(group['Type'] == "TrainA") & (group["Run_No"] == restart)]["Tr_Acc"].values[0]
+            Training_Loss_A = group[(group['Type'] == "TrainA") & (group["Run_No"] == restart)]["Tr_loss"].values[0]
+            Validation_Accuracy_A = group[(group['Type'] == "TrainA") & (group["Run_No"] == restart)]["Val_Acc"].values[0]
+            Validation_Loss_A = group[(group['Type'] == "TrainA") & (group["Run_No"] == restart)]["Val_loss"].values[0]
+
+            Training_Accuracy_B = group[(group['Type'] == "TrainB") & (group["Run_No"] == restart)]["Tr_Acc"].values[0]
+            Training_Loss_B = group[(group['Type'] == "TrainB") & (group["Run_No"] == restart)]["Tr_loss"].values[0]
+            Validation_Accuracy_B = group[(group['Type'] == "TrainB") & (group["Run_No"] == restart)]["Val_Acc"].values[0]
+            Validation_Loss_B = group[(group['Type'] == "TrainB") & (group["Run_No"] == restart)]["Val_loss"].values[0]
+
+            filtered = group[(group['Type'] == "TrainD") & (group["Run_No"] == restart)]
+            if not filtered.empty:
+                Training_Accuracy_D = group[(group['Type'] == "TrainD") & (group["Run_No"] == restart)]["Tr_Acc"].values[0]
+                Training_Loss_D = group[(group['Type'] == "TrainD") & (group["Run_No"] == restart)]["Tr_loss"].values[0]
+                Validation_Accuracy_D = group[(group['Type'] == "TrainD") & (group["Run_No"] == restart)]["Val_Acc"].values[0]
+                Validation_Loss_D = group[(group['Type'] == "TrainD") & (group["Run_No"] == restart)]["Val_loss"].values[0]
+                Training_Accuracy_D_all.append(Training_Accuracy_D)
+                Training_Loss_D_all.append(Training_Loss_D)
+                Validation_Accuracy_D_all.append(Validation_Accuracy_D)
+                Validation_Loss_D_all.append(Validation_Loss_D)
+                if Training_Accuracy_D > Training_Accuracy_B:
+                    Training_Accuracy_Win_Count += 1
+                elif Training_Accuracy_D == Training_Accuracy_B:
+                    Training_Accuracy_Same_Count += 1
+                else:
+                    Training_Accuracy_Lose_Count += 1
+                if Training_Loss_D < Training_Loss_B:
+                    Training_Loss_Win_Count += 1
+                elif Training_Loss_D == Training_Loss_B:
+                    Training_Loss_Same_Count += 1
+                else:
+                    Training_Loss_Lose_Count += 1
+                if Validation_Accuracy_D > Validation_Accuracy_B:
+                    Validation_Accuracy_Win_Count += 1
+                elif Validation_Accuracy_D == Validation_Accuracy_B:
+                    Validation_Accuracy_Same_Count += 1
+                else:
+                    Validation_Accuracy_Lose_Count += 1
+                if Validation_Loss_D < Validation_Loss_B:
+                    Validation_Loss_Win_Count += 1
+                elif Validation_Loss_D == Validation_Loss_B:
+                    Validation_Loss_Same_Count += 1
+                else:
+                    Validation_Loss_Lose_Count += 1
+            else:
+                continue
+            Training_Accuracy_A_all.append(Training_Accuracy_A)
+            Training_Loss_A_all.append(Training_Loss_A)
+            Validation_Accuracy_A_all.append(Validation_Accuracy_A)
+            Validation_Loss_A_all.append(Validation_Loss_A)
+            Training_Accuracy_B_all.append(Training_Accuracy_B)
+            Training_Loss_B_all.append(Training_Loss_B)
+            Validation_Accuracy_B_all.append(Validation_Accuracy_B)
+            Validation_Loss_B_all.append(Validation_Loss_B)
+            
+        Training_Accuracy_A = np.mean(Training_Accuracy_A_all)
+        Training_Loss_A = np.mean(Training_Loss_A_all)
+        Validation_Accuracy_A = np.mean(Validation_Accuracy_A_all)
+        Validation_Loss_A = np.mean(Validation_Loss_A_all)
+        Training_Accuracy_B = np.mean(Training_Accuracy_B_all)
+        Training_Loss_B = np.mean(Training_Loss_B_all)
+        Validation_Accuracy_B = np.mean(Validation_Accuracy_B_all)
+        Validation_Loss_B = np.mean(Validation_Loss_B_all)
+        Training_Accuracy_D = np.mean(Training_Accuracy_D_all)
+        Training_Loss_D = np.mean(Training_Loss_D_all)
+        Validation_Accuracy_D = np.mean(Validation_Accuracy_D_all)
+        Validation_Loss_D = np.mean(Validation_Loss_D_all)
+        # ari, loss_delta, loss_delta_20k, loss_0, loss_1, loss_20k, accuracy_20k = getARI(name)
+
+        delta_tr_acc = (
+            'Increased' if Training_Accuracy_D > Training_Accuracy_B else
+            'Decreased' if Training_Accuracy_D < Training_Accuracy_B else
+            'Same'
+        )
+        delta_val_acc = (
+            'Increased' if Validation_Accuracy_D > Validation_Accuracy_B else
+            'Decreased' if Validation_Accuracy_D < Validation_Accuracy_B else
+            'Same'
+        )
+        delta_tr_loss = (
+            'Increased' if Training_Loss_D > Training_Loss_B else
+            'Decreased' if Training_Loss_D < Training_Loss_B else
+            'Same'
+        )
+        delta_val_loss = (
+            'Increased' if Validation_Loss_D > Validation_Loss_B else
+            'Decreased' if Validation_Loss_D < Validation_Loss_B else
+            'Same'
+        )
+
+
+        folder_name = name.replace('.csv', '')
+        folder_path = os.path.join(weights_base_path, folder_name)
+
+        # weights_status = compare_files(folder_path, ['W1', 'W2', 'W3'], 0, 1)
+        # biases_status = compare_files(folder_path, ['b1', 'b2', 'b3'], 0, 1)
+
+        
+        ari = 0
+        output_data.append({
+            'Dataset': name,
+            'Row': row,
+            'Col': col,
+            'Accuracy_A': Training_Accuracy_A,
+            'Accuracy_B': Training_Accuracy_B,
+            'Accuracy_D': Training_Accuracy_D,
+            'Loss_A': Training_Loss_A,
+            'Loss_B': Training_Loss_B,
+            'Loss_D': Training_Loss_D,
+            'Validation_Accuracy_A': Validation_Accuracy_A,
+            'Validation_Accuracy_B': Validation_Accuracy_B,
+            'Validation_Accuracy_D': Validation_Accuracy_D,
+            'Validation_Loss_A': Validation_Loss_A,
+            'Validation_Loss_B': Validation_Loss_B,
+            'Validation_Loss_D': Validation_Loss_D,
+            'Delta_Training_Accuracy': delta_tr_acc,
+            'Delta_Validation_Accuracy': delta_val_acc,
+            'Delta_Training_Loss': delta_tr_loss,
+            'Delta_Validation_Loss': delta_val_loss,
+            
+            'Training_Accuracy_Win_Count': Training_Accuracy_Win_Count,
+            'Training_Accuracy_Lose_Count': Training_Accuracy_Lose_Count,
+            'Training_Accuracy_Same_Count': Training_Accuracy_Same_Count,
+
+            'Training_Loss_Win_Count': Training_Loss_Win_Count,
+            'Training_Loss_Lose_Count': Training_Loss_Lose_Count,
+
+            'Validation_Accuracy_Win_Count': Validation_Accuracy_Win_Count,
+            'Validation_Accuracy_Lose_Count': Validation_Accuracy_Lose_Count,
+            'Validation_Accuracy_Same_Count': Validation_Accuracy_Same_Count,
+            
+            'Validation_Loss_Win_Count': Validation_Loss_Win_Count,
+            'Validation_Loss_Lose_Count': Validation_Loss_Lose_Count,
+            
+            # 'WeightChange_0_1': weights_status,
+            # 'BiasChange_0_1': biases_status,
+            'ARI': ari
+        })
+
+    summary_df = pd.DataFrame(output_data)
+    summary_df.to_csv(output_csv, index=False)
+    # print(count)
+
 if __name__ == "__main__":
-    test = "RetrainAfterBorder_l44_Variable"
+    test = "RetrainAfterBorder_l44_Restarts10"
     input_csv = f"Stats/{test}.csv"
     weights_base_path = f"Weights/{test}"
     output_csv = f"Stats/{test}_Summary.csv"
-    generate_summary(input_csv, weights_base_path, output_csv)
+    generate_summary_restart(input_csv, weights_base_path, output_csv)
 

@@ -15,7 +15,7 @@ from gurobipy import GRB
 from Gurobi_ForwardPass_L2_Sigmoid import ForwardPass
 
 
-timeLimit = 300
+timeLimit = 600
 
 class BinaryClassifier(nn.Module):
     def __init__(self, input_dim, l1, l2):
@@ -257,8 +257,8 @@ if __name__ == "__main__":
     val_size = 0.2
     epoch_count = 50000
     tol = 3e-6
-    restarts = 10
-    Test = f"RetrainAfterBorder_l{l1}{l2}_Restarts10"
+    restarts = 20
+    Test = f"RetrainAfterBorder_l{l1}{l2}_Restarts20"
     
     dataset_dir = "../../Dataset"
     # dataset_dir = "../Dataset"
