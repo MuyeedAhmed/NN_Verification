@@ -211,7 +211,7 @@ def generate_summary(input_csv, weights_base_path, output_csv):
     summary_df.to_csv(output_csv, index=False)
     # print(count)
 
-def generate_summary_restart(input_csv, weights_base_path, output_csv):
+def generate_summary_restart(input_csv, weights_base_path, output_csv, restart_Count=10):
     df = pd.read_csv(input_csv)
     grouped = df.groupby('Dataset')
     output_data = []
@@ -248,7 +248,7 @@ def generate_summary_restart(input_csv, weights_base_path, output_csv):
         Validation_Accuracy_Same_Count = 0
         Validation_Loss_Same_Count = 0
 
-        for restart in range(10):
+        for restart in range(restart_Count):
             row = group['Row'].values[0]
             col = group['Col'].values[0]
             Training_Accuracy_A = group[(group['Type'] == "TrainA") & (group["Run_No"] == restart)]["Tr_Acc"].values[0]
@@ -396,8 +396,9 @@ def generate_summary_restart(input_csv, weights_base_path, output_csv):
 
 if __name__ == "__main__":
     test = "RetrainAfterBorder_l44_Restarts10"
+    # test = "Temp"
     input_csv = f"Stats/{test}.csv"
     weights_base_path = f"Weights/{test}"
     output_csv = f"Stats/{test}_Summary.csv"
-    generate_summary_restart(input_csv, weights_base_path, output_csv)
+    generate_summary_restart(input_csv, weights_base_path, output_csv, restart_Count=9)
 
