@@ -389,7 +389,7 @@ if __name__ == "__main__":
 
             extracted_weights = extract_weights(TrainA_Path)
 
-            if sum(y_test != Gurobi_y_target) == 0:
+            if sum(y_test != Gurobi_y_target) != 0:
                 with open(error_file, "a") as f:
                     f.write(f"------------\n{file_name}\n*********\n\nsum(y_test != Gurobi_y_target) > 0\n\n***********\n---------------\n")
             
