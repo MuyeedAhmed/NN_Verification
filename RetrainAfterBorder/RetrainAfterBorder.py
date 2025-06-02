@@ -15,7 +15,7 @@ from gurobipy import GRB
 from Gurobi_ForwardPass_L2_Sigmoid import ForwardPass
 
 
-timeLimit = 600
+timeLimit = 300
 
 class BinaryClassifier(nn.Module):
     def __init__(self, input_dim, l1, l2):
