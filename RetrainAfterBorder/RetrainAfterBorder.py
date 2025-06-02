@@ -22,12 +22,12 @@ class BinaryClassifier(nn.Module):
         super().__init__()
         self.model = nn.Sequential(
             nn.Linear(input_dim, l1),
-            nn.ReLU(),
-            nn.BatchNorm1d(l1),
+            nn.Sigmoid(),
+            # nn.BatchNorm1d(l1),
             nn.Dropout(0.3),
             nn.Linear(l1, l2),
-            nn.ReLU(),
-            nn.BatchNorm1d(l2),
+            nn.Sigmoid(),
+            # nn.BatchNorm1d(l2),
             nn.Dropout(0.3),
             nn.Linear(l2, 1),
             nn.Sigmoid()
@@ -121,10 +121,10 @@ def extract_weights(load_path, transpose=True):
 
     W1 = state_dict['model.0.weight'].numpy()
     b1 = state_dict['model.0.bias'].numpy()
-    W2 = state_dict['model.4.weight'].numpy()
-    b2 = state_dict['model.4.bias'].numpy()
-    W3 = state_dict['model.8.weight'].numpy()
-    b3 = state_dict['model.8.bias'].numpy()
+    W2 = state_dict['model.3.weight'].numpy()
+    b2 = state_dict['model.3.bias'].numpy()
+    W3 = state_dict['model.6.weight'].numpy()
+    b3 = state_dict['model.6.bias'].numpy()
 
     if transpose:
         nn.W1 = W1.T
@@ -185,14 +185,15 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, l1, l2, run_no):
     abs_diffs = []
     for i in range(len(X)):
         diff = model.addVar(lb=0.0, name=f"abs_diff_{i}")
-        model.addConstr(diff >= Z3[i, 0] - float(y[i]), name=f"abs_upper_{i}")
-        model.addConstr(diff >= float(y[i]) - Z3[i, 0], name=f"abs_lower_{i}")
+        model.addConstr(diff >= Z3[i, 0] - int(y[i].item()), name=f"abs_upper_{i}")
+        model.addConstr(diff >= int(y[i].item()) - Z3[i, 0], name=f"abs_lower_{i}")
         abs_diffs.append(diff)
     l1_loss = gp.quicksum(abs_diffs)
     model.addConstr(l1_loss <= 10000, "ObjectiveUpperBound")
     model.setObjective(l1_loss, GRB.MAXIMIZE)
 
     model.setParam('TimeLimit', timeLimit)
+    model.setParam('OutputFlag', 0)
     model.optimize()
 
     if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
@@ -228,10 +229,10 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, l1, l2, run_no):
 
         original_state_dict['model.0.weight'] = W1_torch
         original_state_dict['model.0.bias'] = b1_torch
-        original_state_dict['model.4.weight'] = W2_torch
-        original_state_dict['model.4.bias'] = b2_torch
-        original_state_dict['model.8.weight'] = W3_torch
-        original_state_dict['model.8.bias'] = b3_torch
+        original_state_dict['model.3.weight'] = W2_torch
+        original_state_dict['model.3.bias'] = b2_torch
+        original_state_dict['model.6.weight'] = W3_torch
+        original_state_dict['model.6.bias'] = b3_torch
 
         SavePath = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}"
         if not os.path.exists(SavePath):
@@ -257,14 +258,14 @@ if __name__ == "__main__":
     val_size = 0.2
     epoch_count = 50000
     tol = 3e-6
-    restarts = 20
-    Test = f"RetrainAfterBorder_l{l1}{l2}_Restarts20"
+    restarts = 9
+    Test = f"RetrainAfterBorder_l{l1}{l2}_Restarts9"
     
     dataset_dir = "../../Dataset"
     # dataset_dir = "../Dataset"
     accuracy_file = f"Stats/{Test}.csv"
     error_file = f"Stats/Error_{Test}.txt"
-    summary_file_already_ran_once = pd.read_csv(f"Stats/RetrainAfterBorder_l44_Variable_Summary.csv")['Dataset'].unique()
+    # summary_file_already_ran_once = pd.read_csv(f"Stats/RetrainAfterBorder_l44_Variable_Summary.csv")['Dataset'].unique()
 
     files_already_tested = pd.DataFrame(columns=["Dataset"])
     if not os.path.exists(accuracy_file):
@@ -276,12 +277,12 @@ if __name__ == "__main__":
     for file_name in os.listdir(dataset_dir):
         if not file_name.endswith(".csv"):
             continue
-        # if file_name in files_already_tested:
-        #     print(f"Skipping {file_name} as it has already been processed.")
-        #     continue
-
-        if file_name not in summary_file_already_ran_once:
+        if file_name in files_already_tested:
+            print(f"Skipping {file_name} as it has already been processed.")
             continue
+
+        # if file_name not in summary_file_already_ran_once:
+        #     continue
 
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
@@ -340,6 +341,18 @@ if __name__ == "__main__":
                     '''Step 3: Retrain with the new weights'''
                     TrainC_Path = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}/model_{run_no}.pth"
                     TrainD_Path = f"Weights/{Test}/TrainD/{file_name.split('.')[0]}/model_{run_no}.pth"
+                    
+                    model = BinaryClassifier(X.shape[1], l1, l2)
+                    model.load_state_dict(torch.load(TrainC_Path))
+                    model.eval()
+
+                    X_tensor = torch.tensor(X_train, dtype=torch.float32)
+                    with torch.no_grad():
+                        y_pred_binary = np.round(model(X_tensor).numpy().flatten())
+                    flipped_count_total = np.sum(y_pred_binary != y_train_pred)
+                    print("Mismatch:", flipped_count_total)
+                    
+                    
                     if not os.path.exists(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}"):
                         os.makedirs(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}")
                     model, final_metrics_D = train_model(X, y_gt, l1, l2, val_size, save_path=TrainD_Path, preset_weights_path=TrainC_Path, max_epochs=epoch_count, run_no=run_no)
@@ -350,7 +363,9 @@ if __name__ == "__main__":
                     
                     with open(accuracy_file, "a") as f:
                         f.write(f"{file_name},{len(X)},{X.shape[1]},{run_no},{val_size},TrainD,{final_metrics_D['train_accuracy']},{final_metrics_D['val_accuracy']},{final_metrics_D['train_loss']},{final_metrics_D['val_loss']}\n")
-                    
+                else:
+                    if run_no == 0:
+                        break
             except Exception as e:
                 print(f"Error processing {file_name}: {e}")
                 with open(error_file, "a") as f:
