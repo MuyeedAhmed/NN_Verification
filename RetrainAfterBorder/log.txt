@@ -1,0 +1,4586 @@
+File: cleve.csv
+Set parameter Username
+Set parameter LicenseID to value 2670659
+Academic license - for non-commercial use only - expires 2026-05-26
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c2_100_10.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c3_100_5.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 695_chatfield_4.csv
+File: tecator.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 207_autoPrice.csv
+File: 195_auto_price.csv
+File: acute-inflammations.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: solar_flare_1.csv
+File: calendarDOW.csv
+File: fri_c4_250_25.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: rsctc2010_4.csv
+File: fri_c2_250_5.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 658_fri_c3_250_25.csv
+File: new_thyroid.csv
+File: 229_pwLinear.csv
+File: breast-tissue.csv
+File: 210_cloud.csv
+File: kc1-top5.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: schizo.csv
+Error processing schizo.csv: all elements of input should be between 0 and 1
+Error processing schizo.csv: all elements of input should be between 0 and 1
+Error processing schizo.csv: all elements of input should be between 0 and 1
+Error processing schizo.csv: all elements of input should be between 0 and 1
+Error processing schizo.csv: all elements of input should be between 0 and 1
+Error processing schizo.csv: all elements of input should be between 0 and 1
+Error processing schizo.csv: all elements of input should be between 0 and 1
+Error processing schizo.csv: all elements of input should be between 0 and 1
+Error processing schizo.csv: all elements of input should be between 0 and 1
+File: cleveland_nominal.csv
+File: AP_Omentum_Lung.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: AP_Prostate_Lung.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 18
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 16
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 23
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 15
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 22
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: analcatdata_broadwaymult.csv
+File: cleveland.csv
+Error processing cleveland.csv: all elements of input should be between 0 and 1
+Error processing cleveland.csv: all elements of input should be between 0 and 1
+Error processing cleveland.csv: all elements of input should be between 0 and 1
+Error processing cleveland.csv: all elements of input should be between 0 and 1
+Error processing cleveland.csv: all elements of input should be between 0 and 1
+Error processing cleveland.csv: all elements of input should be between 0 and 1
+Error processing cleveland.csv: all elements of input should be between 0 and 1
+Error processing cleveland.csv: all elements of input should be between 0 and 1
+Error processing cleveland.csv: all elements of input should be between 0 and 1
+File: breastTumor.csv
+Error processing breastTumor.csv: all elements of input should be between 0 and 1
+Error processing breastTumor.csv: all elements of input should be between 0 and 1
+Error processing breastTumor.csv: all elements of input should be between 0 and 1
+Error processing breastTumor.csv: all elements of input should be between 0 and 1
+Error processing breastTumor.csv: all elements of input should be between 0 and 1
+Error processing breastTumor.csv: all elements of input should be between 0 and 1
+Error processing breastTumor.csv: all elements of input should be between 0 and 1
+Error processing breastTumor.csv: all elements of input should be between 0 and 1
+Error processing breastTumor.csv: all elements of input should be between 0 and 1
+File: fri_c0_250_50.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c1_250_25.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: Smartphone-Based_Recognition_of_Human_Activities.csv
+File: hungarian.csv
+Error processing hungarian.csv: all elements of input should be between 0 and 1
+Error processing hungarian.csv: all elements of input should be between 0 and 1
+Error processing hungarian.csv: all elements of input should be between 0 and 1
+Error processing hungarian.csv: all elements of input should be between 0 and 1
+Error processing hungarian.csv: all elements of input should be between 0 and 1
+Error processing hungarian.csv: all elements of input should be between 0 and 1
+Error processing hungarian.csv: all elements of input should be between 0 and 1
+Error processing hungarian.csv: all elements of input should be between 0 and 1
+Error processing hungarian.csv: all elements of input should be between 0 and 1
+File: fishcatch.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: strogatz_lv1.csv
+File: 624_fri_c0_100_5.csv
+File: AP_Prostate_Ovary.csv
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 24
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 32
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 31
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 24
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: pharynx.csv
+Error processing pharynx.csv: all elements of input should be between 0 and 1
+Error processing pharynx.csv: all elements of input should be between 0 and 1
+Error processing pharynx.csv: all elements of input should be between 0 and 1
+Error processing pharynx.csv: all elements of input should be between 0 and 1
+Error processing pharynx.csv: all elements of input should be between 0 and 1
+Error processing pharynx.csv: all elements of input should be between 0 and 1
+Error processing pharynx.csv: all elements of input should be between 0 and 1
+Error processing pharynx.csv: all elements of input should be between 0 and 1
+Error processing pharynx.csv: all elements of input should be between 0 and 1
+File: fri_c2_100_50.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 519_vinnie.csv
+File: fri_c4_250_50.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c4_100_50.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: penguins.csv
+File: bridges.csv
+Error processing bridges.csv: all elements of input should be between 0 and 1
+Error processing bridges.csv: all elements of input should be between 0 and 1
+Error processing bridges.csv: all elements of input should be between 0 and 1
+Error processing bridges.csv: all elements of input should be between 0 and 1
+Error processing bridges.csv: all elements of input should be between 0 and 1
+Error processing bridges.csv: all elements of input should be between 0 and 1
+Error processing bridges.csv: all elements of input should be between 0 and 1
+Error processing bridges.csv: all elements of input should be between 0 and 1
+Error processing bridges.csv: all elements of input should be between 0 and 1
+File: hayes-roth.csv
+File: pwLinear.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: auto.csv
+File: fri_c0_250_25.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c0_100_50.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: chscase_funds.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 644_fri_c4_250_25.csv
+File: analcatdata_challenger.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: GCM.csv
+File: triazines.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: backache.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: sleuth_case2002.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: arcene.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 19
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 9
+File: MegaWatt1.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: chscase_census5.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: rsctc2010_1.csv
+File: 230_machine_cpu.csv
+File: BurkittLymphoma.csv
+File: 621_fri_c0_100_10.csv
+File: analcatdata_lawsuit.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 66
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: chscase_census2.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: anthracyclineTaxaneChemotherapy.csv
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Timeout
+File: robot-failures-lp5.csv
+File: seeds.csv
+File: AP_Endometrium_Kidney.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 23
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 22
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 27
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 27
+File: ionosphere.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: MeanWhile1.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c3_250_5.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: strogatz_vdp1.csv
+File: wisconsin.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: teachingAssistant.csv
+File: chscase_geyser1.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: heart_statlog.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: grub-damage.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 594_fri_c2_100_5.csv
+File: strogatz_predprey1.csv
+File: breast-cancer.csv
+Error processing breast-cancer.csv: all elements of input should be between 0 and 1
+Error processing breast-cancer.csv: all elements of input should be between 0 and 1
+Error processing breast-cancer.csv: all elements of input should be between 0 and 1
+Error processing breast-cancer.csv: all elements of input should be between 0 and 1
+Error processing breast-cancer.csv: all elements of input should be between 0 and 1
+Error processing breast-cancer.csv: all elements of input should be between 0 and 1
+Error processing breast-cancer.csv: all elements of input should be between 0 and 1
+Error processing breast-cancer.csv: all elements of input should be between 0 and 1
+Error processing breast-cancer.csv: all elements of input should be between 0 and 1
+File: vertebra-column.csv
+File: molecular_biology_promoters.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c3_250_10.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: lymphography.csv
+File: pbc.csv
+Error processing pbc.csv: all elements of input should be between 0 and 1
+Error processing pbc.csv: all elements of input should be between 0 and 1
+Error processing pbc.csv: all elements of input should be between 0 and 1
+Error processing pbc.csv: all elements of input should be between 0 and 1
+Error processing pbc.csv: all elements of input should be between 0 and 1
+Error processing pbc.csv: all elements of input should be between 0 and 1
+Error processing pbc.csv: all elements of input should be between 0 and 1
+Error processing pbc.csv: all elements of input should be between 0 and 1
+Error processing pbc.csv: all elements of input should be between 0 and 1
+File: fertility.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: chscase_census4.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 665_sleuth_case2002.csv
+File: fri_c4_250_10.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: hepatitisC.csv
+File: prnn_synth.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 560_bodyfat.csv
+File: AP_Colon_Prostate.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 25
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 48
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 56
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: AP_Omentum_Kidney.csv
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Timeout
+File: fri_c2_250_25.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 634_fri_c2_100_10.csv
+File: rabe_266.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: strogatz_barmag1.csv
+File: autoPrice.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 635_fri_c0_250_10.csv
+File: autos.csv
+File: cloud.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: corral.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: robot-failures-lp4.csv
+File: breast-cancer-dropped-missing-attributes-values.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: auto_price.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 601_fri_c1_250_5.csv
+File: kc1-binary.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: MyIris.csv
+File: leaf.csv
+File: plasma_retinol.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: strogatz_barmag2.csv
+File: 678_visualizing_environmental.csv
+File: 657_fri_c2_250_10.csv
+File: horse_colic.csv
+File: 596_fri_c2_250_5.csv
+File: dermatology.csv
+File: AP_Lung_Uterus.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 33
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 25
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 29
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 38
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 28
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 32
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: fri_c4_100_100.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: ar4.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: chscase_census3.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 591_fri_c1_100_10.csv
+File: 561_cpu.csv
+File: analcatdata_germangss.csv
+File: analcatdata_draft.csv
+Error processing analcatdata_draft.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_draft.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_draft.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_draft.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_draft.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_draft.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_draft.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_draft.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_draft.csv: all elements of input should be between 0 and 1
+File: cleveland-nominal.csv
+File: fri_c0_250_5.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: colic.csv
+Error processing colic.csv: all elements of input should be between 0 and 1
+Error processing colic.csv: all elements of input should be between 0 and 1
+Error processing colic.csv: all elements of input should be between 0 and 1
+Error processing colic.csv: all elements of input should be between 0 and 1
+Error processing colic.csv: all elements of input should be between 0 and 1
+Error processing colic.csv: all elements of input should be between 0 and 1
+Error processing colic.csv: all elements of input should be between 0 and 1
+Error processing colic.csv: all elements of input should be between 0 and 1
+Error processing colic.csv: all elements of input should be between 0 and 1
+File: fri_c4_100_25.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: molecular-biology_promoters.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: breast_cancer.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 651_fri_c0_100_25.csv
+File: diggle_table_a2.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: analcatdata_wildcat.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 648_fri_c1_250_50.csv
+File: appendicitis.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: strogatz_glider1.csv
+File: AP_Omentum_Uterus.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: blogger.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: humandevel.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: strogatz_predprey2.csv
+File: chscase_census6.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c1_250_50.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: bupa.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: flags.csv
+File: SPECT.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: fri_c2_100_25.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: KungChi3.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: biomed.csv
+Error processing biomed.csv: all elements of input should be between 0 and 1
+Error processing biomed.csv: all elements of input should be between 0 and 1
+Error processing biomed.csv: all elements of input should be between 0 and 1
+Error processing biomed.csv: all elements of input should be between 0 and 1
+Error processing biomed.csv: all elements of input should be between 0 and 1
+Error processing biomed.csv: all elements of input should be between 0 and 1
+Error processing biomed.csv: all elements of input should be between 0 and 1
+Error processing biomed.csv: all elements of input should be between 0 and 1
+Error processing biomed.csv: all elements of input should be between 0 and 1
+File: lungcancer_GSE31210.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 523_analcatdata_neavote.csv
+File: cars1.csv
+File: heart-long-beach.csv
+File: heart-switzerland.csv
+File: vinnie.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: AP_Omentum_Ovary.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: datatrieve.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: zoo.csv
+File: iris.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: autoHorse.csv
+Error processing autoHorse.csv: all elements of input should be between 0 and 1
+Error processing autoHorse.csv: all elements of input should be between 0 and 1
+Error processing autoHorse.csv: all elements of input should be between 0 and 1
+Error processing autoHorse.csv: all elements of input should be between 0 and 1
+Error processing autoHorse.csv: all elements of input should be between 0 and 1
+Error processing autoHorse.csv: all elements of input should be between 0 and 1
+Error processing autoHorse.csv: all elements of input should be between 0 and 1
+Error processing autoHorse.csv: all elements of input should be between 0 and 1
+Error processing autoHorse.csv: all elements of input should be between 0 and 1
+File: 505_tecator.csv
+File: cholesterol.csv
+Error processing cholesterol.csv: all elements of input should be between 0 and 1
+Error processing cholesterol.csv: all elements of input should be between 0 and 1
+Error processing cholesterol.csv: all elements of input should be between 0 and 1
+Error processing cholesterol.csv: all elements of input should be between 0 and 1
+Error processing cholesterol.csv: all elements of input should be between 0 and 1
+Error processing cholesterol.csv: all elements of input should be between 0 and 1
+Error processing cholesterol.csv: all elements of input should be between 0 and 1
+Error processing cholesterol.csv: all elements of input should be between 0 and 1
+Error processing cholesterol.csv: all elements of input should be between 0 and 1
+File: 613_fri_c3_250_5.csv
+File: fri_c1_100_5.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: analcatdata_birthday.csv
+Error processing analcatdata_birthday.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_birthday.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_birthday.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_birthday.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_birthday.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_birthday.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_birthday.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_birthday.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_birthday.csv: all elements of input should be between 0 and 1
+File: promoters.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: variousCancers_final.csv
+File: pc1_req.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: analcatdata_creditscore.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: bodyfat.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: fri_c0_100_25.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: AP_Endometrium_Prostate.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 22
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 16
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: AP_Prostate_Uterus.csv
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 19
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 24
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 19
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: glass2.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: analcatdata_gsssexsurvey.csv
+Error processing analcatdata_gsssexsurvey.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_gsssexsurvey.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_gsssexsurvey.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_gsssexsurvey.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_gsssexsurvey.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_gsssexsurvey.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_gsssexsurvey.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_gsssexsurvey.csv: all elements of input should be between 0 and 1
+Error processing analcatdata_gsssexsurvey.csv: all elements of input should be between 0 and 1
+File: CastMetal1.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: fri_c1_100_25.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: AP_Omentum_Prostate.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 21
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 20
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 29
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 19
+File: primary-tumor.csv
+File: strogatz_shearflow2.csv
+File: transplant.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: strogatz_lv2.csv
+File: 603_fri_c0_250_50.csv
+File: hayes_roth.csv
+File: Engine1.csv
+File: autoMpg.csv
+Error processing autoMpg.csv: all elements of input should be between 0 and 1
+Error processing autoMpg.csv: all elements of input should be between 0 and 1
+Error processing autoMpg.csv: all elements of input should be between 0 and 1
+Error processing autoMpg.csv: all elements of input should be between 0 and 1
+Error processing autoMpg.csv: all elements of input should be between 0 and 1
+Error processing autoMpg.csv: all elements of input should be between 0 and 1
+Error processing autoMpg.csv: all elements of input should be between 0 and 1
+Error processing autoMpg.csv: all elements of input should be between 0 and 1
+Error processing autoMpg.csv: all elements of input should be between 0 and 1
+File: parkinsons.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: 712_chscase_geyser1.csv
+File: Olivetti_Faces.csv
+File: visualizing_environmental.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c1_100_10.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: analcatdata_homerun.csv
+File: fruitfly.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: chscase_whale.csv
+Error processing chscase_whale.csv: all elements of input should be between 0 and 1
+Error processing chscase_whale.csv: all elements of input should be between 0 and 1
+Error processing chscase_whale.csv: all elements of input should be between 0 and 1
+Error processing chscase_whale.csv: all elements of input should be between 0 and 1
+Error processing chscase_whale.csv: all elements of input should be between 0 and 1
+Error processing chscase_whale.csv: all elements of input should be between 0 and 1
+Error processing chscase_whale.csv: all elements of input should be between 0 and 1
+Error processing chscase_whale.csv: all elements of input should be between 0 and 1
+Error processing chscase_whale.csv: all elements of input should be between 0 and 1
+File: analcatdata_reviewer.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: prnn_crabs.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c3_100_25.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: MindCave2.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: fri_c3_250_50.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: wine.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: AP_Lung_Kidney.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 44
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 55
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 48
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 59
+File: 615_fri_c4_250_10.csv
+File: analcatdata_neavote.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: lowbwt.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: cpu.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: visualizing_livestock.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c2_250_10.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: analcatdata_seropositive.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: wine_recognition.csv
+File: echoMonths.csv
+Error processing echoMonths.csv: all elements of input should be between 0 and 1
+Error processing echoMonths.csv: all elements of input should be between 0 and 1
+Error processing echoMonths.csv: all elements of input should be between 0 and 1
+Error processing echoMonths.csv: all elements of input should be between 0 and 1
+Error processing echoMonths.csv: all elements of input should be between 0 and 1
+Error processing echoMonths.csv: all elements of input should be between 0 and 1
+Error processing echoMonths.csv: all elements of input should be between 0 and 1
+Error processing echoMonths.csv: all elements of input should be between 0 and 1
+Error processing echoMonths.csv: all elements of input should be between 0 and 1
+File: fri_c3_100_50.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: ar6.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: badges2.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c2_100_5.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: strogatz_glider2.csv
+File: fri_c4_250_100.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: strogatz_vdp2.csv
+File: movement_libras.csv
+File: servo.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: KnuggetChase3.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c2_250_50.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: veteran.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: mc2.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 690_visualizing_galaxy.csv
+File: audiology.csv
+File: mux6.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: lymph.csv
+File: analcatdata_marketing.csv
+File: prnn_fglass.csv
+File: 602_fri_c3_250_10.csv
+File: SPECTF.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: AP_Ovary_Lung.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 20
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 23
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 39
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 42
+File: AP_Endometrium_Lung.csv
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 23
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 24
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: autoUniv-au6-400.csv
+File: 647_fri_c1_250_10.csv
+File: AP_Ovary_Uterus.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 21
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 48
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c4_100_10.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: ovarianTumour.csv
+File: 663_rabe_266.csv
+File: heart-statlog.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: mouseType.csv
+File: tae.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: rmftsa_ctoarrivals.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: planning-relax.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: AP_Colon_Omentum.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 58
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 42
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 46
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 49
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 43
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 35
+File: lsvt.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 579_fri_c0_250_5.csv
+File: AP_Prostate_Kidney.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: fri_c1_250_5.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: rsctc2010_2.csv
+File: heart_h.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: ecoli.csv
+File: qualitative-bankruptcy.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: hepatitis.csv
+Error processing hepatitis.csv: all elements of input should be between 0 and 1
+Error processing hepatitis.csv: all elements of input should be between 0 and 1
+Error processing hepatitis.csv: all elements of input should be between 0 and 1
+Error processing hepatitis.csv: all elements of input should be between 0 and 1
+Error processing hepatitis.csv: all elements of input should be between 0 and 1
+Error processing hepatitis.csv: all elements of input should be between 0 and 1
+Error processing hepatitis.csv: all elements of input should be between 0 and 1
+Error processing hepatitis.csv: all elements of input should be between 0 and 1
+Error processing hepatitis.csv: all elements of input should be between 0 and 1
+File: heart-h.csv
+File: fri_c0_100_5.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: AP_Endometrium_Omentum.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 13
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 23
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: strogatz_shearflow1.csv
+File: analcatdata_boxing2.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 611_fri_c3_100_5.csv
+File: 656_fri_c1_100_5.csv
+File: strogatz_bacres2.csv
+File: analcatdata_chlamydia.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: heart_c.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: heart-c.csv
+Error processing heart-c.csv: all elements of input should be between 0 and 1
+Error processing heart-c.csv: all elements of input should be between 0 and 1
+Error processing heart-c.csv: all elements of input should be between 0 and 1
+Error processing heart-c.csv: all elements of input should be between 0 and 1
+Error processing heart-c.csv: all elements of input should be between 0 and 1
+Error processing heart-c.csv: all elements of input should be between 0 and 1
+Error processing heart-c.csv: all elements of input should be between 0 and 1
+Error processing heart-c.csv: all elements of input should be between 0 and 1
+Error processing heart-c.csv: all elements of input should be between 0 and 1
+File: fri_c3_100_10.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c1_250_10.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 605_fri_c2_250_25.csv
+File: seismic-bumps.csv
+File: AP_Endometrium_Colon.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 36
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 33
+File: fri_c0_100_10.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c1_100_50.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: mu284.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: AP_Uterus_Kidney.csv
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 51
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 43
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 54
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 51
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 52
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 42
+File: strogatz_bacres1.csv
+File: visualizing_galaxy.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: CostaMadre1.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: analcatdata_boxing1.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: machine_cpu.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: chatfield_4.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: ar1.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: thyroid-new.csv
+File: haberman.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: 653_fri_c0_250_25.csv
+File: analcatdata_michiganacc.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c0_250_10.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: sonar.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+File: AP_Endometrium_Uterus.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Timeout
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: newton_hema.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: fri_c3_250_25.csv
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: AP_Endometrium_Ovary.csv
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 0
+Set parameter NonConvex to value 2
+Set parameter TimeLimit to value 300
+Mismatch: 23
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 29
+Set parameter NonConvex to value 2
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Set parameter TimeLimit to value 300
+Mismatch: 0
+File: glass.csv
