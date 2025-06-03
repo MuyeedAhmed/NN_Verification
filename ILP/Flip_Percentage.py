@@ -13,9 +13,26 @@ import gurobipy as gp
 from gurobipy import GRB
 from Gurobi_ForwardPass_L2_ReLU import ForwardPass
 from VerifyWeights import VerifyWeights
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+import seaborn as sns
+import random
+
+
+SEED = 0
+random.seed(SEED)
+np.random.seed(SEED)
+torch.manual_seed(SEED)
+torch.cuda.manual_seed_all(SEED)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
 
 
 timeLimit = 300
+
 
 class BinaryClassifier(nn.Module):
     def __init__(self, input_dim, l1, l2):
@@ -144,6 +161,7 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
     l3_size = len(nn.W3[0])
 
     model = gp.Model("Minimize_b")
+    model.setParam("Seed", SEED)
 
     W1_offset = model.addVars(len(nn.W1), l1_size, vtype=GRB.CONTINUOUS, name="W1_offset")
     W2_offset = model.addVars(len(nn.W2), l2_size, vtype=GRB.CONTINUOUS, name="W2_offset")
@@ -236,7 +254,7 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
         mismatch = -1
         if model.SolCount == 0:
             print("Timeout")
-            return False, mismatch
+            return False, mismatch, None
         with open("Stats/Solved_Flip.txt", "a") as file:
             file.write(f"{file_name}-----\n")
 
@@ -246,7 +264,7 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
 
         if len(flip_idxs) != flipCount:
             print(f"Error: Expected {flipCount} value of 1 in f_values, but found {len(flip_idxs)}")
-            return False, mismatch
+            return False, mismatch, None
 
         print("f values:", f_values)
         print("y_g values:", y_g_values)
@@ -297,10 +315,10 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
             b1_values_with_offset, b2_values_with_offset, b3_values_with_offset, y_gt=y_gt, file_name = file_name)
         vw.main(Task="Flip")
     
-        return True, mismatch
+        return True, mismatch, flip_idxs
     else:
         print("No feasible solution found.")
-        return False, mismatch
+        return False, mismatch, None
 
 
 
@@ -329,19 +347,18 @@ if __name__ == "__main__":
     else:
         files_already_tested = pd.read_csv(accuracy_file)['Dataset'].unique()
 
+    num_datasets_iterated = 0
     for file_name in os.listdir(dataset_dir):
         if not file_name.endswith(".csv"):
             continue
-        if file_name in files_already_tested:
-            print(f"Skipping {file_name} as it has already been processed.")
-            continue
+        #if file_name in files_already_tested:
+        #    print(f"Skipping {file_name} as it has already been processed.")
+        #    continue
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
 
         if not (100 <= len(df) <= 400):
             continue
-        # if not (400 < len(df) <= 1000):
-        #     continue
         print("File:", file_name)
         X = df.iloc[:, :-1]
         y_gt = df.iloc[:, -1]
@@ -381,14 +398,17 @@ if __name__ == "__main__":
 
             extracted_weights = extract_weights(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth")
             flipCount = int(len(X_train_gb) / 10)
-            solution_found, mismatch = RunForward(Test, file_name, extracted_weights, X_train_gb, y_train_pred_gb, y_gt, tol, len(X), flipCount, l1, l2)
+            solution_found, mismatch, flip_idxs = RunForward(Test, file_name, extracted_weights, X_train_gb, y_train_pred_gb, y_gt, tol, len(X), flipCount, l1, l2)
+            np.save(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/flip_idxs.npy", flip_idxs)
+
 
         except Exception as e:
             with open(error_file, "a") as f:
                 f.write(f"------------\n{file_name}\nStep 1: {e}\n---------------\n")
             continue
         '''Step 3: If a solution is found, check flip percentage'''
-        if solution_found:
+        if solution_found and flip_idxs is not None:
+            num_datasets_iterated+=1
             model = BinaryClassifier(X.shape[1], l1, l2)
             model.load_state_dict(torch.load(TrainC_Path))
             model.eval()
@@ -401,4 +421,3 @@ if __name__ == "__main__":
             with open(flipPercentageSummary, "a") as f:
                 flipped_count_total = np.sum(y_pred_binary != y_train_pred)
                 f.write(f"{file_name},{len(X)},{mismatch},{flipCount},{flipped_count_total},{(flipped_count_total / len(X)) * 100:.2f}\n")
-
