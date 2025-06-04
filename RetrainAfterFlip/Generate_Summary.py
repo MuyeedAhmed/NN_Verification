@@ -212,7 +212,7 @@ def generate_summary(input_csv, weights_base_path, output_csv):
     # print(count)
 
 if __name__ == "__main__":
-    test = "Test1_l43_Variable"
+    test = "RFlip_LastLayer_l44_Maximized"
     input_csv = f"Stats/{test}.csv"
     weights_base_path = f"Weights/{test}"
     output_csv = f"Stats/{test}_Summary.csv"

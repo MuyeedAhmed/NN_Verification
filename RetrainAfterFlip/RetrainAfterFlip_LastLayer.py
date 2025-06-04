@@ -240,9 +240,10 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
     )
 
 
-    model.setObjective(objective, GRB.MINIMIZE)
-
-    model.addConstr(objective >= 0, "NonNegativeObjective")
+    # model.setObjective(objective, GRB.MINIMIZE)
+    # model.addConstr(objective >= 0, "NonNegativeObjective")
+    model.setObjective(objective, GRB.MAXIMIZE)
+    model.addConstr(objective <= 10000, "Objective_UpperBound")
     model.setParam('TimeLimit', timeLimit)
     model.optimize()
 
@@ -319,10 +320,10 @@ if __name__ == "__main__":
     l2 = 4
     val_size = 0.2
     epoch_count = 50000
-    flipCount = 2
+    flipCount = 1
     tol = 3e-6
 
-    Test = f"RFlip_LastLayer_l{l1}{l2}"
+    Test = f"RFlip_LastLayer_l{l1}{l2}_Maximized"
     
     dataset_dir = "../../Dataset"
     # dataset_dir = "../Dataset"
@@ -420,7 +421,7 @@ if __name__ == "__main__":
                     with open(error_file, "a") as f:
                         f.write(f"------------\n{file_name}\nExpected {flipCount} flips, but found {flipped_count_total} mismatches.\n---------------\n")
                     continue
-                                    
+
                 if not os.path.exists(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}"):
                     os.makedirs(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}")
                 model, final_metrics_D = train_model(X, y_gt, l1, l2, val_size, save_path=TrainD_Path, preset_weights_path=TrainC_Path, max_epochs=epoch_count)
