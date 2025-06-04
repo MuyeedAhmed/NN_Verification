@@ -350,7 +350,12 @@ if __name__ == "__main__":
                     with torch.no_grad():
                         y_pred_binary = np.round(model(X_tensor).numpy().flatten())
                     flipped_count_total = np.sum(y_pred_binary != y_train_pred)
-                    print("Mismatch:", flipped_count_total)
+                    
+                    if flipped_count_total != 0:
+                        print(f"Expected {flipCount} flips, but found {flipped_count_total} mismatches.")
+                        with open(error_file, "a") as f:
+                            f.write(f"------------\n{file_name}\nExpected {flipCount} flips, but found {flipped_count_total} mismatches.\n---------------\n")
+                        continue
                     
                     
                     if not os.path.exists(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}"):
