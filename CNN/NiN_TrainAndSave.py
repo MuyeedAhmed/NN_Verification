@@ -59,7 +59,7 @@ if __name__ == "__main__":
     optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
     scheduler = CosineAnnealingLR(optimizer, T_max=200)
 
-    for epoch in range(1):
+    for epoch in range(100):
         model.train()
         correct = 0
         total = 0
