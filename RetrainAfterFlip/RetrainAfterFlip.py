@@ -398,6 +398,22 @@ if __name__ == "__main__":
                 '''Step 3: Retrain with the new weights'''
                 TrainC_Path = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}/model.pth"
                 TrainD_Path = f"Weights/{Test}/TrainD/{file_name.split('.')[0]}/model.pth"
+                
+                model = BinaryClassifier(X.shape[1], l1, l2)
+                model.load_state_dict(torch.load(TrainC_Path))
+                model.eval()
+
+                X_tensor = torch.tensor(X_train, dtype=torch.float32)
+                with torch.no_grad():
+                    y_pred_binary = np.round(model(X_tensor).numpy().flatten())
+                flipped_count_total = np.sum(y_pred_binary != y_train_pred)
+                
+                if flipped_count_total != flipCount:
+                    print(f"Expected {flipCount} flips, but found {flipped_count_total} mismatches.")
+                    with open(error_file, "a") as f:
+                        f.write(f"------------\n{file_name}\nExpected {flipCount} flips, but found {flipped_count_total} mismatches.\n---------------\n")
+                    continue
+                
                 if not os.path.exists(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}"):
                     os.makedirs(f"Weights/{Test}/TrainD/{file_name.split('.')[0]}")
                 model, final_metrics_D = train_model(X, y_gt, l1, l2, val_size, save_path=TrainD_Path, preset_weights_path=TrainC_Path, max_epochs=epoch_count)
