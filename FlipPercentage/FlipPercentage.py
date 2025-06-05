@@ -353,7 +353,7 @@ if __name__ == "__main__":
                 os.makedirs(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}")
             
             try:
-                X_train, X_val, y_train, y_val = train_test_split(X, y_gt, test_size=0.1, random_state=r*10)
+                X_train, X_val, y_train, y_val = train_test_split(X, y_gt, test_size=0.1, random_state=r*42)
                 scaler = StandardScaler()
                 X_train = scaler.fit_transform(X_train)
                 X_val = scaler.transform(X_val)
@@ -373,7 +373,7 @@ if __name__ == "__main__":
                 y_train_load = np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds_{r}.npy")
                 y_train_pred = np.round(y_train_load)
                 
-                Gurobi_X, _, y_test, _ = train_test_split(X_train, y_train_pred, test_size=0.9, random_state=r*10)
+                Gurobi_X, _, y_test, _ = train_test_split(X_train, y_train_pred, test_size=0.9, random_state=r*42)
                 Gurobi_X_tensor = torch.tensor(Gurobi_X, dtype=torch.float32)
 
                 model_A = BinaryClassifier(X.shape[1], l1, l2)
