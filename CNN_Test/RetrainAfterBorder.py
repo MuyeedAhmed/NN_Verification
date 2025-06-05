@@ -290,7 +290,7 @@ def GurobiBorder():
 
         with open(log_file, "a") as f:
             f.write("------------------------\n")
-            f.write("Training Without Gurobi Edit\n")
+            f.write("Training With Gurobi Edit\n")
             f.write("------------------------\n")
         W2_new = W2 + W2_off
         b2_new = b2 + b2_off
@@ -305,7 +305,6 @@ def GurobiBorder():
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-        start_epoch = checkpoint['epoch'] + 1
 
         new_W = torch.tensor(W2_new).to(model.classifier.weight.device)
         new_b = torch.tensor(b2_new).to(model.classifier.bias.device)
@@ -323,7 +322,7 @@ def GurobiBorder():
         test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=True, num_workers=2)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=100, shuffle=False, num_workers=2)
-        for epoch in range(start_epoch, start_epoch + 1):
+        for epoch in range(resume_epoch):
             model.train()
             correct = 0
             total = 0
@@ -359,6 +358,6 @@ def GurobiBorder():
         print("No solution found.")
 
 if __name__ == "__main__":
-    TrainAndSave()
+    # TrainAndSave()
     GurobiBorder()
     
