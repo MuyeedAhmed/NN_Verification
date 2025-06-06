@@ -49,7 +49,7 @@ class NIN(nn.Module):
 
 
 def GurobiFlip():
-    n_samples = 10
+    n_samples = 100
     X = torch.load("checkpoints/CIFER10/fc_inputs.pt").numpy()[0:n_samples]
     labels = torch.load("checkpoints/CIFER10/fc_labels.pt").numpy()[0:n_samples]
     pred = torch.load("checkpoints/CIFER10/fc_preds.pt").numpy()[0:n_samples]
