@@ -137,7 +137,7 @@ def extract_weights(load_path, transpose=True):
     return nn
 
 
-def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
+def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, restart=0):
     y = y.reshape(-1, 1)
     l1_size = len(nn.W1[0])
     l2_size = len(nn.W2[0])
@@ -256,7 +256,7 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
               sum(np.abs(b1_offset[j].X) for j in range(l1_size)) +
               sum(np.abs(b2_offset[j].X) for j in range(l2_size)) +
               sum(np.abs(b3_offset[j].X) for j in range(l3_size)))
-        original_model_path = f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth"
+        original_model_path = f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model_{restart}.pth"
         original_state_dict = torch.load(original_model_path)  
 
         W1_torch = torch.tensor(W1_values_with_offset.T, dtype=torch.float32) 
@@ -276,7 +276,7 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
         SavePath = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}"
         if not os.path.exists(SavePath):
             os.makedirs(SavePath)
-        torch.save(original_state_dict, f'{SavePath}/model.pth')
+        torch.save(original_state_dict, f'{SavePath}/model_{restart}.pth')
         
         print("f values  :", f_values)
         print("y_pred val:", y.reshape(1,-1)[0])
@@ -286,10 +286,10 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
         print("Z3:", Z3_values)
         print("Flip Indices:", flip_idxs)
         print("Flipped Z3:", [Z3_values[i] for i in flip_idxs])
-        vw = VerifyWeights(X, y, n, l1, l2, "relu", flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
-            W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
-            b1_values_with_offset, b2_values_with_offset, b3_values_with_offset, y_gt=y_gt, file_name = file_name)
-        vw.main(Task="Flip_Any")
+        # vw = VerifyWeights(X, y, n, l1, l2, "relu", flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
+        #     W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
+        #     b1_values_with_offset, b2_values_with_offset, b3_values_with_offset, y_gt=y_gt, file_name = file_name)
+        # vw.main(Task="Flip_Any")
 
         return True
     else:
@@ -301,32 +301,29 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2):
 if __name__ == "__main__":
     l1 = 4
     l2 = 4
+    Test = f"FlipPercentage_l{l1}{l2}_Flip1_Restart"
     epoch_count = 50000
     flipCount = 1
     tol = 3e-5
-
+    restart = 10
     if not os.path.exists("Stats"):
         os.makedirs("Stats")
     if not os.path.exists("Outputs"):
         os.makedirs("Outputs")
 
-    Test = f"FlipPercentage_l{l1}{l2}_Flip1"
     flipPercentageSummary = f"Stats/{Test}_FlipPercentageSummary.csv"
     dataset_dir = "../../Dataset"
     # dataset_dir = "../Dataset"
 
-    accuracy_file = f"Stats/{Test}.csv"
     error_file = f"Stats/Error_{Test}.txt"
 
     files_already_tested = pd.DataFrame(columns=["Dataset"])
-    if not os.path.exists(accuracy_file):
-        with open(accuracy_file, "w") as f:
-            f.write("Dataset,Row,Col,Type,Tr_Acc,Val_Acc,Tr_loss,Val_loss\n")
+    
     if not os.path.exists(flipPercentageSummary):
         with open(flipPercentageSummary, "w") as f:
-            f.write("Dataset,N,Mismatch,FlipTry,Flipped,Flip_Percentage\n")
+            f.write("Dataset,Row,N_Sample,Col,Seed,Mismatch,FlipTry,Flipped,Flip_Percentage,Tr_Acc,Val_Acc,Tr_loss,Val_loss\n")
     else:
-        files_already_tested = pd.read_csv(accuracy_file)['Dataset'].unique()
+        files_already_tested = pd.read_csv(flipPercentageSummary)['Dataset'].unique()
 
     for file_name in os.listdir(dataset_dir):
         if not file_name.endswith(".csv"):
@@ -334,8 +331,7 @@ if __name__ == "__main__":
         if file_name in files_already_tested:
             print(f"Skipping {file_name} as it has already been processed.")
             continue
-        # if file_name != "machine_cpu.csv":
-        #     continue
+        
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
 
@@ -348,73 +344,75 @@ if __name__ == "__main__":
         y_gt = df.iloc[:, -1]
         if not (set(y_gt.unique()) <= {0, 1}):
             continue
-        '''Step 1: Train the model'''
-        TrainA_Path = f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model.pth"
-        TrainC_Path = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}/model.pth"
+        for r in range(restart):
+            '''Step 1: Train the model'''
+            TrainA_Path = f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/model_{r}.pth"
+            TrainC_Path = f"Weights/{Test}/TrainC/{file_name.split('.')[0]}/model_{r}.pth"
 
-        if not os.path.exists(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}"):
-            os.makedirs(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}")
-        
-        try:
-            X_train, X_val, y_train, y_val = train_test_split(X, y_gt, test_size=0.1, random_state=42)
-            scaler = StandardScaler()
-            X_train = scaler.fit_transform(X_train)
-            X_val = scaler.transform(X_val)
-
-            model, final_metrics_A = train_model(X_train, X_val, y_train, y_val, l1, l2, save_path=TrainA_Path, max_epochs=epoch_count)
-        
-            np.save(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy", final_metrics_A['train_preds'])
+            if not os.path.exists(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}"):
+                os.makedirs(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}")
             
-            with open(accuracy_file, "a") as f:
-                f.write(f"{file_name},{len(X)},{X.shape[1]},TrainA,{final_metrics_A['train_accuracy']},{final_metrics_A['val_accuracy']},{final_metrics_A['train_loss']},{final_metrics_A['val_loss']}\n")
+            try:
+                X_train, X_val, y_train, y_val = train_test_split(X, y_gt, test_size=0.1, random_state=r*42)
+                scaler = StandardScaler()
+                X_train = scaler.fit_transform(X_train)
+                X_val = scaler.transform(X_val)
+
+                model, final_metrics_A = train_model(X_train, X_val, y_train, y_val, l1, l2, save_path=TrainA_Path, max_epochs=epoch_count)
             
-        except Exception as e:
-            print(f"Error processing {file_name}: {e}")
-            with open(error_file, "a") as f:
-                f.write(f"------------\n{file_name}\nStep 1: {e}\n---------------\n")
-            continue
-        '''Step 2: Run Gurobi Flip'''        
-        try:
-            y_train_load = np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds.npy")
-            y_train_pred = np.round(y_train_load)
-            
-            Gurobi_X, _, y_test, _ = train_test_split(X_train, y_train_pred, test_size=0.9, random_state=42)
-            Gurobi_X_tensor = torch.tensor(Gurobi_X, dtype=torch.float32)
-
-            model_A = BinaryClassifier(X.shape[1], l1, l2)
-            model_A.load_state_dict(torch.load(TrainA_Path))
-            model_A.eval()
-            with torch.no_grad():
-                Gurobi_y_target = np.round(model_A(Gurobi_X_tensor).numpy().flatten())
-
-            extracted_weights = extract_weights(TrainA_Path)
-
-            if sum(y_test != Gurobi_y_target) != 0:
+                np.save(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds_{r}.npy", final_metrics_A['train_preds'])
+                
+                
+            except Exception as e:
+                print(f"Error processing {file_name}: {e}")
                 with open(error_file, "a") as f:
-                    f.write(f"------------\n{file_name}\n*********\n\nsum(y_test != Gurobi_y_target) > 0\n\n***********\n---------------\n")
-            
-            # flipCount = int(len(Gurobi_X) / 10)
-            solution_found = RunForward(Test, file_name, extracted_weights, Gurobi_X, Gurobi_y_target, y_gt, tol, len(X), flipCount, l1, l2)
+                    f.write(f"------------\n{file_name}\nStep 1: {e}\n---------------\n")
+                break
+            '''Step 2: Run Gurobi Flip'''        
+            try:
+                y_train_load = np.load(f"Weights/{Test}/TrainA/{file_name.split('.')[0]}/train_preds_{r}.npy")
+                y_train_pred = np.round(y_train_load)
+                
+                Gurobi_X, _, y_test, _ = train_test_split(X_train, y_train_pred, test_size=0.9, random_state=r*42)
+                Gurobi_X_tensor = torch.tensor(Gurobi_X, dtype=torch.float32)
 
-        except Exception as e:
-            with open(error_file, "a") as f:
-                f.write(f"------------\n{file_name}\nStep 1: {e}\n---------------\n")
-            continue
-        '''Step 3: If a solution is found, check flip percentage'''
-        if solution_found:
-            model = BinaryClassifier(X.shape[1], l1, l2)
-            model.load_state_dict(torch.load(TrainC_Path))
-            model.eval()
+                model_A = BinaryClassifier(X.shape[1], l1, l2)
+                model_A.load_state_dict(torch.load(TrainA_Path))
+                model_A.eval()
+                with torch.no_grad():
+                    Gurobi_y_target = np.round(model_A(Gurobi_X_tensor).numpy().flatten())
 
-            X_tensor = torch.tensor(X_train, dtype=torch.float32)
-            Gurobi_X_tensor = torch.tensor(Gurobi_X, dtype=torch.float32)
-            with torch.no_grad():
-                y_pred = model(X_tensor).numpy().flatten()
-                y_pred_binary = np.round(y_pred)
-                Gurobi_y_pred = np.round(model(Gurobi_X_tensor).numpy().flatten())
-            mismatch = np.sum(Gurobi_y_target != Gurobi_y_pred)
-            flipped_count_total = np.sum(y_pred_binary != y_train_pred)
-            print("Mismatch:", mismatch)
-            with open(flipPercentageSummary, "a") as f:
-                f.write(f"{file_name},{len(X)},{mismatch},{flipCount},{flipped_count_total},{(flipped_count_total / len(X)) * 100:.2f}\n")
+                extracted_weights = extract_weights(TrainA_Path)
+
+                if sum(y_test != Gurobi_y_target) != 0:
+                    with open(error_file, "a") as f:
+                        f.write(f"------------\n{file_name}\n*********\n\nsum(y_test != Gurobi_y_target) > 0\n\n***********\n---------------\n")
+                
+                # flipCount = int(len(Gurobi_X) / 10)
+                solution_found = RunForward(Test, file_name, extracted_weights, Gurobi_X, Gurobi_y_target, y_gt, tol, len(X), flipCount, l1, l2, r)
+
+            except Exception as e:
+                with open(error_file, "a") as f:
+                    f.write(f"------------\n{file_name}\nStep 1: {e}\n---------------\n")
+                break
+            '''Step 3: If a solution is found, check flip percentage'''
+            if solution_found:
+                model = BinaryClassifier(X.shape[1], l1, l2)
+                model.load_state_dict(torch.load(TrainC_Path))
+                model.eval()
+
+                X_tensor = torch.tensor(X_train, dtype=torch.float32)
+                Gurobi_X_tensor = torch.tensor(Gurobi_X, dtype=torch.float32)
+                with torch.no_grad():
+                    y_pred = model(X_tensor).numpy().flatten()
+                    y_pred_binary = np.round(y_pred)
+                    Gurobi_y_pred = np.round(model(Gurobi_X_tensor).numpy().flatten())
+                mismatch = np.sum(Gurobi_y_target != Gurobi_y_pred)
+                flipped_count_total = np.sum(y_pred_binary != y_train_pred)
+                print("Mismatch:", mismatch)
+                if mismatch != 1:
+                    continue
+                
+                with open(flipPercentageSummary, "a") as f:
+                    f.write(f"{file_name},{len(X)},{int(len(X)*0.8)},{X.shape[1]},{r*10},{mismatch},{flipCount},{flipped_count_total},{(flipped_count_total / len(X)) * 100:.2f},{final_metrics_A['train_accuracy']},{final_metrics_A['val_accuracy']},{final_metrics_A['train_loss']},{final_metrics_A['val_loss']}\n")
 
