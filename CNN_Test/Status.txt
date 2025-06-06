@@ -218,3 +218,17 @@ Training Without Gurobi Edit
 ------------------------
 Train Accuracy after Epoch 201: 80.39%
 Test Accuracy after Gurobi edit: 70.88%
+------------------------
+Training With Gurobi Edit
+------------------------
+Train Accuracy after Epoch 1: 80.28%
+Train Accuracy after Epoch 2: 80.28%
+Train Accuracy after Epoch 3: 80.27%
+Train Accuracy after Epoch 4: 80.38%
+Train Accuracy after Epoch 5: 79.98%
+Train Accuracy after Epoch 6: 80.31%
+Train Accuracy after Epoch 7: 80.11%
+Train Accuracy after Epoch 8: 80.09%
+Train Accuracy after Epoch 9: 80.05%
+Train Accuracy after Epoch 10: 79.99%
+Test Accuracy after Gurobi edit: 70.36%
