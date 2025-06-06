@@ -13,7 +13,8 @@ import gurobipy as gp
 from gurobipy import GRB
 from Gurobi_ForwardPass_L2_ReLU import ForwardPass
 from VerifyWeights import VerifyWeights
-
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import f1_score
 
 timeLimit = 300
 
@@ -88,7 +89,7 @@ def train_model(X_train, X_val, y_train, y_val, l1, l2, save_path=None, preset_w
         train_preds_tensor = torch.tensor(train_preds).unsqueeze(1)
         train_loss = criterion(train_preds_tensor, y_train_tensor).item()
         train_acc = accuracy_score(y_train_tensor.numpy().flatten(), np.round(train_preds))
-
+        f1_score_train = f1_score(y_train_tensor.numpy().flatten(), np.round(train_preds))
         val_preds = model(X_val_tensor).numpy().flatten()
         val_preds_tensor = torch.tensor(val_preds).unsqueeze(1)
         val_loss = criterion(val_preds_tensor, y_val_tensor).item()
@@ -97,6 +98,7 @@ def train_model(X_train, X_val, y_train, y_val, l1, l2, save_path=None, preset_w
     final_metrics = {
         "train_loss": float(train_loss),
         "train_accuracy": float(train_acc),
+        "f1_score_train": float(f1_score_train),
         "val_loss": float(val_loss),
         "val_accuracy": float(val_acc),
         "train_preds": train_preds,
@@ -277,15 +279,7 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, resta
         if not os.path.exists(SavePath):
             os.makedirs(SavePath)
         torch.save(original_state_dict, f'{SavePath}/model_{restart}.pth')
-        
-        print("f values  :", f_values)
-        print("y_pred val:", y.reshape(1,-1)[0])
-        print("y_g values:", y_g_values)
 
-        Z3_values = [[Z3[i, j].X for j in range(l3_size)] for i in range(len(X))]
-        print("Z3:", Z3_values)
-        print("Flip Indices:", flip_idxs)
-        print("Flipped Z3:", [Z3_values[i] for i in flip_idxs])
         # vw = VerifyWeights(X, y, n, l1, l2, "relu", flip_idxs, tol, W1_values, W2_values, W3_values, b1_values, b2_values, b3_values,
         #     W1_values_with_offset, W2_values_with_offset, W3_values_with_offset,
         #     b1_values_with_offset, b2_values_with_offset, b3_values_with_offset, y_gt=y_gt, file_name = file_name)
@@ -301,7 +295,8 @@ def RunForward(Test, file_name, nn, X, y, y_gt, tol, n, flipCount, l1, l2, resta
 if __name__ == "__main__":
     l1 = 4
     l2 = 4
-    Test = f"FlipPercentage_l{l1}{l2}_Flip1_Restart"
+    Test = f"FP_l{l1}{l2}_F1_Restart"
+    Test = "Te"
     epoch_count = 50000
     flipCount = 1
     tol = 3e-5
@@ -311,7 +306,7 @@ if __name__ == "__main__":
     if not os.path.exists("Outputs"):
         os.makedirs("Outputs")
 
-    flipPercentageSummary = f"Stats/{Test}_FlipPercentageSummary.csv"
+    flipPercentageSummary = f"Stats/{Test}.csv"
     dataset_dir = "../../Dataset"
     # dataset_dir = "../Dataset"
 
@@ -321,7 +316,7 @@ if __name__ == "__main__":
     
     if not os.path.exists(flipPercentageSummary):
         with open(flipPercentageSummary, "w") as f:
-            f.write("Dataset,Row,N_Sample,Col,Seed,Mismatch,FlipTry,Flipped,Flip_Percentage,Tr_Acc,Val_Acc,Tr_loss,Val_loss\n")
+            f.write("Dataset,Row,N_Sample,Col,Seed,Mismatch,FlipTry,Flipped,Flip_Percentage,Tr_Acc,Val_Acc,Tr_loss,Val_loss,F1_train\n")
     else:
         files_already_tested = pd.read_csv(flipPercentageSummary)['Dataset'].unique()
 
@@ -331,14 +326,13 @@ if __name__ == "__main__":
         if file_name in files_already_tested:
             print(f"Skipping {file_name} as it has already been processed.")
             continue
-        
+        if file_name != "appendicitis.csv":
+            continue
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
 
         if not (100 <= len(df) <= 1000):
             continue
-        # if not (400 < len(df) <= 1000):
-        #     continue
         print("File:", file_name)
         X = df.iloc[:, :-1]
         y_gt = df.iloc[:, -1]
@@ -414,5 +408,5 @@ if __name__ == "__main__":
                     continue
                 
                 with open(flipPercentageSummary, "a") as f:
-                    f.write(f"{file_name},{len(X)},{int(len(X)*0.8)},{X.shape[1]},{r*10},{mismatch},{flipCount},{flipped_count_total},{(flipped_count_total / len(X)) * 100:.2f},{final_metrics_A['train_accuracy']},{final_metrics_A['val_accuracy']},{final_metrics_A['train_loss']},{final_metrics_A['val_loss']}\n")
+                    f.write(f"{file_name},{len(X)},{int(len(X)*0.8)},{X.shape[1]},{r*10},{mismatch},{flipCount},{flipped_count_total},{(flipped_count_total / len(X)) * 100:.2f},{final_metrics_A['train_accuracy']},{final_metrics_A['val_accuracy']},{final_metrics_A['train_loss']},{final_metrics_A['val_loss']},{final_metrics_A['f1_score_train']}\n")
 
