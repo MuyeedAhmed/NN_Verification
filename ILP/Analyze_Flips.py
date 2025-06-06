@@ -134,10 +134,22 @@ for idx, row in flipAnyDf.iterrows():
         full_flipped = (y_pred_old_binary != y_pred_new_binary).astype(int)
         tsne_full = TSNE(n_components=2, random_state=42, perplexity=min(30, N_2-1))
         full_emb = tsne_full.fit_transform(X_full_scaled)
+        
+        # Find which row in X_full_scaled matches the flipped Gurobi point
+        if len(gb_flipped_idxs) > 0:
+            flipped_subset_point = X_train_gb[gb_flipped_idxs[0]]
+            for i, row_full in enumerate(X_full_scaled):
+                if np.allclose(row_full, flipped_subset_point, atol=1e-8):
+                    subset_point_full_idx = i
+                    break
+
         plt.figure(figsize=(6,5))
         plt.scatter(full_emb[full_flipped == 0, 0], full_emb[full_flipped == 0, 1], color='gray', label="Full (unchanged)", alpha=0.5, s=40, zorder=1)
         plt.scatter(full_emb[full_flipped == 1, 0], full_emb[full_flipped == 1, 1], color='blue', label="Flipped (all)", alpha=0.95, s=70, edgecolor='black', linewidth=0.5, zorder=2)
-        plt.title(f"{dataset_name}: Full Data (Blue = Flipped)")
+        # Add subset-flipped point if found
+        if subset_point_full_idx is not None:
+            plt.scatter(full_emb[subset_point_full_idx, 0], full_emb[subset_point_full_idx, 1], color='red', label="Subset Flipped", s=220, marker='*', edgecolor='black', linewidth=2.5, zorder=3)
+        plt.title(f"{dataset_name}: Full Data (Blue = Flipped, Red Star = Subset Flip)")
         plt.xlabel("t-SNE 1"); plt.ylabel("t-SNE 2")
         plt.legend()
         plt.tight_layout()
@@ -146,6 +158,8 @@ for idx, row in flipAnyDf.iterrows():
 
     # --- 3. Plot change in loss for flipped points ---
     avg_flip_diff = median_flip_diff = avg_flip_diff_rel = median_flip_diff_rel = np.nan
+    all_hist_dir = "Stats/all_histograms"
+    os.makedirs(all_hist_dir, exist_ok=True)
     if len(flip_idxs) > 0:
         pred_probs_old = y_pred_old[flip_idxs]
         pred_probs_new = y_pred_new[flip_idxs]
@@ -162,28 +176,30 @@ for idx, row in flipAnyDf.iterrows():
         avg_flip_diff_rel = np.mean(loss_diff_rel)
         median_flip_diff_rel = np.median(loss_diff_rel)
 
-        num_bins = 20
+        num_bins = 15
         all_bins = np.linspace(loss_diff.min(), loss_diff.max(), num_bins + 1)
         pos_diff = loss_diff[loss_diff >= 0]
         neg_diff = loss_diff[loss_diff < 0]
+
         plt.figure(figsize=(7, 5))
-        n_pos, bins_pos, patches_pos = plt.hist(pos_diff, bins=all_bins, alpha=0.85, edgecolor='black', color='#3399ff')
-        n_neg, bins_neg, patches_neg = plt.hist(neg_diff, bins=all_bins, alpha=0.85, edgecolor='black', color='#ff6666')
-        for rect in patches_neg:
-            rect.set_height(-abs(rect.get_height()))
-            plt.gca().add_patch(rect)
-        plt.axhline(0, color='black', linewidth=1.2)
-        legend_handles = [
-            mpatches.Patch(color='#3399ff', label="Positive (After > Before)"),
-            mpatches.Patch(color='#ff6666', label="Negative (After < Before)")
-        ]
-        plt.legend(handles=legend_handles)
-        plt.title(f"{dataset_name}: Split Histogram of Loss Difference (Flipped Points)")
+        plt.hist(pos_diff, bins=all_bins, alpha=0.8, edgecolor='black', color='#3399ff', label='Positive (After > Before)')
+        plt.hist(neg_diff, bins=all_bins, alpha=0.8, edgecolor='black', color='#ff6666', label='Negative (After < Before)')
+        
+        # Add vertical line for subset-flipped point if it is among the flipped points
+        if subset_point_full_idx is not None and subset_point_full_idx in flip_idxs:
+            idx_in_hist = np.where(flip_idxs == subset_point_full_idx)[0][0]
+            plt.axvline(loss_diff[idx_in_hist], color='red', linestyle='--', linewidth=2, label='Subset Flipped')
+
+        plt.legend()
+        plt.title(f"{dataset_name}: Histogram of Loss Difference (Flipped Points)")
         plt.xlabel("Loss Difference (After - Before)")
         plt.ylabel("Count")
         plt.tight_layout()
         plt.savefig(f"{tsne_dir}/loss_change_flipped_hist.png")
+        # Also save in the all_histograms folder with the dataset name in filename
+        plt.savefig(os.path.join(all_hist_dir, f"{dataset_name}_hist.png"))
         plt.close()
+        
     else:
         print(f"No points were flipped in {dataset_name}, skipping loss change plot.")
 
