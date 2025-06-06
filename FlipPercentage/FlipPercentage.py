@@ -296,7 +296,6 @@ if __name__ == "__main__":
     l1 = 4
     l2 = 4
     Test = f"FP_l{l1}{l2}_F1_Restart"
-    Test = "Te"
     epoch_count = 50000
     flipCount = 1
     tol = 3e-5
@@ -325,8 +324,6 @@ if __name__ == "__main__":
             continue
         if file_name in files_already_tested:
             print(f"Skipping {file_name} as it has already been processed.")
-            continue
-        if file_name != "appendicitis.csv":
             continue
         file_path = os.path.join(dataset_dir, file_name)
         df = pd.read_csv(file_path)
