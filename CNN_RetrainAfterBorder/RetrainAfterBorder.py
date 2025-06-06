@@ -11,11 +11,9 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-
-
 log_file = "Status.txt"
 initial_epoch = 200
-resume_epoch = 10
+resume_epoch = 100
 timeLimit = 600
 
 
@@ -49,7 +47,13 @@ class NIN(nn.Module):
             return x.clone().detach(), None
         return x
 
-def TrainAndSave():
+def TrainAndSave(resume=False):
+    if resume:
+        with open(log_file, "a") as f:
+            f.write("------------------------\n")
+            f.write(f"Training Resumed Without Gurobi Edit\n")
+            f.write("------------------------\n")
+
     t0 = time.time()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -70,7 +74,22 @@ def TrainAndSave():
     optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
     scheduler = CosineAnnealingLR(optimizer, T_max=200)
 
-    for epoch in range(initial_epoch):
+    checkpoint_dir = "./checkpoints/CIFER10"
+    os.makedirs(checkpoint_dir, exist_ok=True)
+
+    if resume:
+        checkpoint = torch.load(os.path.join(checkpoint_dir, "full_checkpoint.pth"), map_location=device)
+        model.load_state_dict(checkpoint["model_state_dict"])
+        optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
+        start_epoch = checkpoint["epoch"] + 1
+        save_suffix = "_resume"
+    else:
+        start_epoch = 0
+        save_suffix = ""
+
+    end_epoch = initial_epoch if not resume else initial_epoch + resume_epoch
+    for epoch in range(start_epoch, end_epoch):
         model.train()
         correct = 0
         total = 0
@@ -86,9 +105,10 @@ def TrainAndSave():
             total += labels.size(0)
             correct += predicted.eq(labels).sum().item()
         scheduler.step()
-        print(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%")
+        acc = 100. * correct / total
+        print(f"Train Accuracy after Epoch {epoch+1}: {acc:.2f}%")
         with open(log_file, "a") as f:
-            f.write(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%\n")
+            f.write(f"Train Accuracy after Epoch {epoch+1}: {acc:.2f}%\n")
 
     model.eval()
     correct = 0
@@ -100,16 +120,17 @@ def TrainAndSave():
             _, predicted = outputs.max(1)
             total += labels.size(0)
             correct += predicted.eq(labels).sum().item()
-    print(f"Test Accuracy after initial training: {100. * correct / total:.2f}%")
+    test_acc = 100. * correct / total
+    print(f"Test Accuracy after training: {test_acc:.2f}%")
     with open(log_file, "a") as f:
-        f.write(f"Test Accuracy after initial training: {100. * correct / total:.2f}%\n")
-    os.makedirs("./checkpoints/CIFER10", exist_ok=True)
-    torch.save(model.features[18].weight.data.clone(), "./checkpoints/CIFER10/last_weight_original.pt")
-    torch.save(model.features[18].bias.data.clone(), "./checkpoints/CIFER10/last_bias_original.pt")
-    torch.save(model.fc_hidden.weight.data.clone(), "./checkpoints/CIFER10/fc_hidden_weight.pt")
-    torch.save(model.fc_hidden.bias.data.clone(), "./checkpoints/CIFER10/fc_hidden_bias.pt")
-    torch.save(model.classifier.weight.data.clone(), "./checkpoints/CIFER10/classifier_weight.pt")
-    torch.save(model.classifier.bias.data.clone(), "./checkpoints/CIFER10/classifier_bias.pt")
+        f.write(f"Test Accuracy after training: {test_acc:.2f}%\n")
+
+    torch.save(model.features[18].weight.data.clone(), f"{checkpoint_dir}/last_weight_original{save_suffix}.pt")
+    torch.save(model.features[18].bias.data.clone(), f"{checkpoint_dir}/last_bias_original{save_suffix}.pt")
+    torch.save(model.fc_hidden.weight.data.clone(), f"{checkpoint_dir}/fc_hidden_weight{save_suffix}.pt")
+    torch.save(model.fc_hidden.bias.data.clone(), f"{checkpoint_dir}/fc_hidden_bias{save_suffix}.pt")
+    torch.save(model.classifier.weight.data.clone(), f"{checkpoint_dir}/classifier_weight{save_suffix}.pt")
+    torch.save(model.classifier.bias.data.clone(), f"{checkpoint_dir}/classifier_bias{save_suffix}.pt")
 
     torch.save({
         'epoch': epoch,
@@ -117,21 +138,18 @@ def TrainAndSave():
         'optimizer_state_dict': optimizer.state_dict(),
         'scheduler_state_dict': scheduler.state_dict(),
         'loss': loss.item()
-    }, "./checkpoints/CIFER10/full_checkpoint.pth")
-
+    }, f"{checkpoint_dir}/full_checkpoint{save_suffix}.pth")
 
     model.eval()
     X_fc_input = []
     Y_true = []
     Y_pred = []
-
     with torch.no_grad():
         for inputs, labels in train_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             fc_input, _ = model(inputs, extract_fc_input=True)
             logits = model.classifier(torch.relu(model.fc_hidden(fc_input)))
             preds = torch.argmax(logits, dim=1)
-
             X_fc_input.append(fc_input.cpu())
             Y_true.append(labels.cpu())
             Y_pred.append(preds.cpu())
@@ -140,49 +158,11 @@ def TrainAndSave():
     Y_true = torch.cat(Y_true, dim=0)
     Y_pred = torch.cat(Y_pred, dim=0)
 
-    torch.save(X_fc_input, "./checkpoints/CIFER10/fc_inputs.pt")
-    torch.save(Y_true, "./checkpoints/CIFER10/fc_labels.pt")
-    torch.save(Y_pred, "./checkpoints/CIFER10/fc_preds.pt")
+    torch.save(X_fc_input, f"{checkpoint_dir}/fc_inputs{save_suffix}.pt")
+    torch.save(Y_true, f"{checkpoint_dir}/fc_labels{save_suffix}.pt")
+    torch.save(Y_pred, f"{checkpoint_dir}/fc_preds{save_suffix}.pt")
 
-    t1 = time.time()
-    print(f"Training and saving completed in {t1 - t0:.2f} seconds.")
-
-    with open(log_file, "a") as f:
-        f.write("------------------------\n")
-        f.write("Training Without Gurobi Edit\n")
-        f.write("------------------------\n")
-    for epoch in range(resume_epoch):
-        model.train()
-        correct = 0
-        total = 0
-        for inputs, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/200"):
-            inputs, labels = inputs.to(device), labels.to(device)
-            optimizer.zero_grad()
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-
-            _, predicted = outputs.max(1)
-            total += labels.size(0)
-            correct += predicted.eq(labels).sum().item()
-        scheduler.step()
-        print(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%")
-        with open(log_file, "a") as f:
-            f.write(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%\n")
-    model.eval()
-    correct = 0
-    total = 0
-    with torch.no_grad():
-        for inputs, labels in test_loader:
-            inputs, labels = inputs.to(device), labels.to(device)
-            outputs = model(inputs)
-            _, predicted = outputs.max(1)
-            total += labels.size(0)
-            correct += predicted.eq(labels).sum().item()
-    print(f"Test Accuracy after initial training: {100. * correct / total:.2f}%")
-    with open(log_file, "a") as f:
-        f.write(f"Test Accuracy after initial training: {100. * correct / total:.2f}%\n")
+    print(f"Training and saving completed in {time.time() - t0:.2f} seconds.")
 
 def GurobiBorder():
     # n_samples = 1000
@@ -359,5 +339,6 @@ def GurobiBorder():
 
 if __name__ == "__main__":
     # TrainAndSave()
+    TrainAndSave(resume=True)
     GurobiBorder()
     

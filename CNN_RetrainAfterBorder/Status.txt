@@ -214,11 +214,6 @@ Train Accuracy after Epoch 9: 80.18%
 Train Accuracy after Epoch 10: 80.26%
 Test Accuracy after initial training: 70.79%
 ------------------------
-Training Without Gurobi Edit
-------------------------
-Train Accuracy after Epoch 201: 80.39%
-Test Accuracy after Gurobi edit: 70.88%
-------------------------
 Training With Gurobi Edit
 ------------------------
 Train Accuracy after Epoch 1: 80.28%
