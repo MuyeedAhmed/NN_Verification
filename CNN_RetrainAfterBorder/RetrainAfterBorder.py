@@ -11,7 +11,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-log_file = "Status.txt"
+log_file = "Status_400E.txt"
 initial_epoch = 400
 resume_epoch = 100
 timeLimit = 600
@@ -338,7 +338,7 @@ def GurobiBorder():
         print("No solution found.")
 
 if __name__ == "__main__":
-    # TrainAndSave()
+    TrainAndSave()
     TrainAndSave(resume=True)
     GurobiBorder()
     
