@@ -12,7 +12,7 @@ from gurobipy import GRB
 import numpy as np
 
 log_file = "Status.txt"
-initial_epoch = 200
+initial_epoch = 400
 resume_epoch = 100
 timeLimit = 600
 
