@@ -331,6 +331,6 @@ def GurobiBorder():
 
 if __name__ == "__main__":
     TrainAndSave()
-    GurobiBorder()
-    # TrainAndSave(resume=True)
+    # GurobiBorder()
+    TrainAndSave(resume=True)
     
