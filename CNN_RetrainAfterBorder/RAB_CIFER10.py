@@ -124,6 +124,7 @@ def TrainAndSave(resume=False):
 
         with open(log_file, "a") as f:
             f.write(f"Train Accuracy after Epoch {epoch+1}: {acc:.2f}%\n")
+            f.write(f"Loss: {loss.item():.4f}\n")
         if epoch == 0 or epoch == 10:
             model.eval()
             with torch.no_grad():
