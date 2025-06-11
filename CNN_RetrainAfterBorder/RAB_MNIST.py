@@ -12,8 +12,8 @@ from gurobipy import GRB
 import numpy as np
 
 log_file = "Status_MNIST_2.txt"
-initial_epoch = 400
-resume_epoch = 200
+initial_epoch = 1
+resume_epoch = 1
 timeLimit = 600
 
 
@@ -171,9 +171,10 @@ def TrainAndSave(resume=False):
     print(f"Training and saving completed in {time.time() - t0:.2f} seconds.")
 
 def GurobiBorder():
-    X = torch.load("checkpoints/MNIST/fc_inputs.pt").numpy()
-    labels = torch.load("checkpoints/MNIST/fc_labels.pt").numpy()
-    pred = torch.load("checkpoints/MNIST/fc_preds.pt").numpy()
+    n = 30000
+    X = torch.load("checkpoints/MNIST/fc_inputs.pt").numpy()[0:n]
+    labels = torch.load("checkpoints/MNIST/fc_labels.pt").numpy()[0:n]
+    pred = torch.load("checkpoints/MNIST/fc_preds.pt").numpy()[0:n]
 
     W1 = torch.load("checkpoints/MNIST/fc_hidden_weight.pt").cpu().numpy()
     b1 = torch.load("checkpoints/MNIST/fc_hidden_bias.pt").cpu().numpy()
@@ -186,6 +187,8 @@ def GurobiBorder():
 
     print("Mismatch: ", sum(pred != preds_Z2))
     print("Size of X:", X.shape)
+    print("Size of W2:", W2.shape)
+    print("Size of b2:", b2.shape)
 
 
     n_samples = len(X)
@@ -193,7 +196,7 @@ def GurobiBorder():
     l2_size = W2.shape[0]
 
     model = gp.Model()
-    model.setParam("OutputFlag", 1)
+    # model.setParam("OutputFlag", 1)
 
     W2_offset = model.addVars(*W2.shape, lb=-GRB.INFINITY, name="W2_offset")
     b2_offset = model.addVars(l2_size, lb=-GRB.INFINITY, name="b2_offset")
