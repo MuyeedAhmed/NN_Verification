@@ -7,8 +7,8 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from tqdm import tqdm
 import os
 import time
-# import gurobipy as gp
-# from gurobipy import GRB
+import gurobipy as gp
+from gurobipy import GRB
 import numpy as np
 
 log_file = "Status_KMNIST.txt"
@@ -118,16 +118,7 @@ def TrainAndSave(resume=False):
         with open(log_file, "a") as f:
             f.write(f"Train Accuracy after Epoch {epoch+1}: {acc:.2f}%\n")
             f.write(f"Loss: {loss.item():.4f}\n")
-        # if epoch == 0 or epoch == 10:
-        #     model.eval()
-        #     with torch.no_grad():
-        #         inputs, labels = next(iter(train_loader))
-        #         inputs, labels = inputs.to(device), labels.to(device)
-        #         outputs = model(inputs)
-        #         print("Output shape:", outputs.shape) 
-        #         print("Sample logits:", outputs[0])
-        #         print("Predicted label:", outputs[0].argmax().item())
-        #     model.train()
+
     model.eval()
     correct = 0
     total = 0
@@ -304,14 +295,20 @@ def GurobiBorder():
             model.classifier.weight.copy_(new_W)
             model.classifier.bias.copy_(new_b)
 
-        transform = transforms.Compose([
-            transforms.RandomCrop(32, padding=4),
+        transform_train = transforms.Compose([
+            # transforms.RandomCrop(32, padding=4),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,)),
         ])
-        train_dataset = torchvision.datasets.KMNIST(root='./data', train=True, download=True, transform=transform)
-        test_dataset = torchvision.datasets.KMNIST(root='./data', train=False, download=True, transform=transform)
+
+        transform_test = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.5,), (0.5,)),
+        ])
+
+        train_dataset = torchvision.datasets.KMNIST(root='./data', train=True, download=True, transform=transform_train)
+        test_dataset = torchvision.datasets.KMNIST(root='./data', train=False, download=True, transform=transform_test)
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=True, num_workers=2)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=100, shuffle=False, num_workers=2)
         for epoch in range(resume_epoch):
@@ -350,7 +347,7 @@ def GurobiBorder():
         print("No solution found.")
 
 if __name__ == "__main__":
-    TrainAndSave()
-    # GurobiBorder()
-    TrainAndSave(resume=True)
+    # TrainAndSave()
+    GurobiBorder()
+    # TrainAndSave(resume=True)
     
