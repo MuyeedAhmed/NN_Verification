@@ -108,6 +108,10 @@ def TrainAndSave(resume=False):
             outputs = model(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
+            for name, param in model.named_parameters():
+                if param.requires_grad:
+                    print(f"{name:30s} | mean={param.data.abs().mean():.6f} | grad_is_None={param.grad is None}")
+
             optimizer.step()
 
             _, predicted = outputs.max(1)
