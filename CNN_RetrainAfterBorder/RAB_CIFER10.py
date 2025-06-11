@@ -34,6 +34,8 @@ class NIN(nn.Module):
             nin_block(128, 128, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(2, stride=2),
             nin_block(128, 128, kernel_size=3, stride=1, padding=1),
+            nn.MaxPool2d(2, stride=2),
+            nin_block(128, 128, kernel_size=3, stride=1, padding=1),
             nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
