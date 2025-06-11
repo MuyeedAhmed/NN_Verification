@@ -7,8 +7,8 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from tqdm import tqdm
 import os
 import time
-# import gurobipy as gp
-# from gurobipy import GRB
+import gurobipy as gp
+from gurobipy import GRB
 import numpy as np
 
 log_file = "Status_CIFER10.txt"
@@ -353,7 +353,7 @@ def GurobiBorder():
         print("No solution found.")
 
 if __name__ == "__main__":
-    TrainAndSave()
-    # GurobiBorder()
-    TrainAndSave(resume=True)
+    # TrainAndSave()
+    GurobiBorder()
+    # TrainAndSave(resume=True)
     
