@@ -35,11 +35,11 @@ class NIN(nn.Module):
             nn.MaxPool2d(2, stride=2),
             nin_block(128, 128, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(2, stride=2),
-            nin_block(128, 128, kernel_size=3, stride=1, padding=1),
-            nn.AdaptiveAvgPool2d((1, 1))
+            nin_block(128, 64, kernel_size=3, stride=1, padding=1),
+            # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(128, 64)
+        self.fc_hidden = nn.Linear(64*2*2, 64)
         self.relu = nn.ReLU()
         self.classifier = nn.Linear(64, num_classes)
 
@@ -81,7 +81,7 @@ def TrainAndSave(resume=False):
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=100, shuffle=False, num_workers=2)
 
     model = NIN(num_classes=10).to(device)
-    print("Initial weight mean:", model.features[0][0].weight.data.abs().mean())
+    # print("Initial weight mean:", model.features[0][0].weight.data.abs().mean())
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=5e-4)
