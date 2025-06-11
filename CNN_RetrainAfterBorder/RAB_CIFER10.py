@@ -31,10 +31,6 @@ class NIN(nn.Module):
             nn.MaxPool2d(2, stride=2),
             nin_block(64, 128, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(2, stride=2),
-            nin_block(128, 128, kernel_size=3, stride=1, padding=1),
-            nn.MaxPool2d(2, stride=2),
-            nin_block(128, 128, kernel_size=3, stride=1, padding=1),
-            nn.MaxPool2d(2, stride=2),
             nin_block(128, 64, kernel_size=3, stride=1, padding=1),
             # nn.AdaptiveAvgPool2d((1, 1))
         )
