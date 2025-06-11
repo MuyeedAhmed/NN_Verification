@@ -1,0 +1,1205 @@
+Train Accuracy after Epoch 1: 72.35%
+Loss: 0.3079
+Train Accuracy after Epoch 2: 85.43%
+Loss: 0.3335
+Train Accuracy after Epoch 3: 87.03%
+Loss: 0.3607
+Train Accuracy after Epoch 4: 88.01%
+Loss: 0.3565
+Train Accuracy after Epoch 5: 88.67%
+Loss: 0.3509
+Train Accuracy after Epoch 6: 89.07%
+Loss: 0.2915
+Train Accuracy after Epoch 7: 89.71%
+Loss: 0.2406
+Train Accuracy after Epoch 8: 89.99%
+Loss: 0.2322
+Train Accuracy after Epoch 9: 90.33%
+Loss: 0.1986
+Train Accuracy after Epoch 10: 90.52%
+Loss: 0.1406
+Train Accuracy after Epoch 11: 90.91%
+Loss: 0.1453
+Train Accuracy after Epoch 12: 91.05%
+Loss: 0.2229
+Train Accuracy after Epoch 13: 91.25%
+Loss: 0.2753
+Train Accuracy after Epoch 14: 91.38%
+Loss: 0.1932
+Train Accuracy after Epoch 15: 91.67%
+Loss: 0.2771
+Train Accuracy after Epoch 16: 91.81%
+Loss: 0.2268
+Train Accuracy after Epoch 17: 92.03%
+Loss: 0.2950
+Train Accuracy after Epoch 18: 92.17%
+Loss: 0.1773
+Train Accuracy after Epoch 19: 92.35%
+Loss: 0.1886
+Train Accuracy after Epoch 20: 92.43%
+Loss: 0.2235
+Train Accuracy after Epoch 21: 92.39%
+Loss: 0.2275
+Train Accuracy after Epoch 22: 92.72%
+Loss: 0.2486
+Train Accuracy after Epoch 23: 92.78%
+Loss: 0.2154
+Train Accuracy after Epoch 24: 92.88%
+Loss: 0.1672
+Train Accuracy after Epoch 25: 93.07%
+Loss: 0.1795
+Train Accuracy after Epoch 26: 93.09%
+Loss: 0.1184
+Train Accuracy after Epoch 27: 93.16%
+Loss: 0.2077
+Train Accuracy after Epoch 28: 93.43%
+Loss: 0.2134
+Train Accuracy after Epoch 29: 93.57%
+Loss: 0.2197
+Train Accuracy after Epoch 30: 93.71%
+Loss: 0.0765
+Train Accuracy after Epoch 31: 93.64%
+Loss: 0.1747
+Train Accuracy after Epoch 32: 93.81%
+Loss: 0.1576
+Train Accuracy after Epoch 33: 93.88%
+Loss: 0.1163
+Train Accuracy after Epoch 34: 93.89%
+Loss: 0.1076
+Train Accuracy after Epoch 35: 94.02%
+Loss: 0.2910
+Train Accuracy after Epoch 36: 94.14%
+Loss: 0.1164
+Train Accuracy after Epoch 37: 94.15%
+Loss: 0.0801
+Train Accuracy after Epoch 38: 94.20%
+Loss: 0.0902
+Train Accuracy after Epoch 39: 94.24%
+Loss: 0.0997
+Train Accuracy after Epoch 40: 94.31%
+Loss: 0.1357
+Train Accuracy after Epoch 41: 94.48%
+Loss: 0.0558
+Train Accuracy after Epoch 42: 94.49%
+Loss: 0.1888
+Train Accuracy after Epoch 43: 94.56%
+Loss: 0.1486
+Train Accuracy after Epoch 44: 94.62%
+Loss: 0.1890
+Train Accuracy after Epoch 45: 94.75%
+Loss: 0.1199
+Train Accuracy after Epoch 46: 94.75%
+Loss: 0.1317
+Train Accuracy after Epoch 47: 94.92%
+Loss: 0.1045
+Train Accuracy after Epoch 48: 94.99%
+Loss: 0.2210
+Train Accuracy after Epoch 49: 94.94%
+Loss: 0.1587
+Train Accuracy after Epoch 50: 95.07%
+Loss: 0.0769
+Train Accuracy after Epoch 51: 95.17%
+Loss: 0.1343
+Train Accuracy after Epoch 52: 95.26%
+Loss: 0.1390
+Train Accuracy after Epoch 53: 95.33%
+Loss: 0.1476
+Train Accuracy after Epoch 54: 95.26%
+Loss: 0.2200
+Train Accuracy after Epoch 55: 95.27%
+Loss: 0.1351
+Train Accuracy after Epoch 56: 95.42%
+Loss: 0.0657
+Train Accuracy after Epoch 57: 95.46%
+Loss: 0.1299
+Train Accuracy after Epoch 58: 95.42%
+Loss: 0.1252
+Train Accuracy after Epoch 59: 95.69%
+Loss: 0.1169
+Train Accuracy after Epoch 60: 95.76%
+Loss: 0.2443
+Train Accuracy after Epoch 61: 95.81%
+Loss: 0.2403
+Train Accuracy after Epoch 62: 95.74%
+Loss: 0.0733
+Train Accuracy after Epoch 63: 95.90%
+Loss: 0.1049
+Train Accuracy after Epoch 64: 95.96%
+Loss: 0.0514
+Train Accuracy after Epoch 65: 95.93%
+Loss: 0.0833
+Train Accuracy after Epoch 66: 96.09%
+Loss: 0.1108
+Train Accuracy after Epoch 67: 96.06%
+Loss: 0.1750
+Train Accuracy after Epoch 68: 96.27%
+Loss: 0.2303
+Train Accuracy after Epoch 69: 96.19%
+Loss: 0.2449
+Train Accuracy after Epoch 70: 96.27%
+Loss: 0.1165
+Train Accuracy after Epoch 71: 96.38%
+Loss: 0.0909
+Train Accuracy after Epoch 72: 96.40%
+Loss: 0.0860
+Train Accuracy after Epoch 73: 96.42%
+Loss: 0.0819
+Train Accuracy after Epoch 74: 96.57%
+Loss: 0.1210
+Train Accuracy after Epoch 75: 96.58%
+Loss: 0.1475
+Train Accuracy after Epoch 76: 96.42%
+Loss: 0.1002
+Train Accuracy after Epoch 77: 96.55%
+Loss: 0.1651
+Train Accuracy after Epoch 78: 96.69%
+Loss: 0.1603
+Train Accuracy after Epoch 79: 96.72%
+Loss: 0.0572
+Train Accuracy after Epoch 80: 96.81%
+Loss: 0.1186
+Train Accuracy after Epoch 81: 96.88%
+Loss: 0.0802
+Train Accuracy after Epoch 82: 96.77%
+Loss: 0.1075
+Train Accuracy after Epoch 83: 97.05%
+Loss: 0.1135
+Train Accuracy after Epoch 84: 97.00%
+Loss: 0.1073
+Train Accuracy after Epoch 85: 96.96%
+Loss: 0.1382
+Train Accuracy after Epoch 86: 97.15%
+Loss: 0.1204
+Train Accuracy after Epoch 87: 97.19%
+Loss: 0.1145
+Train Accuracy after Epoch 88: 97.22%
+Loss: 0.0909
+Train Accuracy after Epoch 89: 97.22%
+Loss: 0.0557
+Train Accuracy after Epoch 90: 97.13%
+Loss: 0.0858
+Train Accuracy after Epoch 91: 97.44%
+Loss: 0.0682
+Train Accuracy after Epoch 92: 97.40%
+Loss: 0.0941
+Train Accuracy after Epoch 93: 97.56%
+Loss: 0.1179
+Train Accuracy after Epoch 94: 97.56%
+Loss: 0.0763
+Train Accuracy after Epoch 95: 97.55%
+Loss: 0.0850
+Train Accuracy after Epoch 96: 97.63%
+Loss: 0.0551
+Train Accuracy after Epoch 97: 97.75%
+Loss: 0.0736
+Train Accuracy after Epoch 98: 97.66%
+Loss: 0.1167
+Train Accuracy after Epoch 99: 97.72%
+Loss: 0.0811
+Train Accuracy after Epoch 100: 97.86%
+Loss: 0.0885
+Train Accuracy after Epoch 101: 97.96%
+Loss: 0.0144
+Train Accuracy after Epoch 102: 97.94%
+Loss: 0.1933
+Train Accuracy after Epoch 103: 98.04%
+Loss: 0.0627
+Train Accuracy after Epoch 104: 98.06%
+Loss: 0.0854
+Train Accuracy after Epoch 105: 98.05%
+Loss: 0.0387
+Train Accuracy after Epoch 106: 98.13%
+Loss: 0.0299
+Train Accuracy after Epoch 107: 98.23%
+Loss: 0.0488
+Train Accuracy after Epoch 108: 98.24%
+Loss: 0.0874
+Train Accuracy after Epoch 109: 98.35%
+Loss: 0.0425
+Train Accuracy after Epoch 110: 98.30%
+Loss: 0.0346
+Train Accuracy after Epoch 111: 98.39%
+Loss: 0.0624
+Train Accuracy after Epoch 112: 98.54%
+Loss: 0.0688
+Train Accuracy after Epoch 113: 98.49%
+Loss: 0.0739
+Train Accuracy after Epoch 114: 98.54%
+Loss: 0.0219
+Train Accuracy after Epoch 115: 98.53%
+Loss: 0.0327
+Train Accuracy after Epoch 116: 98.59%
+Loss: 0.0275
+Train Accuracy after Epoch 117: 98.64%
+Loss: 0.0316
+Train Accuracy after Epoch 118: 98.76%
+Loss: 0.0305
+Train Accuracy after Epoch 119: 98.79%
+Loss: 0.0213
+Train Accuracy after Epoch 120: 98.76%
+Loss: 0.0162
+Train Accuracy after Epoch 121: 98.87%
+Loss: 0.0384
+Train Accuracy after Epoch 122: 99.00%
+Loss: 0.0174
+Train Accuracy after Epoch 123: 98.86%
+Loss: 0.0100
+Train Accuracy after Epoch 124: 98.92%
+Loss: 0.0161
+Train Accuracy after Epoch 125: 99.00%
+Loss: 0.0195
+Train Accuracy after Epoch 126: 99.00%
+Loss: 0.0314
+Train Accuracy after Epoch 127: 99.12%
+Loss: 0.0224
+Train Accuracy after Epoch 128: 99.01%
+Loss: 0.0070
+Train Accuracy after Epoch 129: 99.24%
+Loss: 0.0321
+Train Accuracy after Epoch 130: 99.20%
+Loss: 0.0109
+Train Accuracy after Epoch 131: 99.28%
+Loss: 0.0169
+Train Accuracy after Epoch 132: 99.28%
+Loss: 0.0611
+Train Accuracy after Epoch 133: 99.34%
+Loss: 0.0562
+Train Accuracy after Epoch 134: 99.34%
+Loss: 0.0480
+Train Accuracy after Epoch 135: 99.40%
+Loss: 0.0388
+Train Accuracy after Epoch 136: 99.44%
+Loss: 0.0539
+Train Accuracy after Epoch 137: 99.47%
+Loss: 0.0128
+Train Accuracy after Epoch 138: 99.57%
+Loss: 0.0135
+Train Accuracy after Epoch 139: 99.48%
+Loss: 0.0408
+Train Accuracy after Epoch 140: 99.60%
+Loss: 0.0279
+Train Accuracy after Epoch 141: 99.60%
+Loss: 0.0207
+Train Accuracy after Epoch 142: 99.60%
+Loss: 0.0152
+Train Accuracy after Epoch 143: 99.67%
+Loss: 0.0079
+Train Accuracy after Epoch 144: 99.68%
+Loss: 0.0331
+Train Accuracy after Epoch 145: 99.69%
+Loss: 0.0023
+Train Accuracy after Epoch 146: 99.70%
+Loss: 0.0188
+Train Accuracy after Epoch 147: 99.73%
+Loss: 0.0156
+Train Accuracy after Epoch 148: 99.78%
+Loss: 0.0079
+Train Accuracy after Epoch 149: 99.74%
+Loss: 0.0112
+Train Accuracy after Epoch 150: 99.83%
+Loss: 0.0058
+Train Accuracy after Epoch 151: 99.86%
+Loss: 0.0026
+Train Accuracy after Epoch 152: 99.83%
+Loss: 0.0085
+Train Accuracy after Epoch 153: 99.86%
+Loss: 0.0239
+Train Accuracy after Epoch 154: 99.89%
+Loss: 0.0062
+Train Accuracy after Epoch 155: 99.86%
+Loss: 0.0112
+Train Accuracy after Epoch 156: 99.89%
+Loss: 0.0078
+Train Accuracy after Epoch 157: 99.89%
+Loss: 0.0094
+Train Accuracy after Epoch 158: 99.93%
+Loss: 0.0081
+Train Accuracy after Epoch 159: 99.94%
+Loss: 0.0038
+Train Accuracy after Epoch 160: 99.92%
+Loss: 0.0055
+Train Accuracy after Epoch 161: 99.94%
+Loss: 0.0111
+Train Accuracy after Epoch 162: 99.95%
+Loss: 0.0057
+Train Accuracy after Epoch 163: 99.96%
+Loss: 0.0044
+Train Accuracy after Epoch 164: 99.97%
+Loss: 0.0134
+Train Accuracy after Epoch 165: 99.96%
+Loss: 0.0214
+Train Accuracy after Epoch 166: 99.97%
+Loss: 0.0077
+Train Accuracy after Epoch 167: 99.97%
+Loss: 0.0040
+Train Accuracy after Epoch 168: 99.98%
+Loss: 0.0060
+Train Accuracy after Epoch 169: 99.98%
+Loss: 0.0148
+Train Accuracy after Epoch 170: 99.98%
+Loss: 0.0072
+Train Accuracy after Epoch 171: 99.99%
+Loss: 0.0056
+Train Accuracy after Epoch 172: 99.99%
+Loss: 0.0102
+Train Accuracy after Epoch 173: 99.98%
+Loss: 0.0034
+Train Accuracy after Epoch 174: 99.99%
+Loss: 0.0027
+Train Accuracy after Epoch 175: 99.99%
+Loss: 0.0070
+Train Accuracy after Epoch 176: 100.00%
+Loss: 0.0036
+Train Accuracy after Epoch 177: 99.99%
+Loss: 0.0077
+Train Accuracy after Epoch 178: 100.00%
+Loss: 0.0045
+Train Accuracy after Epoch 179: 100.00%
+Loss: 0.0021
+Train Accuracy after Epoch 180: 100.00%
+Loss: 0.0037
+Train Accuracy after Epoch 181: 100.00%
+Loss: 0.0081
+Train Accuracy after Epoch 182: 100.00%
+Loss: 0.0028
+Train Accuracy after Epoch 183: 100.00%
+Loss: 0.0034
+Train Accuracy after Epoch 184: 100.00%
+Loss: 0.0026
+Train Accuracy after Epoch 185: 100.00%
+Loss: 0.0031
+Train Accuracy after Epoch 186: 100.00%
+Loss: 0.0050
+Train Accuracy after Epoch 187: 100.00%
+Loss: 0.0047
+Train Accuracy after Epoch 188: 100.00%
+Loss: 0.0065
+Train Accuracy after Epoch 189: 100.00%
+Loss: 0.0056
+Train Accuracy after Epoch 190: 100.00%
+Loss: 0.0039
+Train Accuracy after Epoch 191: 100.00%
+Loss: 0.0042
+Train Accuracy after Epoch 192: 100.00%
+Loss: 0.0025
+Train Accuracy after Epoch 193: 100.00%
+Loss: 0.0080
+Train Accuracy after Epoch 194: 100.00%
+Loss: 0.0020
+Train Accuracy after Epoch 195: 100.00%
+Loss: 0.0020
+Train Accuracy after Epoch 196: 100.00%
+Loss: 0.0038
+Train Accuracy after Epoch 197: 100.00%
+Loss: 0.0022
+Train Accuracy after Epoch 198: 100.00%
+Loss: 0.0029
+Train Accuracy after Epoch 199: 100.00%
+Loss: 0.0048
+Train Accuracy after Epoch 200: 100.00%
+Loss: 0.0025
+Train Accuracy after Epoch 201: 100.00%
+Loss: 0.0034
+Train Accuracy after Epoch 202: 100.00%
+Loss: 0.0071
+Train Accuracy after Epoch 203: 100.00%
+Loss: 0.0026
+Train Accuracy after Epoch 204: 100.00%
+Loss: 0.0040
+Train Accuracy after Epoch 205: 100.00%
+Loss: 0.0104
+Train Accuracy after Epoch 206: 100.00%
+Loss: 0.0040
+Train Accuracy after Epoch 207: 100.00%
+Loss: 0.0135
+Train Accuracy after Epoch 208: 100.00%
+Loss: 0.0014
+Train Accuracy after Epoch 209: 100.00%
+Loss: 0.0051
+Train Accuracy after Epoch 210: 100.00%
+Loss: 0.0050
+Train Accuracy after Epoch 211: 100.00%
+Loss: 0.0038
+Train Accuracy after Epoch 212: 100.00%
+Loss: 0.0058
+Train Accuracy after Epoch 213: 100.00%
+Loss: 0.0063
+Train Accuracy after Epoch 214: 100.00%
+Loss: 0.0029
+Train Accuracy after Epoch 215: 100.00%
+Loss: 0.0032
+Train Accuracy after Epoch 216: 100.00%
+Loss: 0.0072
+Train Accuracy after Epoch 217: 100.00%
+Loss: 0.0042
+Train Accuracy after Epoch 218: 100.00%
+Loss: 0.0038
+Train Accuracy after Epoch 219: 100.00%
+Loss: 0.0095
+Train Accuracy after Epoch 220: 100.00%
+Loss: 0.0086
+Train Accuracy after Epoch 221: 100.00%
+Loss: 0.0064
+Train Accuracy after Epoch 222: 100.00%
+Loss: 0.0124
+Train Accuracy after Epoch 223: 100.00%
+Loss: 0.0050
+Train Accuracy after Epoch 224: 100.00%
+Loss: 0.0051
+Train Accuracy after Epoch 225: 100.00%
+Loss: 0.0054
+Train Accuracy after Epoch 226: 99.99%
+Loss: 0.0036
+Train Accuracy after Epoch 227: 100.00%
+Loss: 0.0047
+Train Accuracy after Epoch 228: 99.99%
+Loss: 0.0066
+Train Accuracy after Epoch 229: 99.99%
+Loss: 0.0084
+Train Accuracy after Epoch 230: 99.99%
+Loss: 0.0050
+Train Accuracy after Epoch 231: 99.98%
+Loss: 0.0083
+Train Accuracy after Epoch 232: 99.99%
+Loss: 0.0052
+Train Accuracy after Epoch 233: 99.99%
+Loss: 0.0059
+Train Accuracy after Epoch 234: 99.98%
+Loss: 0.0073
+Train Accuracy after Epoch 235: 99.97%
+Loss: 0.0082
+Train Accuracy after Epoch 236: 99.95%
+Loss: 0.0035
+Train Accuracy after Epoch 237: 99.97%
+Loss: 0.0072
+Train Accuracy after Epoch 238: 99.92%
+Loss: 0.0077
+Train Accuracy after Epoch 239: 99.92%
+Loss: 0.0124
+Train Accuracy after Epoch 240: 99.92%
+Loss: 0.0077
+Train Accuracy after Epoch 241: 99.89%
+Loss: 0.0307
+Train Accuracy after Epoch 242: 99.92%
+Loss: 0.0053
+Train Accuracy after Epoch 243: 99.88%
+Loss: 0.0074
+Train Accuracy after Epoch 244: 99.89%
+Loss: 0.0104
+Train Accuracy after Epoch 245: 99.88%
+Loss: 0.0096
+Train Accuracy after Epoch 246: 99.81%
+Loss: 0.0161
+Train Accuracy after Epoch 247: 99.69%
+Loss: 0.0063
+Train Accuracy after Epoch 248: 99.83%
+Loss: 0.0137
+Train Accuracy after Epoch 249: 99.78%
+Loss: 0.0116
+Train Accuracy after Epoch 250: 99.70%
+Loss: 0.0076
+Train Accuracy after Epoch 251: 99.71%
+Loss: 0.0205
+Train Accuracy after Epoch 252: 99.75%
+Loss: 0.0378
+Train Accuracy after Epoch 253: 99.51%
+Loss: 0.0058
+Train Accuracy after Epoch 254: 99.61%
+Loss: 0.0248
+Train Accuracy after Epoch 255: 99.60%
+Loss: 0.0183
+Train Accuracy after Epoch 256: 99.58%
+Loss: 0.0041
+Train Accuracy after Epoch 257: 99.53%
+Loss: 0.0109
+Train Accuracy after Epoch 258: 99.49%
+Loss: 0.0159
+Train Accuracy after Epoch 259: 99.48%
+Loss: 0.0088
+Train Accuracy after Epoch 260: 99.43%
+Loss: 0.0223
+Train Accuracy after Epoch 261: 99.45%
+Loss: 0.0213
+Train Accuracy after Epoch 262: 99.38%
+Loss: 0.0094
+Train Accuracy after Epoch 263: 99.39%
+Loss: 0.0339
+Train Accuracy after Epoch 264: 99.35%
+Loss: 0.0039
+Train Accuracy after Epoch 265: 99.29%
+Loss: 0.0380
+Train Accuracy after Epoch 266: 99.28%
+Loss: 0.0148
+Train Accuracy after Epoch 267: 99.16%
+Loss: 0.0793
+Train Accuracy after Epoch 268: 99.08%
+Loss: 0.0140
+Train Accuracy after Epoch 269: 99.06%
+Loss: 0.0139
+Train Accuracy after Epoch 270: 99.05%
+Loss: 0.0718
+Train Accuracy after Epoch 271: 99.17%
+Loss: 0.0107
+Train Accuracy after Epoch 272: 98.99%
+Loss: 0.0115
+Train Accuracy after Epoch 273: 99.07%
+Loss: 0.0303
+Train Accuracy after Epoch 274: 99.00%
+Loss: 0.0251
+Train Accuracy after Epoch 275: 98.86%
+Loss: 0.0201
+Train Accuracy after Epoch 276: 99.05%
+Loss: 0.0217
+Train Accuracy after Epoch 277: 98.85%
+Loss: 0.0336
+Train Accuracy after Epoch 278: 98.87%
+Loss: 0.0517
+Train Accuracy after Epoch 279: 98.86%
+Loss: 0.0297
+Train Accuracy after Epoch 280: 98.70%
+Loss: 0.0235
+Train Accuracy after Epoch 281: 98.76%
+Loss: 0.0575
+Train Accuracy after Epoch 282: 98.86%
+Loss: 0.0436
+Train Accuracy after Epoch 283: 98.75%
+Loss: 0.1882
+Train Accuracy after Epoch 284: 98.69%
+Loss: 0.0904
+Train Accuracy after Epoch 285: 98.60%
+Loss: 0.0622
+Train Accuracy after Epoch 286: 98.61%
+Loss: 0.0362
+Train Accuracy after Epoch 287: 98.63%
+Loss: 0.0231
+Train Accuracy after Epoch 288: 98.50%
+Loss: 0.0505
+Train Accuracy after Epoch 289: 98.50%
+Loss: 0.0374
+Train Accuracy after Epoch 290: 98.59%
+Loss: 0.0303
+Train Accuracy after Epoch 291: 98.49%
+Loss: 0.0318
+Train Accuracy after Epoch 292: 98.50%
+Loss: 0.0223
+Train Accuracy after Epoch 293: 98.41%
+Loss: 0.0938
+Train Accuracy after Epoch 294: 98.34%
+Loss: 0.0117
+Train Accuracy after Epoch 295: 98.35%
+Loss: 0.0639
+Train Accuracy after Epoch 296: 98.30%
+Loss: 0.0508
+Train Accuracy after Epoch 297: 98.30%
+Loss: 0.0657
+Train Accuracy after Epoch 298: 98.35%
+Loss: 0.0410
+Train Accuracy after Epoch 299: 98.26%
+Loss: 0.0222
+Train Accuracy after Epoch 300: 98.18%
+Loss: 0.0396
+Train Accuracy after Epoch 301: 98.07%
+Loss: 0.0561
+Train Accuracy after Epoch 302: 98.31%
+Loss: 0.0329
+Train Accuracy after Epoch 303: 98.05%
+Loss: 0.0599
+Train Accuracy after Epoch 304: 98.11%
+Loss: 0.0217
+Train Accuracy after Epoch 305: 98.06%
+Loss: 0.0371
+Train Accuracy after Epoch 306: 98.18%
+Loss: 0.0665
+Train Accuracy after Epoch 307: 97.92%
+Loss: 0.0980
+Train Accuracy after Epoch 308: 98.06%
+Loss: 0.0258
+Train Accuracy after Epoch 309: 97.95%
+Loss: 0.0620
+Train Accuracy after Epoch 310: 97.85%
+Loss: 0.0304
+Train Accuracy after Epoch 311: 98.02%
+Loss: 0.0321
+Train Accuracy after Epoch 312: 97.93%
+Loss: 0.1048
+Train Accuracy after Epoch 313: 97.99%
+Loss: 0.0317
+Train Accuracy after Epoch 314: 97.83%
+Loss: 0.0431
+Train Accuracy after Epoch 315: 97.72%
+Loss: 0.1128
+Train Accuracy after Epoch 316: 97.76%
+Loss: 0.0430
+Train Accuracy after Epoch 317: 97.83%
+Loss: 0.0272
+Train Accuracy after Epoch 318: 97.84%
+Loss: 0.0535
+Train Accuracy after Epoch 319: 97.88%
+Loss: 0.0488
+Train Accuracy after Epoch 320: 97.77%
+Loss: 0.0687
+Train Accuracy after Epoch 321: 97.85%
+Loss: 0.0855
+Train Accuracy after Epoch 322: 97.62%
+Loss: 0.1175
+Train Accuracy after Epoch 323: 97.62%
+Loss: 0.2042
+Train Accuracy after Epoch 324: 97.74%
+Loss: 0.0521
+Train Accuracy after Epoch 325: 97.64%
+Loss: 0.0253
+Train Accuracy after Epoch 326: 97.81%
+Loss: 0.0598
+Train Accuracy after Epoch 327: 97.68%
+Loss: 0.0835
+Train Accuracy after Epoch 328: 97.56%
+Loss: 0.0982
+Train Accuracy after Epoch 329: 97.40%
+Loss: 0.0645
+Train Accuracy after Epoch 330: 97.38%
+Loss: 0.1344
+Train Accuracy after Epoch 331: 97.68%
+Loss: 0.0868
+Train Accuracy after Epoch 332: 97.46%
+Loss: 0.0661
+Train Accuracy after Epoch 333: 97.53%
+Loss: 0.0605
+Train Accuracy after Epoch 334: 97.46%
+Loss: 0.0381
+Train Accuracy after Epoch 335: 97.50%
+Loss: 0.1090
+Train Accuracy after Epoch 336: 97.50%
+Loss: 0.0396
+Train Accuracy after Epoch 337: 97.37%
+Loss: 0.0426
+Train Accuracy after Epoch 338: 97.44%
+Loss: 0.1116
+Train Accuracy after Epoch 339: 97.27%
+Loss: 0.1189
+Train Accuracy after Epoch 340: 97.38%
+Loss: 0.0995
+Train Accuracy after Epoch 341: 97.35%
+Loss: 0.0764
+Train Accuracy after Epoch 342: 97.42%
+Loss: 0.0408
+Train Accuracy after Epoch 343: 97.29%
+Loss: 0.0707
+Train Accuracy after Epoch 344: 97.16%
+Loss: 0.0794
+Train Accuracy after Epoch 345: 97.37%
+Loss: 0.0865
+Train Accuracy after Epoch 346: 97.24%
+Loss: 0.0472
+Train Accuracy after Epoch 347: 97.25%
+Loss: 0.1184
+Train Accuracy after Epoch 348: 97.24%
+Loss: 0.0732
+Train Accuracy after Epoch 349: 97.15%
+Loss: 0.0787
+Train Accuracy after Epoch 350: 97.12%
+Loss: 0.0788
+Train Accuracy after Epoch 351: 97.23%
+Loss: 0.0520
+Train Accuracy after Epoch 352: 97.06%
+Loss: 0.0901
+Train Accuracy after Epoch 353: 97.11%
+Loss: 0.1401
+Train Accuracy after Epoch 354: 97.08%
+Loss: 0.0511
+Train Accuracy after Epoch 355: 97.06%
+Loss: 0.1304
+Train Accuracy after Epoch 356: 97.11%
+Loss: 0.0840
+Train Accuracy after Epoch 357: 97.01%
+Loss: 0.1030
+Train Accuracy after Epoch 358: 97.09%
+Loss: 0.0906
+Train Accuracy after Epoch 359: 97.02%
+Loss: 0.0475
+Train Accuracy after Epoch 360: 97.03%
+Loss: 0.0809
+Train Accuracy after Epoch 361: 97.11%
+Loss: 0.0516
+Train Accuracy after Epoch 362: 96.95%
+Loss: 0.0464
+Train Accuracy after Epoch 363: 97.06%
+Loss: 0.1222
+Train Accuracy after Epoch 364: 96.96%
+Loss: 0.1069
+Train Accuracy after Epoch 365: 97.03%
+Loss: 0.1211
+Train Accuracy after Epoch 366: 97.07%
+Loss: 0.0500
+Train Accuracy after Epoch 367: 96.93%
+Loss: 0.1059
+Train Accuracy after Epoch 368: 96.98%
+Loss: 0.1377
+Train Accuracy after Epoch 369: 96.96%
+Loss: 0.1541
+Train Accuracy after Epoch 370: 96.98%
+Loss: 0.0691
+Train Accuracy after Epoch 371: 96.96%
+Loss: 0.0893
+Train Accuracy after Epoch 372: 96.94%
+Loss: 0.0588
+Train Accuracy after Epoch 373: 96.94%
+Loss: 0.0643
+Train Accuracy after Epoch 374: 96.89%
+Loss: 0.0388
+Train Accuracy after Epoch 375: 96.95%
+Loss: 0.1186
+Train Accuracy after Epoch 376: 96.94%
+Loss: 0.1434
+Train Accuracy after Epoch 377: 96.77%
+Loss: 0.0712
+Train Accuracy after Epoch 378: 96.78%
+Loss: 0.0366
+Train Accuracy after Epoch 379: 96.93%
+Loss: 0.0579
+Train Accuracy after Epoch 380: 96.77%
+Loss: 0.1937
+Train Accuracy after Epoch 381: 97.10%
+Loss: 0.1737
+Train Accuracy after Epoch 382: 96.82%
+Loss: 0.1230
+Train Accuracy after Epoch 383: 96.87%
+Loss: 0.0868
+Train Accuracy after Epoch 384: 96.72%
+Loss: 0.0870
+Train Accuracy after Epoch 385: 96.87%
+Loss: 0.0634
+Train Accuracy after Epoch 386: 96.76%
+Loss: 0.0907
+Train Accuracy after Epoch 387: 96.93%
+Loss: 0.1941
+Train Accuracy after Epoch 388: 96.82%
+Loss: 0.0873
+Train Accuracy after Epoch 389: 96.83%
+Loss: 0.0716
+Train Accuracy after Epoch 390: 96.97%
+Loss: 0.0759
+Train Accuracy after Epoch 391: 96.76%
+Loss: 0.0906
+Train Accuracy after Epoch 392: 96.89%
+Loss: 0.0919
+Train Accuracy after Epoch 393: 96.84%
+Loss: 0.1028
+Train Accuracy after Epoch 394: 96.70%
+Loss: 0.0842
+Train Accuracy after Epoch 395: 96.89%
+Loss: 0.0836
+Train Accuracy after Epoch 396: 96.83%
+Loss: 0.0947
+Train Accuracy after Epoch 397: 96.87%
+Loss: 0.1671
+Train Accuracy after Epoch 398: 96.75%
+Loss: 0.2338
+Train Accuracy after Epoch 399: 96.83%
+Loss: 0.1324
+Train Accuracy after Epoch 400: 96.83%
+Loss: 0.1263
+Test Accuracy after training: 90.73%
+------------------------
+Training Resumed Without Gurobi Edit
+------------------------
+Train Accuracy after Epoch 401: 96.98%
+Loss: 0.0897
+Train Accuracy after Epoch 402: 96.73%
+Loss: 0.1655
+Train Accuracy after Epoch 403: 97.03%
+Loss: 0.0568
+Train Accuracy after Epoch 404: 96.82%
+Loss: 0.0519
+Train Accuracy after Epoch 405: 96.96%
+Loss: 0.0553
+Train Accuracy after Epoch 406: 96.88%
+Loss: 0.0256
+Train Accuracy after Epoch 407: 96.86%
+Loss: 0.0623
+Train Accuracy after Epoch 408: 96.85%
+Loss: 0.0572
+Train Accuracy after Epoch 409: 96.97%
+Loss: 0.0942
+Train Accuracy after Epoch 410: 96.82%
+Loss: 0.0454
+Train Accuracy after Epoch 411: 96.92%
+Loss: 0.1277
+Train Accuracy after Epoch 412: 96.97%
+Loss: 0.1372
+Train Accuracy after Epoch 413: 96.94%
+Loss: 0.0939
+Train Accuracy after Epoch 414: 96.93%
+Loss: 0.0854
+Train Accuracy after Epoch 415: 97.03%
+Loss: 0.0646
+Train Accuracy after Epoch 416: 97.02%
+Loss: 0.1490
+Train Accuracy after Epoch 417: 96.99%
+Loss: 0.0777
+Train Accuracy after Epoch 418: 96.90%
+Loss: 0.0601
+Train Accuracy after Epoch 419: 96.99%
+Loss: 0.1243
+Train Accuracy after Epoch 420: 96.96%
+Loss: 0.1219
+Train Accuracy after Epoch 421: 96.98%
+Loss: 0.0692
+Train Accuracy after Epoch 422: 97.10%
+Loss: 0.0564
+Train Accuracy after Epoch 423: 97.08%
+Loss: 0.0388
+Train Accuracy after Epoch 424: 97.08%
+Loss: 0.0680
+Train Accuracy after Epoch 425: 97.04%
+Loss: 0.0709
+Train Accuracy after Epoch 426: 97.11%
+Loss: 0.0844
+Train Accuracy after Epoch 427: 97.06%
+Loss: 0.0917
+Train Accuracy after Epoch 428: 97.05%
+Loss: 0.0849
+Train Accuracy after Epoch 429: 97.25%
+Loss: 0.1740
+Train Accuracy after Epoch 430: 97.14%
+Loss: 0.0386
+Train Accuracy after Epoch 431: 96.97%
+Loss: 0.1627
+Train Accuracy after Epoch 432: 97.21%
+Loss: 0.0867
+Train Accuracy after Epoch 433: 97.22%
+Loss: 0.0529
+Train Accuracy after Epoch 434: 97.06%
+Loss: 0.0577
+Train Accuracy after Epoch 435: 97.26%
+Loss: 0.2054
+Train Accuracy after Epoch 436: 97.23%
+Loss: 0.0937
+Train Accuracy after Epoch 437: 97.25%
+Loss: 0.0576
+Train Accuracy after Epoch 438: 97.32%
+Loss: 0.0826
+Train Accuracy after Epoch 439: 97.36%
+Loss: 0.0664
+Train Accuracy after Epoch 440: 97.31%
+Loss: 0.0445
+Train Accuracy after Epoch 441: 97.40%
+Loss: 0.0931
+Train Accuracy after Epoch 442: 97.16%
+Loss: 0.0690
+Train Accuracy after Epoch 443: 97.43%
+Loss: 0.0335
+Train Accuracy after Epoch 444: 97.37%
+Loss: 0.0441
+Train Accuracy after Epoch 445: 97.35%
+Loss: 0.0663
+Train Accuracy after Epoch 446: 97.49%
+Loss: 0.1011
+Train Accuracy after Epoch 447: 97.46%
+Loss: 0.0767
+Train Accuracy after Epoch 448: 97.44%
+Loss: 0.0644
+Train Accuracy after Epoch 449: 97.52%
+Loss: 0.1265
+Train Accuracy after Epoch 450: 97.43%
+Loss: 0.0476
+Train Accuracy after Epoch 451: 97.42%
+Loss: 0.0474
+Train Accuracy after Epoch 452: 97.50%
+Loss: 0.0608
+Train Accuracy after Epoch 453: 97.60%
+Loss: 0.1148
+Train Accuracy after Epoch 454: 97.65%
+Loss: 0.0912
+Train Accuracy after Epoch 455: 97.66%
+Loss: 0.1147
+Train Accuracy after Epoch 456: 97.66%
+Loss: 0.0450
+Train Accuracy after Epoch 457: 97.70%
+Loss: 0.0713
+Train Accuracy after Epoch 458: 97.76%
+Loss: 0.0478
+Train Accuracy after Epoch 459: 97.72%
+Loss: 0.0868
+Train Accuracy after Epoch 460: 97.81%
+Loss: 0.1016
+Train Accuracy after Epoch 461: 97.72%
+Loss: 0.0523
+Train Accuracy after Epoch 462: 97.87%
+Loss: 0.1240
+Train Accuracy after Epoch 463: 97.75%
+Loss: 0.1025
+Train Accuracy after Epoch 464: 97.79%
+Loss: 0.0357
+Train Accuracy after Epoch 465: 97.92%
+Loss: 0.0796
+Train Accuracy after Epoch 466: 97.96%
+Loss: 0.0677
+Train Accuracy after Epoch 467: 97.91%
+Loss: 0.1030
+Train Accuracy after Epoch 468: 97.93%
+Loss: 0.0412
+Train Accuracy after Epoch 469: 97.98%
+Loss: 0.0590
+Train Accuracy after Epoch 470: 97.97%
+Loss: 0.0264
+Train Accuracy after Epoch 471: 98.11%
+Loss: 0.1442
+Train Accuracy after Epoch 472: 98.20%
+Loss: 0.0210
+Train Accuracy after Epoch 473: 97.99%
+Loss: 0.1253
+Train Accuracy after Epoch 474: 98.17%
+Loss: 0.0186
+Train Accuracy after Epoch 475: 98.11%
+Loss: 0.1026
+Train Accuracy after Epoch 476: 98.21%
+Loss: 0.1001
+Train Accuracy after Epoch 477: 98.32%
+Loss: 0.0531
+Train Accuracy after Epoch 478: 98.11%
+Loss: 0.0593
+Train Accuracy after Epoch 479: 98.27%
+Loss: 0.0282
+Train Accuracy after Epoch 480: 98.29%
+Loss: 0.0593
+Train Accuracy after Epoch 481: 98.34%
+Loss: 0.0852
+Train Accuracy after Epoch 482: 98.41%
+Loss: 0.0137
+Train Accuracy after Epoch 483: 98.31%
+Loss: 0.0172
+Train Accuracy after Epoch 484: 98.40%
+Loss: 0.0501
+Train Accuracy after Epoch 485: 98.48%
+Loss: 0.0383
+Train Accuracy after Epoch 486: 98.48%
+Loss: 0.0458
+Train Accuracy after Epoch 487: 98.42%
+Loss: 0.0875
+Train Accuracy after Epoch 488: 98.55%
+Loss: 0.0308
+Train Accuracy after Epoch 489: 98.54%
+Loss: 0.0531
+Train Accuracy after Epoch 490: 98.56%
+Loss: 0.0369
+Train Accuracy after Epoch 491: 98.59%
+Loss: 0.0779
+Train Accuracy after Epoch 492: 98.68%
+Loss: 0.0478
+Train Accuracy after Epoch 493: 98.58%
+Loss: 0.0660
+Train Accuracy after Epoch 494: 98.86%
+Loss: 0.0473
+Train Accuracy after Epoch 495: 98.71%
+Loss: 0.0241
+Train Accuracy after Epoch 496: 98.78%
+Loss: 0.0459
+Train Accuracy after Epoch 497: 98.83%
+Loss: 0.0408
+Train Accuracy after Epoch 498: 98.85%
+Loss: 0.0294
+Train Accuracy after Epoch 499: 98.79%
+Loss: 0.0778
+Train Accuracy after Epoch 500: 98.86%
+Loss: 0.0342
+Train Accuracy after Epoch 501: 98.89%
+Loss: 0.0319
+Train Accuracy after Epoch 502: 98.89%
+Loss: 0.0217
+Train Accuracy after Epoch 503: 98.92%
+Loss: 0.0249
+Train Accuracy after Epoch 504: 98.97%
+Loss: 0.0259
+Train Accuracy after Epoch 505: 99.10%
+Loss: 0.0151
+Train Accuracy after Epoch 506: 98.99%
+Loss: 0.0068
+Train Accuracy after Epoch 507: 99.05%
+Loss: 0.0558
+Train Accuracy after Epoch 508: 99.09%
+Loss: 0.0848
+Train Accuracy after Epoch 509: 99.11%
+Loss: 0.0513
+Train Accuracy after Epoch 510: 99.24%
+Loss: 0.0254
+Train Accuracy after Epoch 511: 99.23%
+Loss: 0.0308
+Train Accuracy after Epoch 512: 99.16%
+Loss: 0.0604
+Train Accuracy after Epoch 513: 99.21%
+Loss: 0.0761
+Train Accuracy after Epoch 514: 99.26%
+Loss: 0.0091
+Train Accuracy after Epoch 515: 99.39%
+Loss: 0.0119
+Train Accuracy after Epoch 516: 99.37%
+Loss: 0.0237
+Train Accuracy after Epoch 517: 99.45%
+Loss: 0.0092
+Train Accuracy after Epoch 518: 99.41%
+Loss: 0.0094
+Train Accuracy after Epoch 519: 99.36%
+Loss: 0.0218
+Train Accuracy after Epoch 520: 99.38%
+Loss: 0.0314
+Train Accuracy after Epoch 521: 99.43%
+Loss: 0.0127
+Train Accuracy after Epoch 522: 99.52%
+Loss: 0.0124
+Train Accuracy after Epoch 523: 99.47%
+Loss: 0.0118
+Train Accuracy after Epoch 524: 99.59%
+Loss: 0.0194
+Train Accuracy after Epoch 525: 99.61%
+Loss: 0.0512
+Train Accuracy after Epoch 526: 99.58%
+Loss: 0.0389
+Train Accuracy after Epoch 527: 99.53%
+Loss: 0.0234
+Train Accuracy after Epoch 528: 99.59%
+Loss: 0.0200
+Train Accuracy after Epoch 529: 99.60%
+Loss: 0.0112
+Train Accuracy after Epoch 530: 99.61%
+Loss: 0.0087
+Train Accuracy after Epoch 531: 99.72%
+Loss: 0.0414
+Train Accuracy after Epoch 532: 99.68%
+Loss: 0.0106
+Train Accuracy after Epoch 533: 99.75%
+Loss: 0.0053
+Train Accuracy after Epoch 534: 99.77%
+Loss: 0.0455
+Train Accuracy after Epoch 535: 99.73%
+Loss: 0.0151
+Train Accuracy after Epoch 536: 99.72%
+Loss: 0.0057
+Train Accuracy after Epoch 537: 99.80%
+Loss: 0.0054
+Train Accuracy after Epoch 538: 99.79%
+Loss: 0.0072
+Train Accuracy after Epoch 539: 99.83%
+Loss: 0.0042
+Train Accuracy after Epoch 540: 99.79%
+Loss: 0.0166
+Train Accuracy after Epoch 541: 99.86%
+Loss: 0.0183
+Train Accuracy after Epoch 542: 99.84%
+Loss: 0.0053
+Train Accuracy after Epoch 543: 99.81%
+Loss: 0.0205
+Train Accuracy after Epoch 544: 99.87%
+Loss: 0.0061
+Train Accuracy after Epoch 545: 99.88%
+Loss: 0.0068
+Train Accuracy after Epoch 546: 99.88%
+Loss: 0.0133
+Train Accuracy after Epoch 547: 99.93%
+Loss: 0.0070
+Train Accuracy after Epoch 548: 99.89%
+Loss: 0.0037
+Train Accuracy after Epoch 549: 99.94%
+Loss: 0.0036
+Train Accuracy after Epoch 550: 99.94%
+Loss: 0.0067
+Train Accuracy after Epoch 551: 99.93%
+Loss: 0.0051
+Train Accuracy after Epoch 552: 99.94%
+Loss: 0.0132
+Train Accuracy after Epoch 553: 99.97%
+Loss: 0.0051
+Train Accuracy after Epoch 554: 99.96%
+Loss: 0.0065
+Train Accuracy after Epoch 555: 99.94%
+Loss: 0.0055
+Train Accuracy after Epoch 556: 99.97%
+Loss: 0.0010
+Train Accuracy after Epoch 557: 99.97%
+Loss: 0.0027
+Train Accuracy after Epoch 558: 99.97%
+Loss: 0.0101
+Train Accuracy after Epoch 559: 99.97%
+Loss: 0.0077
+Train Accuracy after Epoch 560: 99.96%
+Loss: 0.0060
+Train Accuracy after Epoch 561: 99.98%
+Loss: 0.0027
+Train Accuracy after Epoch 562: 99.98%
+Loss: 0.0032
+Train Accuracy after Epoch 563: 99.99%
+Loss: 0.0110
+Train Accuracy after Epoch 564: 99.98%
+Loss: 0.0034
+Train Accuracy after Epoch 565: 99.99%
+Loss: 0.0045
+Train Accuracy after Epoch 566: 99.98%
+Loss: 0.0024
+Train Accuracy after Epoch 567: 99.99%
+Loss: 0.0047
+Train Accuracy after Epoch 568: 100.00%
+Loss: 0.0037
+Train Accuracy after Epoch 569: 99.99%
+Loss: 0.0041
+Train Accuracy after Epoch 570: 99.99%
+Loss: 0.0043
+Train Accuracy after Epoch 571: 99.99%
+Loss: 0.0020
+Train Accuracy after Epoch 572: 100.00%
+Loss: 0.0044
+Train Accuracy after Epoch 573: 100.00%
+Loss: 0.0019
+Train Accuracy after Epoch 574: 100.00%
+Loss: 0.0031
+Train Accuracy after Epoch 575: 100.00%
+Loss: 0.0030
+Train Accuracy after Epoch 576: 100.00%
+Loss: 0.0058
+Train Accuracy after Epoch 577: 99.99%
+Loss: 0.0039
+Train Accuracy after Epoch 578: 100.00%
+Loss: 0.0030
+Train Accuracy after Epoch 579: 100.00%
+Loss: 0.0034
+Train Accuracy after Epoch 580: 100.00%
+Loss: 0.0032
+Train Accuracy after Epoch 581: 100.00%
+Loss: 0.0021
+Train Accuracy after Epoch 582: 100.00%
+Loss: 0.0032
+Train Accuracy after Epoch 583: 100.00%
+Loss: 0.0015
+Train Accuracy after Epoch 584: 100.00%
+Loss: 0.0055
+Train Accuracy after Epoch 585: 100.00%
+Loss: 0.0033
+Train Accuracy after Epoch 586: 100.00%
+Loss: 0.0036
+Train Accuracy after Epoch 587: 100.00%
+Loss: 0.0027
+Train Accuracy after Epoch 588: 100.00%
+Loss: 0.0024
+Train Accuracy after Epoch 589: 100.00%
+Loss: 0.0047
+Train Accuracy after Epoch 590: 100.00%
+Loss: 0.0031
+Train Accuracy after Epoch 591: 100.00%
+Loss: 0.0047
+Train Accuracy after Epoch 592: 100.00%
+Loss: 0.0023
+Train Accuracy after Epoch 593: 100.00%
+Loss: 0.0065
+Train Accuracy after Epoch 594: 100.00%
+Loss: 0.0022
+Train Accuracy after Epoch 595: 100.00%
+Loss: 0.0031
+Train Accuracy after Epoch 596: 100.00%
+Loss: 0.0035
+Train Accuracy after Epoch 597: 100.00%
+Loss: 0.0027
+Train Accuracy after Epoch 598: 100.00%
+Loss: 0.0025
+Train Accuracy after Epoch 599: 100.00%
+Loss: 0.0040
+Train Accuracy after Epoch 600: 100.00%
+Loss: 0.0022
+Test Accuracy after training: 90.59%
