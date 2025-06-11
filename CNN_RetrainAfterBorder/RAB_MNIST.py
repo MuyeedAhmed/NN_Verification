@@ -175,10 +175,10 @@ def GurobiBorder():
     labels = torch.load("checkpoints/MNIST/fc_labels.pt").numpy()
     pred = torch.load("checkpoints/MNIST/fc_preds.pt").numpy()
 
-    W1 = torch.load("checkpoints/MNIST/fc_hidden_weight.pt").numpy()
-    b1 = torch.load("checkpoints/MNIST/fc_hidden_bias.pt").numpy()
-    W2 = torch.load("checkpoints/MNIST/classifier_weight.pt").numpy()
-    b2 = torch.load("checkpoints/MNIST/classifier_bias.pt").numpy()
+    W1 = torch.load("checkpoints/MNIST/fc_hidden_weight.pt").cpu().numpy()
+    b1 = torch.load("checkpoints/MNIST/fc_hidden_bias.pt").cpu().numpy()
+    W2 = torch.load("checkpoints/MNIST/classifier_weight.pt").cpu().numpy()
+    b2 = torch.load("checkpoints/MNIST/classifier_bias.pt").cpu().numpy()
 
     Z1 = np.maximum(0, X @ W1.T + b1)
     Z2_target = Z1 @ W2.T + b2  
