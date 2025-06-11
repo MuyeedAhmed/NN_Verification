@@ -7,8 +7,8 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from tqdm import tqdm
 import os
 import time
-import gurobipy as gp
-from gurobipy import GRB
+# import gurobipy as gp
+# from gurobipy import GRB
 import numpy as np
 
 log_file = "Status_CIFER10.txt"
@@ -31,11 +31,13 @@ class NIN(nn.Module):
             nn.MaxPool2d(2, stride=2),
             nin_block(64, 128, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(2, stride=2),
-            nin_block(128, 192, kernel_size=3, stride=1, padding=1),
+            nin_block(128, 128, kernel_size=3, stride=1, padding=1),
+            nn.MaxPool2d(2, stride=2),
+            nin_block(128, 128, kernel_size=3, stride=1, padding=1),
             nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(192, 64)
+        self.fc_hidden = nn.Linear(128, 64)
         self.classifier = nn.Linear(64, num_classes)
 
     def forward(self, x, extract_fc_input=False):
