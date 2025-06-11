@@ -31,13 +31,11 @@ class NIN(nn.Module):
             nn.MaxPool2d(2, stride=2),
             nin_block(64, 128, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(2, stride=2),
-            nin_block(128, 128, kernel_size=3, stride=1, padding=1),
-            nn.MaxPool2d(2, stride=2),
             nin_block(128, 64, kernel_size=3, stride=1, padding=1),
             # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(64*2*2, 64)
+        self.fc_hidden = nn.Linear(64*8*8, 64)
         self.relu = nn.ReLU()
         self.classifier = nn.Linear(64, num_classes)
 
