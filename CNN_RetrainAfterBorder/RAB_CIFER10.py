@@ -27,9 +27,9 @@ class NIN(nn.Module):
                 nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
             )
         self.features = nn.Sequential(
-            nin_block(3, 64, kernel_size=5, stride=1, padding=2),
+            nin_block(3, 192, kernel_size=5, stride=1, padding=2),
             nn.MaxPool2d(2, stride=2),
-            nin_block(64, 128, kernel_size=3, stride=1, padding=1),
+            nin_block(192, 128, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(2, stride=2),
             nin_block(128, 64, kernel_size=3, stride=1, padding=1),
             # nn.AdaptiveAvgPool2d((1, 1))
