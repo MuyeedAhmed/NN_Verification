@@ -116,9 +116,11 @@ def TrainAndSave(resume=False):
         scheduler.step()
         acc = 100. * correct / total
         print(f"Train Accuracy after Epoch {epoch+1}: {acc:.2f}%")
+        print(f"Loss: {loss.item():.4f}")
+
         with open(log_file, "a") as f:
             f.write(f"Train Accuracy after Epoch {epoch+1}: {acc:.2f}%\n")
-        if epoch == 0:
+        if epoch == 0 or epoch == 10:
             model.eval()
             with torch.no_grad():
                 inputs, labels = next(iter(train_loader))
