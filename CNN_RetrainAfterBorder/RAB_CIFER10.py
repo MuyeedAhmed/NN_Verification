@@ -38,6 +38,7 @@ class NIN(nn.Module):
         )
         self.flatten = nn.Flatten()
         self.fc_hidden = nn.Linear(128, 64)
+        self.relu = nn.ReLU()
         self.classifier = nn.Linear(64, num_classes)
 
     def forward(self, x, extract_fc_input=False):
@@ -46,8 +47,8 @@ class NIN(nn.Module):
         if extract_fc_input:
             return x.clone().detach(), None
         x = self.fc_hidden(x)
-        x = F.relu(self.fc_hidden(x))
-        # x = self.classifier(x)
+        x = self.relu(x)
+        x = self.classifier(x)
         return x
 
 def TrainAndSave(resume=False):
