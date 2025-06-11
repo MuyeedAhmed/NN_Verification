@@ -79,6 +79,8 @@ def TrainAndSave(resume=False):
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=100, shuffle=False, num_workers=2)
 
     model = NIN(num_classes=10).to(device)
+    print("Initial weight mean:", model.features[0][0].weight.data.abs().mean())
+
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=5e-4)
     scheduler = CosineAnnealingLR(optimizer, T_max=200)
@@ -108,10 +110,6 @@ def TrainAndSave(resume=False):
             outputs = model(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
-            for name, param in model.named_parameters():
-                if param.requires_grad:
-                    print(f"{name:30s} | mean={param.data.abs().mean():.6f} | grad_is_None={param.grad is None}")
-
             optimizer.step()
 
             _, predicted = outputs.max(1)
@@ -200,7 +198,7 @@ def GurobiBorder():
     Z2_target = Z1 @ W2.T + b2  
     preds_Z2 = np.argmax(Z2_target, axis=1)
 
-    print("Mismatch: ", sum(preds_Z2 != preds_Z2))
+    print("Mismatch: ", sum(pred != preds_Z2))
     print("Size of X:", X.shape)
 
 
