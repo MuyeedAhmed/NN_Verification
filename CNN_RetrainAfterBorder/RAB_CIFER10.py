@@ -45,6 +45,9 @@ class NIN(nn.Module):
         x = x.view(x.size(0), -1)
         if extract_fc_input:
             return x.clone().detach(), None
+        x = self.fc_hidden(x)
+        # x = F.relu(self.fc_hidden(x))
+        x = self.classifier(x)
         return x
 
 def TrainAndSave(resume=False):
