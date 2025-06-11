@@ -11,7 +11,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-log_file = "Status_KMNIST.txt"
+log_file = "Status_KMNIST_2.txt"
 initial_epoch = 400
 resume_epoch = 200
 timeLimit = 600
@@ -30,10 +30,10 @@ class NIN_KMNIST(nn.Module):
             nin_block(1, 32, kernel_size=5, stride=1, padding=2),
             nn.MaxPool2d(2, stride=2),
             nin_block(32, 32, kernel_size=3, stride=1, padding=1),
-            # nn.AdaptiveAvgPool2d((1, 1))
+            nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(32*14*14, 32)
+        self.fc_hidden = nn.Linear(32, 32)
         self.relu = nn.ReLU()
         self.classifier = nn.Linear(32, num_classes)
 
@@ -347,7 +347,7 @@ def GurobiBorder():
         print("No solution found.")
 
 if __name__ == "__main__":
-    # TrainAndSave()
+    TrainAndSave()
     GurobiBorder()
-    # TrainAndSave(resume=True)
+    TrainAndSave(resume=True)
     

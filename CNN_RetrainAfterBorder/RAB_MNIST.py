@@ -11,7 +11,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-log_file = "Status_MNIST.txt"
+log_file = "Status_MNIST_2.txt"
 initial_epoch = 400
 resume_epoch = 200
 timeLimit = 600
@@ -33,9 +33,9 @@ class NIN_MNIST(nn.Module):
             # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(32*14*14, 32)
+        self.fc_hidden = nn.Linear(32*14*14, 16)
         self.relu = nn.ReLU()
-        self.classifier = nn.Linear(32, num_classes)
+        self.classifier = nn.Linear(16, num_classes)
 
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
@@ -346,7 +346,7 @@ def GurobiBorder():
         print("No solution found.")
 
 if __name__ == "__main__":
-    # TrainAndSave()
+    TrainAndSave()
     GurobiBorder()
-    # TrainAndSave(resume=True)
+    TrainAndSave(resume=True)
     

@@ -11,7 +11,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-log_file = "Status_CIFER10.txt"
+log_file = "Status_CIFER10_2.txt"
 initial_epoch = 400
 resume_epoch = 200
 timeLimit = 600
@@ -29,15 +29,15 @@ class NIN(nn.Module):
         self.features = nn.Sequential(
             nin_block(3, 192, kernel_size=5, stride=1, padding=2),
             nn.MaxPool2d(2, stride=2),
-            nin_block(192, 128, kernel_size=3, stride=1, padding=1),
+            nin_block(192, 64, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(2, stride=2),
-            nin_block(128, 64, kernel_size=3, stride=1, padding=1),
+            nin_block(64, 32, kernel_size=3, stride=1, padding=1),
             # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(64*8*8, 64)
+        self.fc_hidden = nn.Linear(32*8*8, 32)
         self.relu = nn.ReLU()
-        self.classifier = nn.Linear(64, num_classes)
+        self.classifier = nn.Linear(32, num_classes)
 
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
@@ -353,7 +353,7 @@ def GurobiBorder():
         print("No solution found.")
 
 if __name__ == "__main__":
-    # TrainAndSave()
+    TrainAndSave()
     GurobiBorder()
-    # TrainAndSave(resume=True)
+    TrainAndSave(resume=True)
     
