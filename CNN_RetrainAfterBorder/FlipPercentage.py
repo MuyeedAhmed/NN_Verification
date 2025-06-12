@@ -11,60 +11,33 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-log_file = "Status.txt"
+from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST
+
+
+log_file = "Stats/FP_Status.txt"
 initial_epoch = 200
 resume_epoch = 100
 timeLimit = 600
 
 
-class NIN(nn.Module):
-    def __init__(self, num_classes=10):
-        super(NIN, self).__init__()
-        self.features = nn.Sequential(
-            nn.Conv2d(3, 192, kernel_size=5, padding=2), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 160, kernel_size=1), nn.ReLU(inplace=True),
-            nn.Conv2d(160, 96, kernel_size=1), nn.ReLU(inplace=True),
-            nn.MaxPool2d(3, stride=2, padding=1),
 
-            nn.Conv2d(96, 192, kernel_size=5, padding=2), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
-            nn.MaxPool2d(3, stride=2, padding=1),
+def GurobiFlip(dataset_name):
+    n_samples = 1000
+    X = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()[0:n_samples]
+    labels = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()[0:n_samples]
+    pred = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()[0:n_samples]
+    X_full = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
+    labels_full = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
+    pred_full = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
 
-            nn.Conv2d(192, 192, kernel_size=3, padding=1), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 10, kernel_size=1),
-            # nn.AdaptiveAvgPool2d((1, 1))
-        )
-        self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(10 * 8 * 8, 64)
-        self.classifier = nn.Linear(64, num_classes)
+    # X = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
+    # labels = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
+    # pred = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
 
-    def forward(self, x, extract_fc_input=False):
-        x = self.features(x)
-        x = x.view(x.size(0), -1)
-        if extract_fc_input:
-            return x.clone().detach(), None
-        return x
-
-
-def GurobiFlip():
-    n_samples = 100
-    X = torch.load("checkpoints/CIFER10/fc_inputs.pt").numpy()[0:n_samples]
-    labels = torch.load("checkpoints/CIFER10/fc_labels.pt").numpy()[0:n_samples]
-    pred = torch.load("checkpoints/CIFER10/fc_preds.pt").numpy()[0:n_samples]
-    X_full = torch.load("checkpoints/CIFER10/fc_inputs.pt").numpy()
-    labels_full = torch.load("checkpoints/CIFER10/fc_labels.pt").numpy()
-    pred_full = torch.load("checkpoints/CIFER10/fc_preds.pt").numpy()
-
-    # X = torch.load("checkpoints/CIFER10/fc_inputs.pt").numpy()
-    # labels = torch.load("checkpoints/CIFER10/fc_labels.pt").numpy()
-    # pred = torch.load("checkpoints/CIFER10/fc_preds.pt").numpy()
-
-    W1 = torch.load("checkpoints/CIFER10/fc_hidden_weight.pt").numpy()
-    b1 = torch.load("checkpoints/CIFER10/fc_hidden_bias.pt").numpy()
-    W2 = torch.load("checkpoints/CIFER10/classifier_weight.pt").numpy()
-    b2 = torch.load("checkpoints/CIFER10/classifier_bias.pt").numpy()
+    W1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_weight.pt", map_location=torch.device('cpu')).cpu().numpy()
+    b1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_bias.pt", map_location=torch.device('cpu')).cpu().numpy()
+    W2 = torch.load(f"checkpoints/{dataset_name}/classifier_weight.pt", map_location=torch.device('cpu')).cpu().numpy()
+    b2 = torch.load(f"checkpoints/{dataset_name}/classifier_bias.pt", map_location=torch.device('cpu')).cpu().numpy()
 
     Z1 = np.maximum(0, X @ W1.T + b1)
     Z2_target = Z1 @ W2.T + b2  
@@ -79,7 +52,7 @@ def GurobiFlip():
     l2_size = W2.shape[0]
 
     model = gp.Model()
-    # model.setParam("OutputFlag", 1)
+    model.setParam("OutputFlag", 1)
 
     W2_offset = model.addVars(*W2.shape, lb=-GRB.INFINITY, name="W2_offset")
     b2_offset = model.addVars(l2_size, lb=-GRB.INFINITY, name="b2_offset")
@@ -88,7 +61,7 @@ def GurobiFlip():
     max_min_diff = []
 
     misclassified_flags = model.addVars(n_samples, vtype=GRB.BINARY, name="misclassified_flags")
-    epsilon = 1e-6
+    epsilon = 2e-6
     for s in range(n_samples):
         label_max = int(np.argmax(Z2_target[s]))
         label_min = int(np.argmin(Z2_target[s]))
@@ -204,74 +177,89 @@ def GurobiFlip():
         print("Average Cross Entropy loss (z2 vs labels):", ce_loss_pred / n_samples)
 
         return
-        with open(log_file, "a") as f:
-            f.write("------------------------\n")
-            f.write("Training With Gurobi Edit\n")
-            f.write("------------------------\n")
-        W2_new = W2 + W2_off
-        b2_new = b2 + b2_off
+    #     with open(log_file, "a") as f:
+    #         f.write("------------------------\n")
+    #         f.write("Training With Gurobi Edit\n")
+    #         f.write("------------------------\n")
+    #     W2_new = W2 + W2_off
+    #     b2_new = b2 + b2_off
 
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = NIN(num_classes=10).to(device)
-        criterion = torch.nn.CrossEntropyLoss()
-        optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
+    #     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    #     model = None
+    #     if dataset_name == "MNIST":
+    #         model = NIN_MNIST(num_classes=10).to(device)
+    #     elif dataset_name == "FashionMNIST":
+    #         model = NIN_FashionMNIST(num_classes=10).to(device)
+    #     elif dataset_name == "KMNIST":
+    #         model = NIN_KMNIST(num_classes=10).to(device)
+    #     elif dataset_name == "CIFAR10": 
+    #         model = NIN_CIFAR10(num_classes=10).to(device)
 
-        checkpoint = torch.load("./checkpoints/CIFER10/full_checkpoint.pth")
-        model.load_state_dict(checkpoint['model_state_dict'])
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
 
-        new_W = torch.tensor(W2_new).to(model.classifier.weight.device)
-        new_b = torch.tensor(b2_new).to(model.classifier.bias.device)
-        with torch.no_grad():
-            model.classifier.weight.copy_(new_W)
-            model.classifier.bias.copy_(new_b)
+    #     criterion = torch.nn.CrossEntropyLoss()
+    #     optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
+    #     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
-        transform = transforms.Compose([
-            transforms.RandomCrop(32, padding=4),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-        ])
-        train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
-        test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=True, num_workers=2)
-        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=100, shuffle=False, num_workers=2)
-        for epoch in range(resume_epoch):
-            model.train()
-            correct = 0
-            total = 0
-            for inputs, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/200"):
-                inputs, labels = inputs.to(device), labels.to(device)
-                optimizer.zero_grad()
-                outputs = model(inputs)
-                loss = criterion(outputs, labels)
-                loss.backward()
-                optimizer.step()
+    #     checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth")
+    #     model.load_state_dict(checkpoint['model_state_dict'])
+    #     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    #     scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
 
-                _, predicted = outputs.max(1)
-                total += labels.size(0)
-                correct += predicted.eq(labels).sum().item()
-            scheduler.step()
-            print(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%")
-            with open(log_file, "a") as f:
-                f.write(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%\n")
-        model.eval()
-        correct = 0
-        total = 0
-        with torch.no_grad():
-            for inputs, labels in test_loader:
-                inputs, labels = inputs.to(device), labels.to(device)
-                outputs = model(inputs)
-                _, predicted = outputs.max(1)
-                total += labels.size(0)
-                correct += predicted.eq(labels).sum().item()
-        print(f"Test Accuracy after Gurobi edit: {100. * correct / total:.2f}%")
-        with open(log_file, "a") as f:
-            f.write(f"Test Accuracy after Gurobi edit: {100. * correct / total:.2f}%\n")
-    else:
-        print("No solution found.")
+    #     new_W = torch.tensor(W2_new).to(model.classifier.weight.device)
+    #     new_b = torch.tensor(b2_new).to(model.classifier.bias.device)
+    #     with torch.no_grad():
+    #         model.classifier.weight.copy_(new_W)
+    #         model.classifier.bias.copy_(new_b)
+
+    #     transform = transforms.Compose([
+    #         transforms.RandomCrop(32, padding=4),
+    #         transforms.RandomHorizontalFlip(),
+    #         transforms.ToTensor(),
+    #         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+    #     ])
+    #     train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
+    #     test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
+    #     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=True, num_workers=2)
+    #     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=100, shuffle=False, num_workers=2)
+    #     for epoch in range(resume_epoch):
+    #         model.train()
+    #         correct = 0
+    #         total = 0
+    #         for inputs, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/200"):
+    #             inputs, labels = inputs.to(device), labels.to(device)
+    #             optimizer.zero_grad()
+    #             outputs = model(inputs)
+    #             loss = criterion(outputs, labels)
+    #             loss.backward()
+    #             optimizer.step()
+
+    #             _, predicted = outputs.max(1)
+    #             total += labels.size(0)
+    #             correct += predicted.eq(labels).sum().item()
+    #         scheduler.step()
+    #         print(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%")
+    #         with open(log_file, "a") as f:
+    #             f.write(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%\n")
+    #     model.eval()
+    #     correct = 0
+    #     total = 0
+    #     with torch.no_grad():
+    #         for inputs, labels in test_loader:
+    #             inputs, labels = inputs.to(device), labels.to(device)
+    #             outputs = model(inputs)
+    #             _, predicted = outputs.max(1)
+    #             total += labels.size(0)
+    #             correct += predicted.eq(labels).sum().item()
+    #     print(f"Test Accuracy after Gurobi edit: {100. * correct / total:.2f}%")
+    #     with open(log_file, "a") as f:
+    #         f.write(f"Test Accuracy after Gurobi edit: {100. * correct / total:.2f}%\n")
+    # else:
+    #     print("No solution found.")
 
 if __name__ == "__main__":
-    GurobiFlip()    
+    #GurobiFlip("CIFAR10")
+    # GurobiFlip("MNIST")
+    # GurobiFlip("FashionMNIST")
+    # GurobiFlip("KMNIST")
+    GurobiFlip("EMNIST")
+

@@ -11,40 +11,40 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-log_file = "Status_400E.txt"
-initial_epoch = 400
+log_file = "Status_FashionMNIST_2.txt"
+initial_epoch = 200
 resume_epoch = 100
-timeLimit = 600
+timeLimit = 6000
 
 
-class NIN(nn.Module):
+class NIN_FashionMNIST(nn.Module):
     def __init__(self, num_classes=10):
-        super(NIN, self).__init__()
+        super(NIN_FashionMNIST, self).__init__()
+        def nin_block(in_channels, out_channels, kernel_size, stride, padding):
+            return nn.Sequential(
+                nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding), nn.ReLU(),
+                nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
+                nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
+            )
         self.features = nn.Sequential(
-            nn.Conv2d(3, 192, kernel_size=5, padding=2), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 160, kernel_size=1), nn.ReLU(inplace=True),
-            nn.Conv2d(160, 96, kernel_size=1), nn.ReLU(inplace=True),
-            nn.MaxPool2d(3, stride=2, padding=1),
-
-            nn.Conv2d(96, 192, kernel_size=5, padding=2), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
-            nn.MaxPool2d(3, stride=2, padding=1),
-
-            nn.Conv2d(192, 192, kernel_size=3, padding=1), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 10, kernel_size=1),
+            nin_block(1, 32, kernel_size=5, stride=1, padding=2),
+            nn.MaxPool2d(2, stride=2),
+            nin_block(32, 32, kernel_size=3, stride=1, padding=1),
             # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(10 * 8 * 8, 64)
-        self.classifier = nn.Linear(64, num_classes)
+        self.fc_hidden = nn.Linear(32*14*14, 16)
+        self.relu = nn.ReLU()
+        self.classifier = nn.Linear(16, num_classes)
 
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
         x = x.view(x.size(0), -1)
         if extract_fc_input:
             return x.clone().detach(), None
+        x = self.fc_hidden(x)
+        x = self.relu(x)
+        x = self.classifier(x)
         return x
 
 def TrainAndSave(resume=False):
@@ -57,24 +57,30 @@ def TrainAndSave(resume=False):
     t0 = time.time()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    transform = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
+    transform_train = transforms.Compose([
+        # transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+        transforms.Normalize((0.5,), (0.5,)),
     ])
 
-    train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
-    test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
+    transform_test = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5,), (0.5,)),
+    ])
+
+    train_dataset = torchvision.datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform_train)
+    test_dataset = torchvision.datasets.FashionMNIST(root='./data', train=False, download=True, transform=transform_test)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=True, num_workers=2)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=100, shuffle=False, num_workers=2)
 
-    model = NIN(num_classes=10).to(device)
+    model = NIN_FashionMNIST(num_classes=10).to(device)
+
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
+    optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=5e-4)
     scheduler = CosineAnnealingLR(optimizer, T_max=200)
 
-    checkpoint_dir = "./checkpoints/CIFER10"
+    checkpoint_dir = "./checkpoints/FashionMNIST"
     os.makedirs(checkpoint_dir, exist_ok=True)
 
     if resume:
@@ -107,9 +113,12 @@ def TrainAndSave(resume=False):
         scheduler.step()
         acc = 100. * correct / total
         print(f"Train Accuracy after Epoch {epoch+1}: {acc:.2f}%")
+        print(f"Loss: {loss.item():.4f}")
+
         with open(log_file, "a") as f:
             f.write(f"Train Accuracy after Epoch {epoch+1}: {acc:.2f}%\n")
-
+            f.write(f"Loss: {loss.item():.4f}\n")
+        
     model.eval()
     correct = 0
     total = 0
@@ -125,8 +134,6 @@ def TrainAndSave(resume=False):
     with open(log_file, "a") as f:
         f.write(f"Test Accuracy after training: {test_acc:.2f}%\n")
 
-    torch.save(model.features[18].weight.data.clone(), f"{checkpoint_dir}/last_weight_original{save_suffix}.pt")
-    torch.save(model.features[18].bias.data.clone(), f"{checkpoint_dir}/last_bias_original{save_suffix}.pt")
     torch.save(model.fc_hidden.weight.data.clone(), f"{checkpoint_dir}/fc_hidden_weight{save_suffix}.pt")
     torch.save(model.fc_hidden.bias.data.clone(), f"{checkpoint_dir}/fc_hidden_bias{save_suffix}.pt")
     torch.save(model.classifier.weight.data.clone(), f"{checkpoint_dir}/classifier_weight{save_suffix}.pt")
@@ -165,24 +172,20 @@ def TrainAndSave(resume=False):
     print(f"Training and saving completed in {time.time() - t0:.2f} seconds.")
 
 def GurobiBorder():
-    # n_samples = 1000
-    # X = torch.load("checkpoints/CIFER10/fc_inputs.pt").numpy()[0:n_samples]
-    # labels = torch.load("checkpoints/CIFER10/fc_labels.pt").numpy()[0:n_samples]
-    # pred = torch.load("checkpoints/CIFER10/fc_preds.pt").numpy()[0:n_samples]
-    X = torch.load("checkpoints/CIFER10/fc_inputs.pt").numpy()
-    labels = torch.load("checkpoints/CIFER10/fc_labels.pt").numpy()
-    pred = torch.load("checkpoints/CIFER10/fc_preds.pt").numpy()
+    X = torch.load("checkpoints/FashionMNIST/fc_inputs.pt").numpy()
+    labels = torch.load("checkpoints/FashionMNIST/fc_labels.pt").numpy()
+    pred = torch.load("checkpoints/FashionMNIST/fc_preds.pt").numpy()
 
-    W1 = torch.load("checkpoints/CIFER10/fc_hidden_weight.pt").numpy()
-    b1 = torch.load("checkpoints/CIFER10/fc_hidden_bias.pt").numpy()
-    W2 = torch.load("checkpoints/CIFER10/classifier_weight.pt").numpy()
-    b2 = torch.load("checkpoints/CIFER10/classifier_bias.pt").numpy()
+    W1 = torch.load("checkpoints/FashionMNIST/fc_hidden_weight.pt").cpu().numpy()
+    b1 = torch.load("checkpoints/FashionMNIST/fc_hidden_bias.pt").cpu().numpy()
+    W2 = torch.load("checkpoints/FashionMNIST/classifier_weight.pt").cpu().numpy()
+    b2 = torch.load("checkpoints/FashionMNIST/classifier_bias.pt").cpu().numpy()
 
     Z1 = np.maximum(0, X @ W1.T + b1)
     Z2_target = Z1 @ W2.T + b2  
     preds_Z2 = np.argmax(Z2_target, axis=1)
 
-    print("Mismatch: ", sum(preds_Z2 != preds_Z2))
+    print("Mismatch: ", sum(pred != preds_Z2))
     print("Size of X:", X.shape)
 
 
@@ -276,12 +279,12 @@ def GurobiBorder():
         b2_new = b2 + b2_off
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = NIN(num_classes=10).to(device)
+        model = NIN_FashionMNIST(num_classes=10).to(device)
         criterion = torch.nn.CrossEntropyLoss()
-        optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
+        optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=5e-4)
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
-        checkpoint = torch.load("./checkpoints/CIFER10/full_checkpoint.pth")
+        checkpoint = torch.load("./checkpoints/FashionMNIST/full_checkpoint.pth")
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
@@ -292,14 +295,20 @@ def GurobiBorder():
             model.classifier.weight.copy_(new_W)
             model.classifier.bias.copy_(new_b)
 
-        transform = transforms.Compose([
-            transforms.RandomCrop(32, padding=4),
+        transform_train = transforms.Compose([
+            # transforms.RandomCrop(32, padding=4),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+            transforms.Normalize((0.5,), (0.5,)),
         ])
-        train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
-        test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
+
+        transform_test = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.5,), (0.5,)),
+        ])
+
+        train_dataset = torchvision.datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform_train)
+        test_dataset = torchvision.datasets.FashionMNIST(root='./data', train=False, download=True, transform=transform_test)
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=True, num_workers=2)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=100, shuffle=False, num_workers=2)
         for epoch in range(resume_epoch):
@@ -321,6 +330,7 @@ def GurobiBorder():
             print(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%")
             with open(log_file, "a") as f:
                 f.write(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%\n")
+                f.write(f"Loss: {loss.item():.4f}\n")
         model.eval()
         correct = 0
         total = 0
@@ -339,6 +349,6 @@ def GurobiBorder():
 
 if __name__ == "__main__":
     TrainAndSave()
-    TrainAndSave(resume=True)
     GurobiBorder()
+    TrainAndSave(resume=True)
     

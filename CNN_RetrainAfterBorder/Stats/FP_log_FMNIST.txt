@@ -1,0 +1,73 @@
+Mismatch:  0
+Size of X: (1000, 6272)
+Set parameter OutputFlag to value 1
+Set parameter TimeLimit to value 600
+Gurobi Optimizer version 12.0.1 build v12.0.1rc0 (mac64[arm] - Darwin 24.3.0 24D81)
+
+CPU model: Apple M1
+Thread count: 8 physical cores, 8 logical processors, using up to 8 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 13342 rows, 21340 columns and 142620 nonzeros
+Model fingerprint: 0xab46db79
+Model has 18000 simple general constraints
+  18000 INDICATOR
+Variable types: 10340 continuous, 11000 integer (11000 binary)
+Coefficient statistics:
+  Matrix range     [1e-04, 6e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [7e-04, 7e+01]
+  GenCon rhs range [1e-06, 1e-06]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 25959 rows and 25960 columns
+Presolve time: 1.36s
+Presolved: 39301 rows, 47300 columns, 211370 nonzeros
+Presolved model has 18000 SOS constraint(s)
+Variable types: 28300 continuous, 19000 integer (19000 binary)
+Found heuristic solution: objective 5.1520585
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing primal log only...
+
+Concurrent spin time: 0.00s
+
+Solved with dual simplex
+
+Root relaxation: objective 0.000000e+00, 0 iterations, 0.03 seconds (0.06 work units)
+Total elapsed time = 5.09s (DegenMoves)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0    9    5.15206    0.00000   100%     -    5s
+     0     2    0.00000    0    9    5.15206    0.00000   100%     -    7s
+     3     2    0.00000    2    7    5.15206    0.00000   100%  1260   10s
+    11     2    0.00000    6    3    5.15206    0.00000   100%  1353   15s
+*   19     1              10       5.1520400    0.00000   100%  1010   16s
+*   21     1               9       5.1519970    0.00000   100%   947   16s
+    29     2 infeasible   14         5.15200    0.00000   100%   978   20s
+H   39     8                       0.1864491    0.00000   100%  1019   25s
+*   47     2              24       0.1630368    0.00000   100%   891   25s
+   146     1     cutoff   74         0.16304    0.00000   100%   361   30s
+*  322    10             159       0.0148996    0.00000   100%   171   32s
+
+Explored 444 nodes (56250 simplex iterations) in 32.95 seconds (91.20 work units)
+Thread count was 8 (of 8 available processors)
+
+Solution count 6: 0.0148996 0.163037 0.186449 ... 5.15206
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.489958677341e-02, best bound 1.489958677341e-02, gap 0.0000%
+-------Weight/Bias Offsets-------
+W2 offsets: 0.014899586773408758
+b2 offsets: 0.0
+Objective value: 0.014899586773408757
+------------------------------------
+Misclassified: 0, out of 1000
+Average Cross Entropy loss (Z2 vs labels): 0.012301929710179765
+Average Cross Entropy loss (z2 vs labels): 0.012888335695380617
+Misclassified On full dataset: 18 out of 60000
+Average Cross Entropy loss (Z2 vs labels): 0.800170199052032
+Average Cross Entropy loss (z2 vs labels): 0.8178376466061986
