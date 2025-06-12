@@ -31,11 +31,13 @@ class NIN_CIFAR10(nn.Module):
             nn.MaxPool2d(2, stride=2),
             nin_block(192, 192, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(2, stride=2),
-            nin_block(192, 10, kernel_size=3, stride=1, padding=1),
+            nin_block(192, 128, kernel_size=3, stride=1, padding=1),
+            nn.MaxPool2d(2, stride=2),
+            nin_block(128, 64, kernel_size=3, stride=1, padding=1),
             # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(10*8*8, 64)
+        self.fc_hidden = nn.Linear(64*4*4, 64)
         self.relu = nn.ReLU()
         self.classifier = nn.Linear(64, num_classes)
 
