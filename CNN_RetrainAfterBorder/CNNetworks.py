@@ -27,14 +27,14 @@ class NIN_CIFAR10(nn.Module):
             nn.MaxPool2d(3, stride=2, padding=1),
             nin_block(192, 128, kernel_size=5, stride=1, padding=2),
             nn.MaxPool2d(3, stride=2, padding=1),
-            nin_block(128, 64, kernel_size=3, stride=1, padding=1),
+            nin_block(128, 128, kernel_size=3, stride=1, padding=1),
             nn.AdaptiveAvgPool2d((1, 1))
         )
 
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(64, 64)
+        self.fc_hidden = nn.Linear(128, 128)
         self.relu = nn.ReLU()
-        self.classifier = nn.Linear(64, num_classes)
+        self.classifier = nn.Linear(128, num_classes)
 
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
@@ -172,28 +172,27 @@ class NIN_EMNIST(nn.Module):
 class NIN_SVHN(nn.Module):
     def __init__(self, num_classes=10):
         super(NIN_SVHN, self).__init__()
-        def nin_block(in_channels, out_channels, kernel_size, stride, padding):
+        def nin_block(in_ch, out_ch, kernel_size, stride, padding):
             return nn.Sequential(
-                nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding), nn.ReLU(),
-                nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
-                nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
+                nn.Conv2d(in_ch, out_ch, kernel_size, stride, padding), nn.ReLU(),
+                nn.Conv2d(out_ch, out_ch, kernel_size=1), nn.ReLU(),
+                nn.Conv2d(out_ch, out_ch, kernel_size=1), nn.ReLU()
             )
 
         self.features = nn.Sequential(
             nin_block(3, 192, kernel_size=5, stride=1, padding=2),
-            nn.MaxPool2d(2, stride=2, padding=1),
-            nin_block(192, 192, kernel_size=3, stride=1, padding=1),
-            nn.MaxPool2d(2, stride=2, padding=1),
-            nin_block(192, 128, kernel_size=3, stride=1, padding=1),
-            nn.MaxPool2d(2, stride=2, padding=1),
-            nin_block(128, 64, kernel_size=3, stride=1, padding=1),
-            # nn.AdaptiveAvgPool2d((1, 1))
+            nn.MaxPool2d(2, stride=2),
+            nin_block(192, 160, kernel_size=5, stride=1, padding=2),
+            nn.MaxPool2d(2, stride=2),
+            nin_block(160, 96, kernel_size=3, stride=1, padding=1),
+            nn.AdaptiveAvgPool2d((1, 1)),
         )
 
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(64*5*5, 64)
+        self.fc_hidden = nn.Linear(96, 128)
         self.relu = nn.ReLU()
-        self.classifier = nn.Linear(64, num_classes)
+        self.classifier = nn.Linear(128, num_classes)
+
 
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
