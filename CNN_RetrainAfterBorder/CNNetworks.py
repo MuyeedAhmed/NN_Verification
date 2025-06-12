@@ -21,16 +21,18 @@ class NIN_CIFAR10(nn.Module):
                 nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
             )
         self.features = nn.Sequential(
-            nin_block(3, 192, kernel_size=5, stride=1, padding=2),
+            nin_block(3, 256, kernel_size=5, stride=1, padding=2),
             nn.MaxPool2d(3, stride=2, padding=1),
-            nin_block(192, 160, kernel_size=5, stride=1, padding=2),
+            nin_block(256, 192, kernel_size=5, stride=1, padding=2),
             nn.MaxPool2d(3, stride=2, padding=1),
-            nin_block(160, 96, kernel_size=3, stride=1, padding=1),
+            nin_block(192, 128, kernel_size=5, stride=1, padding=2),
+            nn.MaxPool2d(3, stride=2, padding=1),
+            nin_block(128, 64, kernel_size=3, stride=1, padding=1),
             nn.AdaptiveAvgPool2d((1, 1))
         )
 
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(96, 64)
+        self.fc_hidden = nn.Linear(64, 64)
         self.relu = nn.ReLU()
         self.classifier = nn.Linear(64, num_classes)
 
