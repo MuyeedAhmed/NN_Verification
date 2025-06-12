@@ -17,9 +17,9 @@ resume_epoch = 200
 timeLimit = 600
 
 
-class NIN(nn.Module):
+class NIN_CIFAR10(nn.Module):
     def __init__(self, num_classes=10):
-        super(NIN, self).__init__()
+        super(NIN_CIFAR10, self).__init__()
         def nin_block(in_channels, out_channels, kernel_size, stride, padding):
             return nn.Sequential(
                 nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding), nn.ReLU(),
@@ -29,15 +29,15 @@ class NIN(nn.Module):
         self.features = nn.Sequential(
             nin_block(3, 192, kernel_size=5, stride=1, padding=2),
             nn.MaxPool2d(2, stride=2),
-            nin_block(192, 64, kernel_size=3, stride=1, padding=1),
+            nin_block(192, 192, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(2, stride=2),
-            nin_block(64, 32, kernel_size=3, stride=1, padding=1),
+            nin_block(192, 10, kernel_size=3, stride=1, padding=1),
             # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(32*8*8, 32)
+        self.fc_hidden = nn.Linear(10*8*8, 64)
         self.relu = nn.ReLU()
-        self.classifier = nn.Linear(32, num_classes)
+        self.classifier = nn.Linear(64, num_classes)
 
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
@@ -76,7 +76,7 @@ def TrainAndSave(resume=False):
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=True, num_workers=2)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=100, shuffle=False, num_workers=2)
 
-    model = NIN(num_classes=10).to(device)
+    model = NIN_CIFAR10(num_classes=10).to(device)
     # print("Initial weight mean:", model.features[0][0].weight.data.abs().mean())
 
     criterion = nn.CrossEntropyLoss()
@@ -291,7 +291,7 @@ def GurobiBorder():
         b2_new = b2 + b2_off
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = NIN(num_classes=10).to(device)
+        model = NIN_CIFAR10(num_classes=10).to(device)
         criterion = torch.nn.CrossEntropyLoss()
         optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=5e-4)
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)

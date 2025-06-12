@@ -257,7 +257,7 @@ def GurobiFlip(dataset_name):
     #     print("No solution found.")
 
 if __name__ == "__main__":
-    # GurobiFlip("CIFAR10")
-    GurobiFlip("MNIST")
-    GurobiFlip("FashionMNIST")
-    # GurobiFlip("KMNIST")
+    GurobiFlip("CIFAR10")
+    # GurobiFlip("MNIST")
+    # GurobiFlip("FashionMNIST")
+    GurobiFlip("KMNIST")
