@@ -13,7 +13,7 @@ import numpy as np
 
 class NIN_CIFAR10(nn.Module):
     def __init__(self, num_classes=10):
-        super(NIN, self).__init__()
+        super(NIN_CIFAR10, self).__init__()
         def nin_block(in_channels, out_channels, kernel_size, stride, padding):
             return nn.Sequential(
                 nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding), nn.ReLU(),
