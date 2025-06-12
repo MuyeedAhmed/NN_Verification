@@ -11,7 +11,7 @@ from gurobipy import GRB
 import numpy as np
 
 
-class NIN_CIFER10(nn.Module):
+class NIN_CIFAR10(nn.Module):
     def __init__(self, num_classes=10):
         super(NIN, self).__init__()
         def nin_block(in_channels, out_channels, kernel_size, stride, padding):

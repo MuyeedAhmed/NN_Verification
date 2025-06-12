@@ -11,7 +11,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-log_file = "Status_CIFER10_2.txt"
+log_file = "Status_CIFAR10_2.txt"
 initial_epoch = 400
 resume_epoch = 200
 timeLimit = 600
@@ -83,7 +83,7 @@ def TrainAndSave(resume=False):
     optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=5e-4)
     scheduler = CosineAnnealingLR(optimizer, T_max=200)
 
-    checkpoint_dir = "./checkpoints/CIFER10"
+    checkpoint_dir = "./checkpoints/CIFAR10"
     os.makedirs(checkpoint_dir, exist_ok=True)
 
     if resume:
@@ -184,14 +184,14 @@ def TrainAndSave(resume=False):
     print(f"Training and saving completed in {time.time() - t0:.2f} seconds.")
 
 def GurobiBorder():
-    X = torch.load("checkpoints/CIFER10/fc_inputs.pt").numpy()
-    labels = torch.load("checkpoints/CIFER10/fc_labels.pt").numpy()
-    pred = torch.load("checkpoints/CIFER10/fc_preds.pt").numpy()
+    X = torch.load("checkpoints/CIFAR10/fc_inputs.pt").numpy()
+    labels = torch.load("checkpoints/CIFAR10/fc_labels.pt").numpy()
+    pred = torch.load("checkpoints/CIFAR10/fc_preds.pt").numpy()
 
-    W1 = torch.load("checkpoints/CIFER10/fc_hidden_weight.pt").cpu().numpy()
-    b1 = torch.load("checkpoints/CIFER10/fc_hidden_bias.pt").cpu().numpy()
-    W2 = torch.load("checkpoints/CIFER10/classifier_weight.pt").cpu().numpy()
-    b2 = torch.load("checkpoints/CIFER10/classifier_bias.pt").cpu().numpy()
+    W1 = torch.load("checkpoints/CIFAR10/fc_hidden_weight.pt").cpu().numpy()
+    b1 = torch.load("checkpoints/CIFAR10/fc_hidden_bias.pt").cpu().numpy()
+    W2 = torch.load("checkpoints/CIFAR10/classifier_weight.pt").cpu().numpy()
+    b2 = torch.load("checkpoints/CIFAR10/classifier_bias.pt").cpu().numpy()
 
     Z1 = np.maximum(0, X @ W1.T + b1)
     Z2_target = Z1 @ W2.T + b2  
@@ -296,7 +296,7 @@ def GurobiBorder():
         optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=5e-4)
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
-        checkpoint = torch.load("./checkpoints/CIFER10/full_checkpoint.pth")
+        checkpoint = torch.load("./checkpoints/CIFAR10/full_checkpoint.pth")
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         scheduler.load_state_dict(checkpoint['scheduler_state_dict'])

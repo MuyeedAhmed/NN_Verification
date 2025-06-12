@@ -12,7 +12,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-from CNNetworks import NIN_MNIST
+from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST
 
 
 timeLimit = 600
@@ -293,8 +293,8 @@ if __name__ == "__main__":
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
 
-        model = NIN_CIFER10(num_classes=10).to(device)
-        model_g = NIN_CIFER10(num_classes=10).to(device)
+        model = NIN_CIFAR10(num_classes=10).to(device)
+        model_g = NIN_CIFAR10(num_classes=10).to(device)
     elif dataset_name == "FashionMNIST":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
         train_dataset = torchvision.datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform)
