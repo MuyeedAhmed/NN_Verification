@@ -347,7 +347,7 @@ def GurobiBorder():
         print("No solution found.")
 
 if __name__ == "__main__":
-    # TrainAndSave()
+    TrainAndSave()
     GurobiBorder()
     TrainAndSave(resume=True)
     
