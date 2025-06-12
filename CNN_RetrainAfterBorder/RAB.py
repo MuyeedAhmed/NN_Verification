@@ -12,7 +12,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST
+from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN_SVHN, NIN_EMNIST
 
 
 timeLimit = 600
@@ -71,7 +71,7 @@ class RAB:
             with open(self.log_file, "a") as f:
                 f.write(f"{self.phase},{epoch+1},{running_loss/len(self.train_loader):.4f},{accuracy:.2f}\n")
             if epoch == self.num_epochs - 100:
-                self.save_model(loss, save_suffix="_G")
+                self.save_model(loss, save_suffix="")
         return loss
 
     def test(self):
@@ -143,7 +143,7 @@ class RAB:
         start_time = time.time()
         loss = self.train()
         accuracy = self.test()
-        self.save_model(loss, save_suffix=f"_Full")
+        self.save_model(loss, save_suffix=f"_Resume")
 
 def GurobiBorder(dataset_name, n=-1):
     if n != -1:
@@ -315,6 +315,30 @@ if __name__ == "__main__":
 
         model = NIN_MNIST(num_classes=10).to(device)
         model_g = NIN_MNIST(num_classes=10).to(device)
+    
+    elif dataset_name == "EMNIST":
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+        train_dataset = torchvision.datasets.EMNIST(root='./data', split='letters', train=True, download=True, transform=transform)
+        test_dataset = torchvision.datasets.EMNIST(root='./data', split='letters', train=False, download=True, transform=transform)
+
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
+        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
+
+        model = NIN_EMNIST(num_classes=26).to(device)
+        model_g = NIN_EMNIST(num_classes=26).to(device)
+    
+    elif dataset_name == "SVHN":
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        train_dataset = torchvision.datasets.SVHN(root='./data', split='train', download=True, transform=transform)
+        test_dataset = torchvision.datasets.SVHN(root='./data', split='test', download=True, transform=transform)
+
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
+        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
+
+        model = NIN_SVHN(num_classes=10).to(device)
+        model_g = NIN_SVHN(num_classes=10).to(device)
+
+    
 
 
     rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase="Train")
@@ -324,7 +348,7 @@ if __name__ == "__main__":
 
     rab_g = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase="GurobiEdit")
 
-    checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint_G.pth")
+    checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth")
     rab_g.model_g.load_state_dict(checkpoint['model_state_dict'])
     rab_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     rab_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
