@@ -12,9 +12,9 @@ from gurobipy import GRB
 import numpy as np
 
 log_file = "Status_MNIST_2.txt"
-initial_epoch = 1
-resume_epoch = 1
-timeLimit = 600
+initial_epoch = 200
+resume_epoch = 100
+timeLimit = 6000
 
 
 class NIN_MNIST(nn.Module):
