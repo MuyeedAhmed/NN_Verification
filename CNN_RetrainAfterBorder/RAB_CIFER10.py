@@ -336,6 +336,7 @@ def GurobiBorder():
             print(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%")
             with open(log_file, "a") as f:
                 f.write(f"Train Accuracy after Epoch {epoch+1}: {100. * correct / total:.2f}%\n")
+                f.write(f"Loss: {loss.item():.4f}\n")
         model.eval()
         correct = 0
         total = 0

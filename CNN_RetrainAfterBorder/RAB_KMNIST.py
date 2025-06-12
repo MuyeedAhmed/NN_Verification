@@ -27,17 +27,15 @@ class NIN_KMNIST(nn.Module):
                 nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
             )
         self.features = nn.Sequential(
-            nin_block(1, 128, kernel_size=5, stride=1, padding=2),
+            nin_block(1, 32, kernel_size=5, stride=1, padding=2),
             nn.MaxPool2d(2, stride=2),
-            nin_block(128, 64, kernel_size=3, stride=1, padding=1),
-            nn.MaxPool2d(2, stride=2),
-            nin_block(64, 32, kernel_size=3, stride=1, padding=1),
-            nn.AdaptiveAvgPool2d((1, 1))
+            nin_block(32, 32, kernel_size=3, stride=1, padding=1),
+            # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(32, 32)
+        self.fc_hidden = nn.Linear(32*14*14, 16)
         self.relu = nn.ReLU()
-        self.classifier = nn.Linear(32, num_classes)
+        self.classifier = nn.Linear(16, num_classes)
 
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
