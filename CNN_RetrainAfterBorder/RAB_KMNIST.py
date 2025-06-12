@@ -12,9 +12,9 @@ from gurobipy import GRB
 import numpy as np
 
 log_file = "Status_KMNIST_2.txt"
-initial_epoch = 400
-resume_epoch = 200
-timeLimit = 600
+initial_epoch = 200
+resume_epoch = 100
+timeLimit = 6000
 
 
 class NIN_KMNIST(nn.Module):
@@ -27,9 +27,11 @@ class NIN_KMNIST(nn.Module):
                 nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
             )
         self.features = nn.Sequential(
-            nin_block(1, 32, kernel_size=5, stride=1, padding=2),
+            nin_block(1, 128, kernel_size=5, stride=1, padding=2),
             nn.MaxPool2d(2, stride=2),
-            nin_block(32, 32, kernel_size=3, stride=1, padding=1),
+            nin_block(128, 64, kernel_size=3, stride=1, padding=1),
+            nn.MaxPool2d(2, stride=2),
+            nin_block(64, 32, kernel_size=3, stride=1, padding=1),
             nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
@@ -194,7 +196,7 @@ def GurobiBorder():
     l2_size = W2.shape[0]
 
     model = gp.Model()
-    model.setParam("OutputFlag", 1)
+    # model.setParam("OutputFlag", 1)
 
     W2_offset = model.addVars(*W2.shape, lb=-GRB.INFINITY, name="W2_offset")
     b2_offset = model.addVars(l2_size, lb=-GRB.INFINITY, name="b2_offset")
@@ -347,7 +349,7 @@ def GurobiBorder():
         print("No solution found.")
 
 if __name__ == "__main__":
-    TrainAndSave()
+    # TrainAndSave()
     GurobiBorder()
     TrainAndSave(resume=True)
     

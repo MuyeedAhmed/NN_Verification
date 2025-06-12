@@ -12,9 +12,9 @@ from gurobipy import GRB
 import numpy as np
 
 log_file = "Status_FashionMNIST_2.txt"
-initial_epoch = 400
-resume_epoch = 200
-timeLimit = 600
+initial_epoch = 200
+resume_epoch = 100
+timeLimit = 6000
 
 
 class NIN_FashionMNIST(nn.Module):
@@ -29,11 +29,11 @@ class NIN_FashionMNIST(nn.Module):
         self.features = nn.Sequential(
             nin_block(1, 32, kernel_size=5, stride=1, padding=2),
             nn.MaxPool2d(2, stride=2),
-            nin_block(32, 16, kernel_size=3, stride=1, padding=1),
+            nin_block(32, 32, kernel_size=3, stride=1, padding=1),
             # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(16*14*14, 16)
+        self.fc_hidden = nn.Linear(32*14*14, 16)
         self.relu = nn.ReLU()
         self.classifier = nn.Linear(16, num_classes)
 
