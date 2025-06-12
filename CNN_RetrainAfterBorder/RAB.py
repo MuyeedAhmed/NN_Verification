@@ -53,7 +53,10 @@ class RAB:
             total = 0
             
             for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
-                inputs, labels = inputs.to(self.device), labels.to(self.device)
+                if self.dataset_name == "EMNIST":
+                    inputs, labels = inputs.to(self.device), (labels - 1).to(self.device)
+                else:
+                    inputs, labels = inputs.to(self.device), labels.to(self.device)
                 
                 self.optimizer.zero_grad()
                 outputs = self.model(inputs)
