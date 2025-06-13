@@ -12,7 +12,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN_SVHN, NIN_EMNIST
+from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN_SVHN, NIN_EMNIST, NIN
 
 
 timeLimit = 7200  # 2 hours in seconds
@@ -357,7 +357,7 @@ if __name__ == "__main__":
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
-
+        optimize = "SGD"
         model = NIN_EMNIST(num_classes=26).to(device)
         model_g = NIN_EMNIST(num_classes=26).to(device)
     
