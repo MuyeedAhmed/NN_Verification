@@ -37,11 +37,12 @@ class RAB:
             raise ValueError("Unsupported optimizer type. Use 'SGD' or 'Adam'.")
         self.scheduler = CosineAnnealingLR(self.optimizer, T_max=self.num_epochs)
         self.criterion = nn.CrossEntropyLoss()
-        count = 0
-        self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
-        while os.path.exists(self.log_file):
-            count += 1
-            self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
+        self.log_file = f"Stats/{self.dataset_name}_log.csv"
+        # count = 0
+        # self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
+        # while os.path.exists(self.log_file):
+        #     count += 1
+        #     self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
         with open(self.log_file, "w") as f:
             f.write("Phase,Epoch,Loss,Accuracy\n")
 
@@ -225,6 +226,10 @@ def GurobiBorder(dataset_name, n=-1):
         W2_new = W2 + W2_off
         b2_new = b2 + b2_off
 
+        
+
+            
+        
         print("-------Weight/Bias Offsets-------")
         print("W2 offsets:", np.sum(np.abs(W2_off)))
         print("b2 offsets:", np.sum(np.abs(b2_off)))
@@ -261,7 +266,21 @@ def GurobiBorder(dataset_name, n=-1):
         print(f"Misclassified: {misclassified}")
         print("Average Cross Entropy loss (Z2 vs labels):", ce_loss_target / n_samples)
         print("Average Cross Entropy loss (z2 vs labels):", ce_loss_pred / n_samples)
-
+        try:
+            with open(f"Stats/{dataset_name}_gurobi_log.csv", "w") as f:
+                f.write("-------Weight/Bias Offsets-------\n")
+                f.write("W2 offsets:", str(np.sum(np.abs(W2_off))), "\n")
+                f.write("b2 offsets:", str(np.sum(np.abs(b2_off))), "\n")
+                f.write("Objective value:", str(model_g.ObjVal), "\n")
+                f.write("------------------------------------\n\n")
+                f.write("Sample,True Label,Predicted Label\n")
+                for i in range(n_samples):
+                    f.write(f"{i},{true_labels[i]},{predictions[i]}\n")
+                f.write(f"Misclassified: {misclassified}\n")
+                f.write("Average Cross Entropy loss (Z2 vs labels): " + str(ce_loss_target / n_samples) + "\n")
+                f.write("Average Cross Entropy loss (z2 vs labels): " + str(ce_loss_pred / n_samples) + "\n")
+        except Exception as e:
+            print(f"Error writing to log file: {e}")
         W2_new = W2 + W2_off
         b2_new = b2 + b2_off
 
