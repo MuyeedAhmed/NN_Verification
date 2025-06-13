@@ -75,7 +75,8 @@ class RAB:
             with open(self.log_file, "a") as f:
                 f.write(f"{self.phase},{epoch+1},{running_loss/len(self.train_loader):.4f},{accuracy:.2f}\n")
             if epoch == self.num_epochs:
-                self.save_model(loss, save_suffix="")
+                suffix = "_Gurobi" if self.phase == "GurobiEdit" else ""
+                self.save_model(loss, save_suffix=suffix)
                 test_accuracy = self.test()
                 self.phase = "ResumeTrain"
 
@@ -152,7 +153,8 @@ class RAB:
         start_time = time.time()
         loss = self.train()
         accuracy = self.test()
-        self.save_model(loss, save_suffix=f"_Resume")
+        if self.phase != "GurobiEdit":
+            self.save_model(loss, save_suffix=f"_Resume")
 
 def GurobiBorder(dataset_name, n=-1):
     if n != -1:
