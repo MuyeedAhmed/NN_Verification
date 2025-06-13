@@ -279,8 +279,8 @@ if __name__ == "__main__":
     os.makedirs("Stats", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    initEpoch = 2
-    G_epoch = 1
+    initEpoch = 200
+    G_epoch = 100
     n_samples_gurobi = -1
     optimize = "Adam"
     dataset_name = sys.argv[1] if len(sys.argv) > 1 else "MNIST"
