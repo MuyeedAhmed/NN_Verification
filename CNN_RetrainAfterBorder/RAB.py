@@ -57,7 +57,8 @@ class RAB:
             running_loss = 0.0
             correct = 0
             total = 0
-            for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
+            # for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
+            for i, (inputs, labels) in enumerate(self.train_loader):
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 labels_for_loss = labels - 1 if self.dataset_name == "EMNIST" else labels
 
