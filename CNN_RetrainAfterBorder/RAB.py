@@ -15,7 +15,7 @@ import numpy as np
 from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN_SVHN, NIN_EMNIST, NIN
 
 
-timeLimit = 7200  # 2 hours in seconds
+timeLimit = 3600
 
 class RAB:
     def __init__(self, dataset_name, model, train_loader, test_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase = "Train"):
@@ -173,7 +173,7 @@ class RAB:
         self.train()
         accuracy = self.test()
 
-def GurobiBorder(dataset_name, n=-1):
+def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
     if n != -1:
         X = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()[0:n]
         labels = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()[0:n]
@@ -225,7 +225,7 @@ def GurobiBorder(dataset_name, n=-1):
 
         for k in range(l2_size):
             if k != label_max:
-                model_g.addConstr(Z2[label_max] >= Z2[k] + 3e-5, f"Z2_max_{s}_{k}")
+                model_g.addConstr(Z2[label_max] >= Z2[k] + tol, f"Z2_max_{s}_{k}")
 
         Z2_list.append(Z2)
         max_min_diff.append(Z2[label_max] - Z2[label_min])
@@ -241,12 +241,6 @@ def GurobiBorder(dataset_name, n=-1):
         b2_off = np.array([b2_offset[i].X for i in range(l2_size)])
         W2_new = W2 + W2_off
         b2_new = b2 + b2_off
-        
-        print("-------Weight/Bias Offsets-------")
-        print("W2 offsets:", np.sum(np.abs(W2_off)))
-        print("b2 offsets:", np.sum(np.abs(b2_off)))
-        print("Objective value:", model_g.ObjVal)
-        print("------------------------------------")
         def relu(x): return np.maximum(0, x)
         def softmax(logits):
             e = np.exp(logits - np.max(logits))
@@ -274,7 +268,10 @@ def GurobiBorder(dataset_name, n=-1):
             target_probs = softmax(Z2_target[i])
             ce_loss_pred += -np.log(pred_probs[label] + 1e-12)
             ce_loss_target += -np.log(target_probs[label] + 1e-12)
-
+        if misclassified > 0:
+            with open(f"Stats/{dataset_name}_gurobi_log_tol.csv", "a") as f:
+                f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
+            GurobiBorder(dataset_name, n=n, tol=tol+5e-6)
         with open(f"Stats/{dataset_name}_gurobi_log.csv", "w") as f:
             f.write("-------Weight/Bias Offsets-------\n")
             f.write(f"W2 offsets: {np.sum(np.abs(W2_off))}\n")
