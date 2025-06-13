@@ -56,21 +56,21 @@ class RAB:
             total = 0
             
             for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
+                inputs, labels = inputs.to(self.device), labels.to(self.device)
                 if self.dataset_name == "EMNIST":
-                    inputs, labels = inputs.to(self.device), (labels - 1).to(self.device)
+                    labels_for_loss = labels - 1
                 else:
-                    inputs, labels = inputs.to(self.device), labels.to(self.device)
-                
+                    labels_for_loss = labels    
                 self.optimizer.zero_grad()
                 outputs = self.model(inputs)
-                loss = self.criterion(outputs, labels)
+                loss = self.criterion(outputs, labels_for_loss)
                 loss.backward()
                 self.optimizer.step()
                 
                 running_loss += loss.item()
                 _, predicted = outputs.max(1)
                 total += labels.size(0)
-                correct += predicted.eq(labels).sum().item()
+                correct += predicted.eq(labels_for_loss).sum().item()
             self.scheduler.step()            
             accuracy = 100. * correct / total
             print(f'Epoch [{epoch+1}/{self.num_epochs}], Loss: {running_loss/len(self.train_loader):.4f}, Accuracy: {accuracy:.2f}%')
@@ -95,13 +95,18 @@ class RAB:
         with torch.no_grad():
             for inputs, labels in self.test_loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
+                if self.dataset_name == "EMNIST":
+                    labels_for_loss = labels - 1
+                else:
+                    labels_for_loss = labels   
                 outputs = self.model(inputs)
                 _, predicted = outputs.max(1)
                 total += labels.size(0)
-                correct += predicted.eq(labels).sum().item()
-                loss = self.criterion(outputs, labels)
+                correct += predicted.eq(labels_for_loss).sum().item()
+                loss = self.criterion(outputs, labels_for_loss)
                 total_loss += loss.item()
-        avg_loss = total_loss / total
+        avg_loss = total_loss / len(self.test_loader)
+
         accuracy = 100. * correct / total
         print(f'Test Accuracy: {accuracy:.2f}%')
         with open(self.log_file, "a") as f:
