@@ -47,20 +47,20 @@ class RAB:
             with open(self.log_file, "w") as f:
                 f.write("Phase,Epoch,Loss,Accuracy\n")
 
-    def train(self):
+    def train(self, early_stopping_patience=10, min_delta=1e-5):
         self.model.train()
         loss = -1
+        best_loss = float('inf')
+        epochs_no_improve = 0
+
         for epoch in range(self.num_epochs+self.resume_epochs):
             running_loss = 0.0
             correct = 0
             total = 0
-            
             for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
-                if self.dataset_name == "EMNIST":
-                    labels_for_loss = labels - 1
-                else:
-                    labels_for_loss = labels    
+                labels_for_loss = labels - 1 if self.dataset_name == "EMNIST" else labels
+
                 self.optimizer.zero_grad()
                 outputs = self.model(inputs)
                 loss = self.criterion(outputs, labels_for_loss)
@@ -71,21 +71,38 @@ class RAB:
                 _, predicted = outputs.max(1)
                 total += labels.size(0)
                 correct += predicted.eq(labels_for_loss).sum().item()
-            self.scheduler.step()            
+
+            self.scheduler.step()
+            avg_loss = running_loss / len(self.train_loader)
             accuracy = 100. * correct / total
-            print(f'Epoch [{epoch+1}/{self.num_epochs}], Loss: {running_loss/len(self.train_loader):.4f}, Accuracy: {accuracy:.2f}%')
+
+            print(f'Epoch [{epoch+1}/{self.num_epochs}], Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%')
             with open(self.log_file, "a") as f:
-                f.write(f"{self.phase},{epoch+1},{running_loss/len(self.train_loader):.4f},{accuracy:.2f}\n")
-            if epoch == self.num_epochs-1:
+                f.write(f"{self.phase},{epoch+1},{avg_loss:.4f},{accuracy:.2f}\n")
+
+            # Early stopping logic
+            if best_loss - avg_loss > min_delta:
+                best_loss = avg_loss
+                epochs_no_improve = 0
+            else:
+                epochs_no_improve += 1
+
+            if epochs_no_improve >= early_stopping_patience:
+                print(f"Early stopping triggered after {epoch+1} epochs.")
+                break
+
+            if epoch == self.num_epochs - 1:
                 if self.phase == "Train":
                     self.save_model(loss, save_suffix="")
                     test_accuracy = self.test()
                 self.phase = "ResumeTrain"
-        if self.phase == "GurobiEdit":
+        if self.phase == "Train":
+            self.save_model(loss, save_suffix="")
+        elif self.phase == "GurobiEdit":
             self.save_model(loss, save_suffix="_GurobiEdit")
-        if self.phase == "ResumeTrain":
+        elif self.phase == "ResumeTrain":
             self.save_model(loss, save_suffix="_Resume")
-        return loss
+        
 
     def test(self):
         self.model.eval()
@@ -152,7 +169,7 @@ class RAB:
 
     def run(self):
         start_time = time.time()
-        loss = self.train()
+        self.train()
         accuracy = self.test()
 
 def GurobiBorder(dataset_name, n=-1):
