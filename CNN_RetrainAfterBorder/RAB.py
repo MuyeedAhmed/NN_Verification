@@ -355,28 +355,28 @@ if __name__ == "__main__":
         model = NIN_SVHN(num_classes=10).to(device)
         model_g = NIN_SVHN(num_classes=10).to(device)
 
-    # rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
-    # rab.run()
+    rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
+    rab.run()
 
-    Gurobi_output = GurobiBorder(dataset_name, n=20)
+    Gurobi_output = GurobiBorder(dataset_name, n=n_samples_gurobi)
     if Gurobi_output is None:
         print("Gurobi did not find a solution.")
         sys.exit(1)
-    # W2_new, b2_new = Gurobi_output
+    W2_new, b2_new = Gurobi_output
 
-    # rab_g = RAB(dataset_name, model_g, train_loader, test_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit")
+    rab_g = RAB(dataset_name, model_g, train_loader, test_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit")
 
-    # if device.type == 'cuda':
-    #     checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth")
-    # else:
-    #     checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth", map_location=torch.device('cpu'))
-    # rab_g.model.load_state_dict(checkpoint['model_state_dict'])
-    # rab_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    # rab_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+    if device.type == 'cuda':
+        checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth")
+    else:
+        checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth", map_location=torch.device('cpu'))
+    rab_g.model.load_state_dict(checkpoint['model_state_dict'])
+    rab_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    rab_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
 
-    # new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
-    # new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
-    # with torch.no_grad():
-    #     rab_g.model.classifier.weight.copy_(new_W)
-    #     rab_g.model.classifier.bias.copy_(new_b)
-    # rab_g.run()
+    new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
+    new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
+    with torch.no_grad():
+        rab_g.model.classifier.weight.copy_(new_W)
+        rab_g.model.classifier.bias.copy_(new_b)
+    rab_g.run()
