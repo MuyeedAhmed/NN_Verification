@@ -43,8 +43,9 @@ class RAB:
         # while os.path.exists(self.log_file):
         #     count += 1
         #     self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
-        with open(self.log_file, "w") as f:
-            f.write("Phase,Epoch,Loss,Accuracy\n")
+        if phase == "InitTrain":
+            with open(self.log_file, "w") as f:
+                f.write("Phase,Epoch,Loss,Accuracy\n")
 
     def train(self):
         self.model.train()
@@ -75,11 +76,12 @@ class RAB:
             print(f'Epoch [{epoch+1}/{self.num_epochs}], Loss: {running_loss/len(self.train_loader):.4f}, Accuracy: {accuracy:.2f}%')
             with open(self.log_file, "a") as f:
                 f.write(f"{self.phase},{epoch+1},{running_loss/len(self.train_loader):.4f},{accuracy:.2f}\n")
-            if epoch == self.num_epochs:
-                suffix = "_Gurobi" if self.phase == "GurobiEdit" else ""
+            if epoch == self.num_epochs-1:
                 self.save_model(loss, save_suffix=suffix)
                 test_accuracy = self.test()
                 self.phase = "ResumeTrain"
+        if self.phase == "GurobiEdit":
+            self.save_model(loss, save_suffix="_GurobiEdit")
 
         return loss
 
@@ -140,16 +142,7 @@ class RAB:
         torch.save(X_fc_input, f"{checkpoint_dir}/fc_inputs{save_suffix}.pt")
         torch.save(Y_true, f"{checkpoint_dir}/fc_labels{save_suffix}.pt")
         torch.save(Y_pred, f"{checkpoint_dir}/fc_preds{save_suffix}.pt")
-    
-    
-    # def load_model(self, path):
-    #     if os.path.exists(path):
-    #         self.model.load_state_dict(torch.load(path))
-    #         print(f'Model loaded from {path}')
-    #     else:
-    #         print(f'No model found at {path}, starting from scratch')
-    
-    
+
     def run(self):
         start_time = time.time()
         loss = self.train()
@@ -225,10 +218,6 @@ def GurobiBorder(dataset_name, n=-1):
         b2_off = np.array([b2_offset[i].X for i in range(l2_size)])
         W2_new = W2 + W2_off
         b2_new = b2 + b2_off
-
-        
-
-            
         
         print("-------Weight/Bias Offsets-------")
         print("W2 offsets:", np.sum(np.abs(W2_off)))
@@ -263,24 +252,18 @@ def GurobiBorder(dataset_name, n=-1):
             ce_loss_pred += -np.log(pred_probs[label] + 1e-12)
             ce_loss_target += -np.log(target_probs[label] + 1e-12)
 
-        print(f"Misclassified: {misclassified}")
-        print("Average Cross Entropy loss (Z2 vs labels):", ce_loss_target / n_samples)
-        print("Average Cross Entropy loss (z2 vs labels):", ce_loss_pred / n_samples)
-        try:
-            with open(f"Stats/{dataset_name}_gurobi_log.csv", "w") as f:
-                f.write("-------Weight/Bias Offsets-------\n")
-                f.write("W2 offsets:", str(np.sum(np.abs(W2_off))), "\n")
-                f.write("b2 offsets:", str(np.sum(np.abs(b2_off))), "\n")
-                f.write("Objective value:", str(model_g.ObjVal), "\n")
-                f.write("------------------------------------\n\n")
-                f.write("Sample,True Label,Predicted Label\n")
-                for i in range(n_samples):
-                    f.write(f"{i},{true_labels[i]},{predictions[i]}\n")
-                f.write(f"Misclassified: {misclassified}\n")
-                f.write("Average Cross Entropy loss (Z2 vs labels): " + str(ce_loss_target / n_samples) + "\n")
-                f.write("Average Cross Entropy loss (z2 vs labels): " + str(ce_loss_pred / n_samples) + "\n")
-        except Exception as e:
-            print(f"Error writing to log file: {e}")
+        with open(f"Stats/{dataset_name}_gurobi_log.csv", "w") as f:
+            f.write("-------Weight/Bias Offsets-------\n")
+            f.write(f"W2 offsets: {np.sum(np.abs(W2_off))}\n")
+            f.write(f"b2 offsets: {np.sum(np.abs(b2_off))}\n")
+            f.write(f"Objective value: {model_g.ObjVal}\n")
+            f.write("------------------------------------\n\n")
+            f.write("Sample,True Label,Predicted Label\n")
+            for i in range(n_samples):
+                f.write(f"{i},{true_labels[i]},{predictions[i]}\n")
+            f.write(f"Misclassified: {misclassified}\n")
+            f.write("Average Cross Entropy loss (Z2 vs labels): " + str(ce_loss_target / n_samples) + "\n")
+            f.write("Average Cross Entropy loss (z2 vs labels): " + str(ce_loss_pred / n_samples) + "\n")
         W2_new = W2 + W2_off
         b2_new = b2 + b2_off
 
@@ -377,28 +360,28 @@ if __name__ == "__main__":
     
 
 
-    rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
-    rab.run()
+    # rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
+    # rab.run()
 
-    Gurobi_output = GurobiBorder(dataset_name, n=n_samples_gurobi)
+    Gurobi_output = GurobiBorder(dataset_name, n=20)
     if Gurobi_output is None:
         print("Gurobi did not find a solution.")
         sys.exit(1)
-    W2_new, b2_new = Gurobi_output
+    # W2_new, b2_new = Gurobi_output
 
-    rab_g = RAB(dataset_name, model_g, train_loader, test_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit")
+    # rab_g = RAB(dataset_name, model_g, train_loader, test_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit")
 
-    if device.type == 'cuda':
-        checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth")
-    else:
-        checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth", map_location=torch.device('cpu'))
-    rab_g.model.load_state_dict(checkpoint['model_state_dict'])
-    rab_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    rab_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+    # if device.type == 'cuda':
+    #     checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth")
+    # else:
+    #     checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth", map_location=torch.device('cpu'))
+    # rab_g.model.load_state_dict(checkpoint['model_state_dict'])
+    # rab_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    # rab_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
 
-    new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
-    new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
-    with torch.no_grad():
-        rab_g.model.classifier.weight.copy_(new_W)
-        rab_g.model.classifier.bias.copy_(new_b)
-    rab_g.run()
+    # new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
+    # new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
+    # with torch.no_grad():
+    #     rab_g.model.classifier.weight.copy_(new_W)
+    #     rab_g.model.classifier.bias.copy_(new_b)
+    # rab_g.run()
