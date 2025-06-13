@@ -279,8 +279,6 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
             f.write(f"Objective value: {model_g.ObjVal}\n")
             f.write("------------------------------------\n\n")
             f.write("Sample,True Label,Predicted Label\n")
-            for i in range(n_samples):
-                f.write(f"{i},{true_labels[i]},{predictions[i]}\n")
             f.write(f"Misclassified: {misclassified}\n")
             f.write("Average Cross Entropy loss (Z2 vs labels): " + str(ce_loss_target / n_samples) + "\n")
             f.write("Average Cross Entropy loss (z2 vs labels): " + str(ce_loss_pred / n_samples) + "\n")
