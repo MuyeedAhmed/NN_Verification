@@ -18,13 +18,14 @@ from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN
 timeLimit = 600
 
 class RAB:
-    def __init__(self, dataset_name, model, train_loader, test_loader, device, num_epochs=10, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase = "Train"):
+    def __init__(self, dataset_name, model, train_loader, test_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase = "InitTrain"):
         self.dataset_name = dataset_name
         self.model = model
         self.train_loader = train_loader
         self.test_loader = test_loader
         self.device = device
         self.num_epochs = num_epochs
+        self.resume_epochs = resume_epochs
         self.batch_size = batch_size
         self.learning_rate = learning_rate
         self.phase = phase
@@ -40,14 +41,14 @@ class RAB:
         self.log_file = f"Stats/{self.dataset_name}_log{count}.csv"
         while os.path.exists(self.log_file):
             count += 1
-            self.log_file = f"Stats/{self.dataset_name}_{self.phase}_{count}.csv"
+            self.log_file = f"Stats/{self.dataset_name}_{count}.csv"
         with open(self.log_file, "w") as f:
             f.write("Phase,Epoch,Loss,Accuracy\n")
 
     def train(self):
         self.model.train()
         loss = -1
-        for epoch in range(self.num_epochs):
+        for epoch in range(self.num_epochs+self.resume_epochs):
             running_loss = 0.0
             correct = 0
             total = 0
@@ -73,15 +74,18 @@ class RAB:
             print(f'Epoch [{epoch+1}/{self.num_epochs}], Loss: {running_loss/len(self.train_loader):.4f}, Accuracy: {accuracy:.2f}%')
             with open(self.log_file, "a") as f:
                 f.write(f"{self.phase},{epoch+1},{running_loss/len(self.train_loader):.4f},{accuracy:.2f}\n")
-            if epoch == self.num_epochs - 100:
+            if epoch == self.num_epochs:
                 self.save_model(loss, save_suffix="")
+                test_accuracy = self.test()
+                self.phase = "ResumeTrain"
+
         return loss
 
     def test(self):
         self.model.eval()
         correct = 0
         total = 0
-        
+        total_loss = 0.0
         with torch.no_grad():
             for inputs, labels in self.test_loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
@@ -89,11 +93,13 @@ class RAB:
                 _, predicted = outputs.max(1)
                 total += labels.size(0)
                 correct += predicted.eq(labels).sum().item()
-        
+                loss = self.criterion(outputs, labels)
+                total_loss += loss.item() * labels.size(0)  
+        avg_loss = total_loss / total
         accuracy = 100. * correct / total
         print(f'Test Accuracy: {accuracy:.2f}%')
         with open(self.log_file, "a") as f:
-                f.write(f"{self.phase},-1,-1,{accuracy:.2f}\n")
+                f.write(f"{self.phase}_Test,-1,{total_loss},{accuracy:.2f}\n")
         return accuracy
 
     def save_model(self, loss, save_suffix=""):
@@ -157,11 +163,11 @@ def GurobiBorder(dataset_name, n=-1):
         X = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
         labels = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
         pred = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
-
-    W1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_weight.pt").cpu().numpy()
-    b1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_bias.pt").cpu().numpy()
-    W2 = torch.load(f"checkpoints/{dataset_name}/classifier_weight.pt").cpu().numpy()
-    b2 = torch.load(f"checkpoints/{dataset_name}/classifier_bias.pt").cpu().numpy()
+    
+    W1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_weight.pt", map_location=torch.device('cpu')).cpu().numpy()
+    b1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_bias.pt", map_location=torch.device('cpu')).cpu().numpy()
+    W2 = torch.load(f"checkpoints/{dataset_name}/classifier_weight.pt", map_location=torch.device('cpu')).cpu().numpy()
+    b2 = torch.load(f"checkpoints/{dataset_name}/classifier_bias.pt", map_location=torch.device('cpu')).cpu().numpy()
 
     Z1 = np.maximum(0, X @ W1.T + b1)
     Z2_target = Z1 @ W2.T + b2  
@@ -269,8 +275,10 @@ if __name__ == "__main__":
     os.makedirs("Stats", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    initEpoch = 300
-    G_epoch = 100
+    initEpoch = 3
+    G_epoch = 1
+    n_samples_gurobi = 100
+    optimize = "Adam"
     dataset_name = sys.argv[1] if len(sys.argv) > 1 else "MNIST"
 
     train_loader = None
@@ -308,7 +316,7 @@ if __name__ == "__main__":
 
         model = NIN_MNIST(num_classes=10).to(device)
         model_g = NIN_MNIST(num_classes=10).to(device)
-    elif dataset_name == "KMINIST":
+    elif dataset_name == "KMNIST":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
         train_dataset = torchvision.datasets.KMNIST(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.KMNIST(root='./data', train=False, download=True, transform=transform)
@@ -344,21 +352,28 @@ if __name__ == "__main__":
     
 
 
-    rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase="Train")
+    rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
     rab.run()
 
-    W2_new, b2_new = GurobiBorder(dataset_name, n=100)
+    Gurobi_output = GurobiBorder(dataset_name, n=n_samples_gurobi)
+    if Gurobi_output is None:
+        print("Gurobi did not find a solution.")
+        sys.exit(1)
+    W2_new, b2_new = Gurobi_output
 
-    rab_g = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase="GurobiEdit")
+    rab_g = RAB(dataset_name, model_g, train_loader, test_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit")
 
-    checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth")
-    rab_g.model_g.load_state_dict(checkpoint['model_state_dict'])
+    if device.type == 'cuda':
+        checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth")
+    else:
+        checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth", map_location=torch.device('cpu'))
+    rab_g.model.load_state_dict(checkpoint['model_state_dict'])
     rab_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     rab_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
 
     new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
     new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
     with torch.no_grad():
-        rab_g.model_g.classifier.weight.copy_(new_W)
-        rab_g.model_g.classifier.bias.copy_(new_b)
+        rab_g.model.classifier.weight.copy_(new_W)
+        rab_g.model.classifier.bias.copy_(new_b)
     rab_g.run()
