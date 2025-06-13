@@ -18,7 +18,7 @@ from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN
 timeLimit = 7200  # 2 hours in seconds
 
 class RAB:
-    def __init__(self, dataset_name, model, train_loader, test_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase = "InitTrain"):
+    def __init__(self, dataset_name, model, train_loader, test_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase = "Train"):
         self.dataset_name = dataset_name
         self.model = model
         self.train_loader = train_loader
@@ -43,7 +43,7 @@ class RAB:
         # while os.path.exists(self.log_file):
         #     count += 1
         #     self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
-        if phase == "InitTrain":
+        if phase == "Train":
             with open(self.log_file, "w") as f:
                 f.write("Phase,Epoch,Loss,Accuracy\n")
 
@@ -77,12 +77,14 @@ class RAB:
             with open(self.log_file, "a") as f:
                 f.write(f"{self.phase},{epoch+1},{running_loss/len(self.train_loader):.4f},{accuracy:.2f}\n")
             if epoch == self.num_epochs-1:
-                self.save_model(loss, save_suffix=suffix)
-                test_accuracy = self.test()
+                if self.phase == "Train":
+                    self.save_model(loss, save_suffix="")
+                    test_accuracy = self.test()
                 self.phase = "ResumeTrain"
         if self.phase == "GurobiEdit":
             self.save_model(loss, save_suffix="_GurobiEdit")
-
+        if self.phase == "ResumeTrain":
+            self.save_model(loss, save_suffix="_Resume")
         return loss
 
     def test(self):
@@ -147,8 +149,6 @@ class RAB:
         start_time = time.time()
         loss = self.train()
         accuracy = self.test()
-        if self.phase != "GurobiEdit":
-            self.save_model(loss, save_suffix=f"_Resume")
 
 def GurobiBorder(dataset_name, n=-1):
     if n != -1:
@@ -279,8 +279,8 @@ if __name__ == "__main__":
     os.makedirs("Stats", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    initEpoch = 200
-    G_epoch = 100
+    initEpoch = 2
+    G_epoch = 1
     n_samples_gurobi = -1
     optimize = "Adam"
     dataset_name = sys.argv[1] if len(sys.argv) > 1 else "MNIST"
@@ -313,7 +313,7 @@ if __name__ == "__main__":
         model = NIN(num_classes=10).to(device)
         model_g = NIN(num_classes=10).to(device)
     elif dataset_name == "FashionMNIST":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
         train_dataset = torchvision.datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.FashionMNIST(root='./data', train=False, download=True, transform=transform)
 
