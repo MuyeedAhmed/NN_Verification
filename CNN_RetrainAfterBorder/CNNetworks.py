@@ -203,3 +203,37 @@ class NIN_SVHN(nn.Module):
         x = self.relu(x)
         x = self.classifier(x)
         return x
+
+class NIN(nn.Module):
+    def __init__(self, num_classes=10):
+        super(NIN, self).__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 192, kernel_size=5, padding=2), nn.ReLU(inplace=True),
+            nn.Conv2d(192, 160, kernel_size=1), nn.ReLU(inplace=True),
+            nn.Conv2d(160, 96, kernel_size=1), nn.ReLU(inplace=True),
+            nn.MaxPool2d(3, stride=2, padding=1),
+
+            nn.Conv2d(96, 192, kernel_size=5, padding=2), nn.ReLU(inplace=True),
+            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
+            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
+            nn.MaxPool2d(3, stride=2, padding=1),
+
+            nn.Conv2d(192, 192, kernel_size=3, padding=1), nn.ReLU(inplace=True),
+            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
+            nn.Conv2d(192, 64, kernel_size=1),
+            # nn.AdaptiveAvgPool2d((1, 1))
+        )
+        self.flatten = nn.Flatten()
+        self.fc_hidden = nn.Linear(64 * 8 * 8, 64)
+        self.relu = nn.ReLU()
+        self.classifier = nn.Linear(64, num_classes)
+
+    def forward(self, x, extract_fc_input=False):
+        x = self.features(x)
+        x = x.view(x.size(0), -1)
+        if extract_fc_input:
+            return x.clone().detach(), None
+        x = self.fc_hidden(x)
+        x = torch.relu(x)
+        x = self.classifier(x)
+        return x
