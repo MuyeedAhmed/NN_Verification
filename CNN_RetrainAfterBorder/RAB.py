@@ -15,7 +15,7 @@ import numpy as np
 from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN_SVHN, NIN_EMNIST
 
 
-timeLimit = 600
+timeLimit = 7200  # 2 hours in seconds
 
 class RAB:
     def __init__(self, dataset_name, model, train_loader, test_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase = "InitTrain"):
@@ -38,10 +38,10 @@ class RAB:
         self.scheduler = CosineAnnealingLR(self.optimizer, T_max=self.num_epochs)
         self.criterion = nn.CrossEntropyLoss()
         count = 0
-        self.log_file = f"Stats/{self.dataset_name}_log{count}.csv"
+        self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
         while os.path.exists(self.log_file):
             count += 1
-            self.log_file = f"Stats/{self.dataset_name}_{count}.csv"
+            self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
         with open(self.log_file, "w") as f:
             f.write("Phase,Epoch,Loss,Accuracy\n")
 
@@ -94,7 +94,7 @@ class RAB:
                 total += labels.size(0)
                 correct += predicted.eq(labels).sum().item()
                 loss = self.criterion(outputs, labels)
-                total_loss += loss.item() * labels.size(0)  
+                total_loss += loss.item()
         avg_loss = total_loss / total
         accuracy = 100. * correct / total
         print(f'Test Accuracy: {accuracy:.2f}%')
@@ -275,9 +275,9 @@ if __name__ == "__main__":
     os.makedirs("Stats", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    initEpoch = 3
-    G_epoch = 1
-    n_samples_gurobi = 100
+    initEpoch = 200
+    G_epoch = 100
+    n_samples_gurobi = -1
     optimize = "Adam"
     dataset_name = sys.argv[1] if len(sys.argv) > 1 else "MNIST"
 
