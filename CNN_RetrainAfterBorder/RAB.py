@@ -290,7 +290,7 @@ if __name__ == "__main__":
     model = None
 
     if dataset_name == "MNIST":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         train_dataset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transform)
 
@@ -301,7 +301,7 @@ if __name__ == "__main__":
         model = NIN_MNIST(num_classes=10).to(device)
         model_g = NIN_MNIST(num_classes=10).to(device)
     elif dataset_name == "CIFAR10":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))])
         train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
 
@@ -313,7 +313,7 @@ if __name__ == "__main__":
         model = NIN(num_classes=10).to(device)
         model_g = NIN(num_classes=10).to(device)
     elif dataset_name == "FashionMNIST":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         train_dataset = torchvision.datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.FashionMNIST(root='./data', train=False, download=True, transform=transform)
 
@@ -323,7 +323,7 @@ if __name__ == "__main__":
         model = NIN_MNIST(num_classes=10).to(device)
         model_g = NIN_MNIST(num_classes=10).to(device)
     elif dataset_name == "KMNIST":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         train_dataset = torchvision.datasets.KMNIST(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.KMNIST(root='./data', train=False, download=True, transform=transform)
 
@@ -334,7 +334,7 @@ if __name__ == "__main__":
         model_g = NIN_MNIST(num_classes=10).to(device)
     
     elif dataset_name == "EMNIST":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         train_dataset = torchvision.datasets.EMNIST(root='./data', split='letters', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.EMNIST(root='./data', split='letters', train=False, download=True, transform=transform)
 
@@ -345,20 +345,15 @@ if __name__ == "__main__":
         model_g = NIN_EMNIST(num_classes=26).to(device)
     
     elif dataset_name == "SVHN":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(mean=[0.4377, 0.4438, 0.4728], std=[0.1980, 0.2010, 0.1970])])
         train_dataset = torchvision.datasets.SVHN(root='./data', split='train', download=True, transform=transform)
         test_dataset = torchvision.datasets.SVHN(root='./data', split='test', download=True, transform=transform)
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
 
-        # model = NIN_SVHN(num_classes=10).to(device)
-        # model_g = NIN_SVHN(num_classes=10).to(device)
-        model = NIN(num_classes=10).to(device)
-        model_g = NIN(num_classes=10).to(device)
-
-    
-
+        model = NIN_SVHN(num_classes=10).to(device)
+        model_g = NIN_SVHN(num_classes=10).to(device)
 
     # rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
     # rab.run()

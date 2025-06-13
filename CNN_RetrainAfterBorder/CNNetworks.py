@@ -148,15 +148,15 @@ class NIN_EMNIST(nn.Module):
                 nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
             )
         self.features = nn.Sequential(
-            nin_block(1, 64, kernel_size=5, stride=1, padding=2),
+            nin_block(1, 128, kernel_size=5, stride=1, padding=2),
             nn.MaxPool2d(2, stride=2),
-            nin_block(64, 64, kernel_size=3, stride=1, padding=1),
+            nin_block(128, 64, kernel_size=3, stride=1, padding=1),
             # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(64*14*14, 32)
+        self.fc_hidden = nn.Linear(64*14*14, 64)
         self.relu = nn.ReLU()
-        self.classifier = nn.Linear(32, num_classes)
+        self.classifier = nn.Linear(64, num_classes)
 
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
@@ -208,19 +208,19 @@ class NIN(nn.Module):
     def __init__(self, num_classes=10):
         super(NIN, self).__init__()
         self.features = nn.Sequential(
-            nn.Conv2d(3, 192, kernel_size=5, padding=2), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 160, kernel_size=1), nn.ReLU(inplace=True),
-            nn.Conv2d(160, 96, kernel_size=1), nn.ReLU(inplace=True),
+            nn.Conv2d(3, 256, kernel_size=5, padding=2), nn.ReLU(inplace=True),
+            nn.Conv2d(256, 256, kernel_size=1), nn.ReLU(inplace=True),
+            nn.Conv2d(256, 128, kernel_size=1), nn.ReLU(inplace=True),
             nn.MaxPool2d(3, stride=2, padding=1),
 
-            nn.Conv2d(96, 192, kernel_size=5, padding=2), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
+            nn.Conv2d(128, 128, kernel_size=5, padding=2), nn.ReLU(inplace=True),
+            nn.Conv2d(128, 128, kernel_size=1), nn.ReLU(inplace=True),
+            nn.Conv2d(128, 128, kernel_size=1), nn.ReLU(inplace=True),
             nn.MaxPool2d(3, stride=2, padding=1),
 
-            nn.Conv2d(192, 192, kernel_size=3, padding=1), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 192, kernel_size=1), nn.ReLU(inplace=True),
-            nn.Conv2d(192, 64, kernel_size=1),
+            nn.Conv2d(128, 128, kernel_size=3, padding=1), nn.ReLU(inplace=True),
+            nn.Conv2d(128, 128, kernel_size=1), nn.ReLU(inplace=True),
+            nn.Conv2d(128, 64, kernel_size=1),
             # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
