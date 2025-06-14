@@ -173,7 +173,7 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
     X_full = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
     labels_full = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
     pred_full = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
-    X_full_size = X.shape[0]
+    X_full_size = X_full.shape[0]
     if n == -1:
         X = X_full
         labels = labels_full
@@ -277,7 +277,6 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
             f.write(f"b2 offsets: {np.sum(np.abs(b2_off))}\n")
             f.write(f"Objective value: {model_g.ObjVal}\n")
             f.write("------------------------------------\n\n")
-            f.write("Sample,True Label,Predicted Label\n")
             f.write(f"Misclassified: {misclassified}\n")
             f.write("Average Cross Entropy loss (Z2 vs labels): " + str(ce_loss_target / n_samples) + "\n")
             f.write("Average Cross Entropy loss (z2 vs labels): " + str(ce_loss_pred / n_samples) + "\n")
@@ -299,9 +298,12 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
                 ce_loss_target += -np.log(target_probs[label] + 1e-12)
             ce_loss_target /= X_full_size
             ce_loss_pred /= X_full_size
-            print(f"Total misclassified samples in full dataset: {misclassified}")
-            print(f"Average Cross Entropy loss (Z2 vs labels): {ce_loss_target}")
-            print(f"Average Cross Entropy loss (z2 vs labels): {ce_loss_pred}")
+            with open(f"Stats/{dataset_name}_gurobi_log.csv", "a") as f:
+                f.write("\n\n-------Full Dataset Statistics-------\n")
+                f.write(f"Total samples in full dataset: {X_full_size}\n")
+                f.write(f"Total misclassified samples in full dataset: {misclassified}\n")
+                f.write(f"Average Cross Entropy loss (Z2 vs labels): {ce_loss_target}\n")
+                f.write(f"Average Cross Entropy loss (z2 vs labels): {ce_loss_pred}\n")
         
         W2_new = W2 + W2_off
         b2_new = b2 + b2_off
