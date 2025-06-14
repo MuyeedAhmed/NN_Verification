@@ -12,7 +12,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN_SVHN, NIN_EMNIST, NIN
+from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN_SVHN, NIN_EMNIST, NIN, VGG
 
 
 timeLimit = 3600
@@ -370,8 +370,8 @@ if __name__ == "__main__":
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
 
-        model = NIN_SVHN(num_classes=10).to(device)
-        model_g = NIN_SVHN(num_classes=10).to(device)
+        model = VGG(num_classes=10).to(device)
+        model_g = VGG(num_classes=10).to(device)
 
     rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
     rab.run()
