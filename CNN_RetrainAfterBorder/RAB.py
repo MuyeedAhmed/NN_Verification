@@ -12,7 +12,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN_SVHN, NIN_EMNIST, NIN, VGG
+from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG
 
 
 timeLimit = 3600
@@ -38,11 +38,7 @@ class RAB:
         self.scheduler = CosineAnnealingLR(self.optimizer, T_max=self.num_epochs)
         self.criterion = nn.CrossEntropyLoss()
         self.log_file = f"Stats/{self.dataset_name}_log.csv"
-        # count = 0
-        # self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
-        # while os.path.exists(self.log_file):
-        #     count += 1
-        #     self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
+        
         if phase == "Train":
             with open(self.log_file, "w") as f:
                 f.write("Phase,Epoch,Loss,Accuracy\n")
@@ -174,25 +170,28 @@ class RAB:
         accuracy = self.test()
 
 def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
-    if n != -1:
-        X = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()[0:n]
-        labels = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()[0:n]
-        pred = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()[0:n]
+    X_full = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
+    labels_full = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
+    pred_full = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
+    X_full_size = X.shape[0]
+    if n == -1:
+        X = X_full
+        labels = labels_full
+        pred = pred_full
     else:
-        X = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
-        labels = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
-        pred = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
-    
+        X = X_full[0:n]
+        labels = labels_full[0:n]
+        pred = pred_full[0:n]
+
     W1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_weight.pt", map_location=torch.device('cpu')).cpu().numpy()
     b1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_bias.pt", map_location=torch.device('cpu')).cpu().numpy()
     W2 = torch.load(f"checkpoints/{dataset_name}/classifier_weight.pt", map_location=torch.device('cpu')).cpu().numpy()
     b2 = torch.load(f"checkpoints/{dataset_name}/classifier_bias.pt", map_location=torch.device('cpu')).cpu().numpy()
 
     Z1 = np.maximum(0, X @ W1.T + b1)
-    Z2_target = Z1 @ W2.T + b2  
-    preds_Z2 = np.argmax(Z2_target, axis=1)
+    Z2_target = Z1 @ W2.T + b2
 
-    print("Mismatch: ", sum(pred != preds_Z2))
+    print("Mismatch: ", sum(pred != np.argmax(Z2_target, axis=1)))
     print("Size of X:", X.shape)
     print("Size of W2:", W2.shape)
     print("Size of b2:", b2.shape)
@@ -249,7 +248,7 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
         misclassified = 0
         ce_loss_target = 0
         ce_loss_pred = 0
-        predictions, true_labels = [], []
+        # predictions, true_labels = [], []
 
         for i in range(n_samples):
             x = X[i]
@@ -258,8 +257,8 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
             z2 = W2_new @ a1 + b2_new
             pred = np.argmax(z2)
 
-            predictions.append(pred)
-            true_labels.append(label)
+            # predictions.append(pred)
+            # true_labels.append(label)
             if pred != label:
                 print(f"Sample {i} misclassified: true={label}, pred={pred}")
                 misclassified += 1
@@ -282,6 +281,28 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
             f.write(f"Misclassified: {misclassified}\n")
             f.write("Average Cross Entropy loss (Z2 vs labels): " + str(ce_loss_target / n_samples) + "\n")
             f.write("Average Cross Entropy loss (z2 vs labels): " + str(ce_loss_pred / n_samples) + "\n")
+        
+        if n != -1:
+            Z1_full = np.maximum(0, X_full @ W1.T + b1)
+            Z2_full_target = Z1_full @ W2.T + b2
+            
+            for i in range(X_full_size):
+                a1 = relu(W1 @ X_full[i] + b1)
+                z2 = W2_new @ a1 + b2_new
+                pred = np.argmax(z2)
+                label = int(np.argmax(Z2_full_target[i]))
+                if pred != label:
+                    misclassified += 1
+                pred_probs = softmax(z2)
+                target_probs = softmax(Z2_full_target[i])
+                ce_loss_pred += -np.log(pred_probs[label] + 1e-12)
+                ce_loss_target += -np.log(target_probs[label] + 1e-12)
+            ce_loss_target /= X_full_size
+            ce_loss_pred /= X_full_size
+            print(f"Total misclassified samples in full dataset: {misclassified}")
+            print(f"Average Cross Entropy loss (Z2 vs labels): {ce_loss_target}")
+            print(f"Average Cross Entropy loss (z2 vs labels): {ce_loss_pred}")
+        
         W2_new = W2 + W2_off
         b2_new = b2 + b2_off
 
@@ -373,8 +394,9 @@ if __name__ == "__main__":
         model = VGG(num_classes=10).to(device)
         model_g = VGG(num_classes=10).to(device)
 
-    rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
-    rab.run()
+    if os.path.exists(f"./checkpoints/{dataset_name}/full_checkpoint.pth") == False:
+        rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
+        rab.run()
 
     Gurobi_output = GurobiBorder(dataset_name, n=n_samples_gurobi)
     if Gurobi_output is None:
