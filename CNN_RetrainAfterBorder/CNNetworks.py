@@ -77,66 +77,7 @@ class NIN_MNIST(nn.Module):
         x = self.classifier(x)
         return x
 
-class NIN_FashionMNIST(nn.Module):
-    def __init__(self, num_classes=10):
-        super(NIN_FashionMNIST, self).__init__()
-        def nin_block(in_channels, out_channels, kernel_size, stride, padding):
-            return nn.Sequential(
-                nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding), nn.ReLU(),
-                nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
-                nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
-            )
-        self.features = nn.Sequential(
-            nin_block(1, 32, kernel_size=5, stride=1, padding=2),
-            nn.MaxPool2d(2, stride=2),
-            nin_block(32, 32, kernel_size=3, stride=1, padding=1),
-            # nn.AdaptiveAvgPool2d((1, 1))
-        )
-        self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(32*14*14, 16)
-        self.relu = nn.ReLU()
-        self.classifier = nn.Linear(16, num_classes)
 
-    def forward(self, x, extract_fc_input=False):
-        x = self.features(x)
-        x = x.view(x.size(0), -1)
-        if extract_fc_input:
-            return x.clone().detach(), None
-        x = self.fc_hidden(x)
-        x = self.relu(x)
-        x = self.classifier(x)
-        return x
-
-
-class NIN_KMNIST(nn.Module):
-    def __init__(self, num_classes=10):
-        super(NIN_KMNIST, self).__init__()
-        def nin_block(in_channels, out_channels, kernel_size, stride, padding):
-            return nn.Sequential(
-                nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding), nn.ReLU(),
-                nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
-                nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
-            )
-        self.features = nn.Sequential(
-            nin_block(1, 32, kernel_size=5, stride=1, padding=2),
-            nn.MaxPool2d(2, stride=2),
-            nin_block(32, 32, kernel_size=3, stride=1, padding=1),
-            # nn.AdaptiveAvgPool2d((1, 1))
-        )
-        self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(32*14*14, 16)
-        self.relu = nn.ReLU()
-        self.classifier = nn.Linear(16, num_classes)
-
-    def forward(self, x, extract_fc_input=False):
-        x = self.features(x)
-        x = x.view(x.size(0), -1)
-        if extract_fc_input:
-            return x.clone().detach(), None
-        x = self.fc_hidden(x)
-        x = self.relu(x)
-        x = self.classifier(x)
-        return x
 
 class NIN_EMNIST(nn.Module):
     def __init__(self, num_classes=10):
@@ -237,3 +178,97 @@ class NIN(nn.Module):
         x = torch.relu(x)
         x = self.classifier(x)
         return x
+
+class VGG(nn.Module):
+    def __init__(self, num_classes=10):
+        super().__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
+            nn.Conv2d(64, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
+            nn.MaxPool2d(2),  # 16x16
+
+            nn.Conv2d(64, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
+            nn.Conv2d(128, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
+            nn.MaxPool2d(2),  # 8x8
+
+            nn.Conv2d(128, 256, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(256),
+            nn.AdaptiveAvgPool2d((1, 1))
+        )
+
+        self.flatten = nn.Flatten()
+        self.fc_hidden = nn.Linear(256, 128)
+        self.relu = nn.ReLU()
+        self.classifier = nn.Linear(128, num_classes)
+    
+    def forward(self, x, extract_fc_input=False):
+        x = self.features(x)
+        x = self.flatten(x)
+        if extract_fc_input:
+            return x.clone().detach(), None
+        x = self.fc_hidden(x)
+        x = self.relu(x)
+        x = self.classifier(x)
+        return x
+
+
+
+# class NIN_FashionMNIST(nn.Module):
+#     def __init__(self, num_classes=10):
+#         super(NIN_FashionMNIST, self).__init__()
+#         def nin_block(in_channels, out_channels, kernel_size, stride, padding):
+#             return nn.Sequential(
+#                 nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding), nn.ReLU(),
+#                 nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
+#                 nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
+#             )
+#         self.features = nn.Sequential(
+#             nin_block(1, 32, kernel_size=5, stride=1, padding=2),
+#             nn.MaxPool2d(2, stride=2),
+#             nin_block(32, 32, kernel_size=3, stride=1, padding=1),
+#             # nn.AdaptiveAvgPool2d((1, 1))
+#         )
+#         self.flatten = nn.Flatten()
+#         self.fc_hidden = nn.Linear(32*14*14, 16)
+#         self.relu = nn.ReLU()
+#         self.classifier = nn.Linear(16, num_classes)
+
+#     def forward(self, x, extract_fc_input=False):
+#         x = self.features(x)
+#         x = x.view(x.size(0), -1)
+#         if extract_fc_input:
+#             return x.clone().detach(), None
+#         x = self.fc_hidden(x)
+#         x = self.relu(x)
+#         x = self.classifier(x)
+#         return x
+
+
+# class NIN_KMNIST(nn.Module):
+#     def __init__(self, num_classes=10):
+#         super(NIN_KMNIST, self).__init__()
+#         def nin_block(in_channels, out_channels, kernel_size, stride, padding):
+#             return nn.Sequential(
+#                 nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding), nn.ReLU(),
+#                 nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
+#                 nn.Conv2d(out_channels, out_channels, kernel_size=1), nn.ReLU(),
+#             )
+#         self.features = nn.Sequential(
+#             nin_block(1, 32, kernel_size=5, stride=1, padding=2),
+#             nn.MaxPool2d(2, stride=2),
+#             nin_block(32, 32, kernel_size=3, stride=1, padding=1),
+#             # nn.AdaptiveAvgPool2d((1, 1))
+#         )
+#         self.flatten = nn.Flatten()
+#         self.fc_hidden = nn.Linear(32*14*14, 16)
+#         self.relu = nn.ReLU()
+#         self.classifier = nn.Linear(16, num_classes)
+
+#     def forward(self, x, extract_fc_input=False):
+#         x = self.features(x)
+#         x = x.view(x.size(0), -1)
+#         if extract_fc_input:
+#             return x.clone().detach(), None
+#         x = self.fc_hidden(x)
+#         x = self.relu(x)
+#         x = self.classifier(x)
+#         return x
