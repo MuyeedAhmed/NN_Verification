@@ -12,19 +12,20 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN_SVHN, NIN_EMNIST
+from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_KMNIST, NIN_FashionMNIST, NIN_SVHN, NIN_EMNIST, NIN
 
 
-timeLimit = 600
+timeLimit = 3600
 
 class RAB:
-    def __init__(self, dataset_name, model, train_loader, test_loader, device, num_epochs=10, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase = "Train"):
+    def __init__(self, dataset_name, model, train_loader, test_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase = "Train"):
         self.dataset_name = dataset_name
         self.model = model
         self.train_loader = train_loader
         self.test_loader = test_loader
         self.device = device
         self.num_epochs = num_epochs
+        self.resume_epochs = resume_epochs
         self.batch_size = batch_size
         self.learning_rate = learning_rate
         self.phase = phase
@@ -36,64 +37,98 @@ class RAB:
             raise ValueError("Unsupported optimizer type. Use 'SGD' or 'Adam'.")
         self.scheduler = CosineAnnealingLR(self.optimizer, T_max=self.num_epochs)
         self.criterion = nn.CrossEntropyLoss()
-        count = 0
-        self.log_file = f"Stats/{self.dataset_name}_log{count}.csv"
-        while os.path.exists(self.log_file):
-            count += 1
-            self.log_file = f"Stats/{self.dataset_name}_{self.phase}_{count}.csv"
-        with open(self.log_file, "w") as f:
-            f.write("Phase,Epoch,Loss,Accuracy\n")
+        self.log_file = f"Stats/{self.dataset_name}_log.csv"
+        # count = 0
+        # self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
+        # while os.path.exists(self.log_file):
+        #     count += 1
+        #     self.log_file = f"Stats/{self.dataset_name}_log_{count}.csv"
+        if phase == "Train":
+            with open(self.log_file, "w") as f:
+                f.write("Phase,Epoch,Loss,Accuracy\n")
 
-    def train(self):
+    def train(self, early_stopping_patience=10, min_delta=1e-5):
         self.model.train()
         loss = -1
-        for epoch in range(self.num_epochs):
+        best_loss = float('inf')
+        epochs_no_improve = 0
+
+        for epoch in range(self.num_epochs+self.resume_epochs):
             running_loss = 0.0
             correct = 0
             total = 0
-            
-            for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
-                if self.dataset_name == "EMNIST":
-                    inputs, labels = inputs.to(self.device), (labels - 1).to(self.device)
-                else:
-                    inputs, labels = inputs.to(self.device), labels.to(self.device)
-                
+            # for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
+            for i, (inputs, labels) in enumerate(self.train_loader):
+                inputs, labels = inputs.to(self.device), labels.to(self.device)
+                labels_for_loss = labels - 1 if self.dataset_name == "EMNIST" else labels
+
                 self.optimizer.zero_grad()
                 outputs = self.model(inputs)
-                loss = self.criterion(outputs, labels)
+                loss = self.criterion(outputs, labels_for_loss)
                 loss.backward()
                 self.optimizer.step()
                 
                 running_loss += loss.item()
                 _, predicted = outputs.max(1)
                 total += labels.size(0)
-                correct += predicted.eq(labels).sum().item()
-            self.scheduler.step()            
+                correct += predicted.eq(labels_for_loss).sum().item()
+
+            self.scheduler.step()
+            avg_loss = running_loss / len(self.train_loader)
             accuracy = 100. * correct / total
-            print(f'Epoch [{epoch+1}/{self.num_epochs}], Loss: {running_loss/len(self.train_loader):.4f}, Accuracy: {accuracy:.2f}%')
+
+            print(f'Epoch [{epoch+1}/{self.num_epochs}], Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%')
             with open(self.log_file, "a") as f:
-                f.write(f"{self.phase},{epoch+1},{running_loss/len(self.train_loader):.4f},{accuracy:.2f}\n")
-            if epoch == self.num_epochs - 100:
-                self.save_model(loss, save_suffix="")
-        return loss
+                f.write(f"{self.phase},{epoch+1},{avg_loss:.4f},{accuracy:.2f}\n")
+
+            # Early stopping logic
+            if best_loss - avg_loss > min_delta:
+                best_loss = avg_loss
+                epochs_no_improve = 0
+            else:
+                epochs_no_improve += 1
+
+            if epochs_no_improve >= early_stopping_patience:
+                print(f"Early stopping triggered after {epoch+1} epochs.")
+                break
+
+            if epoch == self.num_epochs - 1:
+                if self.phase == "Train":
+                    self.save_model(loss, save_suffix="")
+                    test_accuracy = self.test()
+                self.phase = "ResumeTrain"
+        if self.phase == "Train":
+            self.save_model(loss, save_suffix="")
+        elif self.phase == "GurobiEdit":
+            self.save_model(loss, save_suffix="_GurobiEdit")
+        elif self.phase == "ResumeTrain":
+            self.save_model(loss, save_suffix="_Resume")
+        
 
     def test(self):
         self.model.eval()
         correct = 0
         total = 0
-        
+        total_loss = 0.0
         with torch.no_grad():
             for inputs, labels in self.test_loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
+                if self.dataset_name == "EMNIST":
+                    labels_for_loss = labels - 1
+                else:
+                    labels_for_loss = labels   
                 outputs = self.model(inputs)
                 _, predicted = outputs.max(1)
                 total += labels.size(0)
-                correct += predicted.eq(labels).sum().item()
-        
+                correct += predicted.eq(labels_for_loss).sum().item()
+                loss = self.criterion(outputs, labels_for_loss)
+                total_loss += loss.item()
+        avg_loss = total_loss / len(self.test_loader)
+
         accuracy = 100. * correct / total
         print(f'Test Accuracy: {accuracy:.2f}%')
         with open(self.log_file, "a") as f:
-                f.write(f"{self.phase},-1,-1,{accuracy:.2f}\n")
+                f.write(f"{self.phase}_Test,-1,{total_loss},{accuracy:.2f}\n")
         return accuracy
 
     def save_model(self, loss, save_suffix=""):
@@ -132,23 +167,13 @@ class RAB:
         torch.save(X_fc_input, f"{checkpoint_dir}/fc_inputs{save_suffix}.pt")
         torch.save(Y_true, f"{checkpoint_dir}/fc_labels{save_suffix}.pt")
         torch.save(Y_pred, f"{checkpoint_dir}/fc_preds{save_suffix}.pt")
-    
-    
-    # def load_model(self, path):
-    #     if os.path.exists(path):
-    #         self.model.load_state_dict(torch.load(path))
-    #         print(f'Model loaded from {path}')
-    #     else:
-    #         print(f'No model found at {path}, starting from scratch')
-    
-    
+
     def run(self):
         start_time = time.time()
-        loss = self.train()
+        self.train()
         accuracy = self.test()
-        self.save_model(loss, save_suffix=f"_Resume")
 
-def GurobiBorder(dataset_name, n=-1):
+def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
     if n != -1:
         X = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()[0:n]
         labels = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()[0:n]
@@ -157,11 +182,11 @@ def GurobiBorder(dataset_name, n=-1):
         X = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
         labels = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
         pred = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
-
-    W1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_weight.pt").cpu().numpy()
-    b1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_bias.pt").cpu().numpy()
-    W2 = torch.load(f"checkpoints/{dataset_name}/classifier_weight.pt").cpu().numpy()
-    b2 = torch.load(f"checkpoints/{dataset_name}/classifier_bias.pt").cpu().numpy()
+    
+    W1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_weight.pt", map_location=torch.device('cpu')).cpu().numpy()
+    b1 = torch.load(f"checkpoints/{dataset_name}/fc_hidden_bias.pt", map_location=torch.device('cpu')).cpu().numpy()
+    W2 = torch.load(f"checkpoints/{dataset_name}/classifier_weight.pt", map_location=torch.device('cpu')).cpu().numpy()
+    b2 = torch.load(f"checkpoints/{dataset_name}/classifier_bias.pt", map_location=torch.device('cpu')).cpu().numpy()
 
     Z1 = np.maximum(0, X @ W1.T + b1)
     Z2_target = Z1 @ W2.T + b2  
@@ -200,7 +225,7 @@ def GurobiBorder(dataset_name, n=-1):
 
         for k in range(l2_size):
             if k != label_max:
-                model_g.addConstr(Z2[label_max] >= Z2[k] + 3e-5, f"Z2_max_{s}_{k}")
+                model_g.addConstr(Z2[label_max] >= Z2[k] + tol, f"Z2_max_{s}_{k}")
 
         Z2_list.append(Z2)
         max_min_diff.append(Z2[label_max] - Z2[label_min])
@@ -216,12 +241,6 @@ def GurobiBorder(dataset_name, n=-1):
         b2_off = np.array([b2_offset[i].X for i in range(l2_size)])
         W2_new = W2 + W2_off
         b2_new = b2 + b2_off
-
-        print("-------Weight/Bias Offsets-------")
-        print("W2 offsets:", np.sum(np.abs(W2_off)))
-        print("b2 offsets:", np.sum(np.abs(b2_off)))
-        print("Objective value:", model_g.ObjVal)
-        print("------------------------------------")
         def relu(x): return np.maximum(0, x)
         def softmax(logits):
             e = np.exp(logits - np.max(logits))
@@ -249,11 +268,20 @@ def GurobiBorder(dataset_name, n=-1):
             target_probs = softmax(Z2_target[i])
             ce_loss_pred += -np.log(pred_probs[label] + 1e-12)
             ce_loss_target += -np.log(target_probs[label] + 1e-12)
-
-        print(f"Misclassified: {misclassified}")
-        print("Average Cross Entropy loss (Z2 vs labels):", ce_loss_target / n_samples)
-        print("Average Cross Entropy loss (z2 vs labels):", ce_loss_pred / n_samples)
-
+        if misclassified > 0:
+            with open(f"Stats/{dataset_name}_gurobi_log_tol.csv", "a") as f:
+                f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
+            GurobiBorder(dataset_name, n=n, tol=tol+5e-6)
+        with open(f"Stats/{dataset_name}_gurobi_log.csv", "w") as f:
+            f.write("-------Weight/Bias Offsets-------\n")
+            f.write(f"W2 offsets: {np.sum(np.abs(W2_off))}\n")
+            f.write(f"b2 offsets: {np.sum(np.abs(b2_off))}\n")
+            f.write(f"Objective value: {model_g.ObjVal}\n")
+            f.write("------------------------------------\n\n")
+            f.write("Sample,True Label,Predicted Label\n")
+            f.write(f"Misclassified: {misclassified}\n")
+            f.write("Average Cross Entropy loss (Z2 vs labels): " + str(ce_loss_target / n_samples) + "\n")
+            f.write("Average Cross Entropy loss (z2 vs labels): " + str(ce_loss_pred / n_samples) + "\n")
         W2_new = W2 + W2_off
         b2_new = b2 + b2_off
 
@@ -269,8 +297,10 @@ if __name__ == "__main__":
     os.makedirs("Stats", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    initEpoch = 300
+    initEpoch = 200
     G_epoch = 100
+    n_samples_gurobi = -1
+    optimize = "Adam"
     dataset_name = sys.argv[1] if len(sys.argv) > 1 else "MNIST"
 
     train_loader = None
@@ -278,7 +308,7 @@ if __name__ == "__main__":
     model = None
 
     if dataset_name == "MNIST":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         train_dataset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transform)
 
@@ -289,15 +319,17 @@ if __name__ == "__main__":
         model = NIN_MNIST(num_classes=10).to(device)
         model_g = NIN_MNIST(num_classes=10).to(device)
     elif dataset_name == "CIFAR10":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))])
         train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
 
-        model = NIN_CIFAR10(num_classes=10).to(device)
-        model_g = NIN_CIFAR10(num_classes=10).to(device)
+        # model = NIN_CIFAR10(num_classes=10).to(device)
+        # model_g = NIN_CIFAR10(num_classes=10).to(device)
+        model = NIN(num_classes=10).to(device)
+        model_g = NIN(num_classes=10).to(device)
     elif dataset_name == "FashionMNIST":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
         train_dataset = torchvision.datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform)
@@ -308,8 +340,8 @@ if __name__ == "__main__":
 
         model = NIN_MNIST(num_classes=10).to(device)
         model_g = NIN_MNIST(num_classes=10).to(device)
-    elif dataset_name == "KMINIST":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+    elif dataset_name == "KMNIST":
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         train_dataset = torchvision.datasets.KMNIST(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.KMNIST(root='./data', train=False, download=True, transform=transform)
 
@@ -320,18 +352,18 @@ if __name__ == "__main__":
         model_g = NIN_MNIST(num_classes=10).to(device)
     
     elif dataset_name == "EMNIST":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         train_dataset = torchvision.datasets.EMNIST(root='./data', split='letters', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.EMNIST(root='./data', split='letters', train=False, download=True, transform=transform)
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
-
+        optimize = "SGD"
         model = NIN_EMNIST(num_classes=26).to(device)
         model_g = NIN_EMNIST(num_classes=26).to(device)
     
     elif dataset_name == "SVHN":
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(mean=[0.4377, 0.4438, 0.4728], std=[0.1980, 0.2010, 0.1970])])
         train_dataset = torchvision.datasets.SVHN(root='./data', split='train', download=True, transform=transform)
         test_dataset = torchvision.datasets.SVHN(root='./data', split='test', download=True, transform=transform)
 
@@ -341,24 +373,28 @@ if __name__ == "__main__":
         model = NIN_SVHN(num_classes=10).to(device)
         model_g = NIN_SVHN(num_classes=10).to(device)
 
-    
-
-
-    rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase="Train")
+    rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
     rab.run()
 
-    W2_new, b2_new = GurobiBorder(dataset_name, n=100)
+    Gurobi_output = GurobiBorder(dataset_name, n=n_samples_gurobi)
+    if Gurobi_output is None:
+        print("Gurobi did not find a solution.")
+        sys.exit(1)
+    W2_new, b2_new = Gurobi_output
 
-    rab_g = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase="GurobiEdit")
+    rab_g = RAB(dataset_name, model_g, train_loader, test_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit")
 
-    checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth")
-    rab_g.model_g.load_state_dict(checkpoint['model_state_dict'])
+    if device.type == 'cuda':
+        checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth")
+    else:
+        checkpoint = torch.load(f"./checkpoints/{dataset_name}/full_checkpoint.pth", map_location=torch.device('cpu'))
+    rab_g.model.load_state_dict(checkpoint['model_state_dict'])
     rab_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     rab_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
 
     new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
     new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
     with torch.no_grad():
-        rab_g.model_g.classifier.weight.copy_(new_W)
-        rab_g.model_g.classifier.bias.copy_(new_b)
+        rab_g.model.classifier.weight.copy_(new_W)
+        rab_g.model.classifier.bias.copy_(new_b)
     rab_g.run()
