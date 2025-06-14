@@ -351,8 +351,9 @@ if __name__ == "__main__":
 
         # model = NIN_CIFAR10(num_classes=10).to(device)
         # model_g = NIN_CIFAR10(num_classes=10).to(device)
-        model = NIN(num_classes=10).to(device)
-        model_g = NIN(num_classes=10).to(device)
+        model = VGG(num_classes=10).to(device)
+        model_g = VGG(num_classes=10).to(device)
+
     elif dataset_name == "FashionMNIST":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
         train_dataset = torchvision.datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform)
