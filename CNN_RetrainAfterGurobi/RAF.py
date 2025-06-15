@@ -98,7 +98,7 @@ class RAF:
         if self.phase == "Train":
             self.save_model(loss, save_suffix="")
         elif self.phase == "GurobiEdit":
-            self.save_model(loss, save_suffix="_GurobiEdit")
+            self.save_model(loss, save_suffix="_GE_RAF")
         elif self.phase == "ResumeTrain":
             self.save_model(loss, save_suffix="_Resume")
         
@@ -171,7 +171,7 @@ class RAF:
         self.train()
         accuracy = self.test()
 
-def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
+def GurobiBorder(dataset_name, n=-1, tol = 5e-6, misclassification_count=1):
     X_full = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
     labels_full = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
     pred_full = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
@@ -223,7 +223,6 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
                 expr += (W2[j, i] + W2_offset[j, i]) * A1_fixed[i]
             expr += b2[j] + b2_offset[j]
             model_g.addConstr(Z2[j] == expr)
-
         violations = model_g.addVars(l2_size, vtype=GRB.BINARY, name=f"violations_{s}")
         for k in range(l2_size):
             if k != label_max:
@@ -235,7 +234,7 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
         model_g.addConstr(gp.quicksum(violations[k] for k in range(l2_size)) >= misclassified_flags[s])
         model_g.addConstr(gp.quicksum(violations[k] for k in range(l2_size)) <= (l2_size - 1) * misclassified_flags[s])
     
-    model_g.addConstr(gp.quicksum(misclassified_flags[s] for s in range(n_samples)) == 1, name="exactly_one_misclassified")
+    model_g.addConstr(gp.quicksum(misclassified_flags[s] for s in range(n_samples)) == misclassification_count, name="exactly_one_misclassified")
 
     abs_W2 = model_g.addVars(*W2.shape, lb=0, name="abs_W2")
     abs_b2 = model_g.addVars(l2_size, lb=0, name="abs_b2")
@@ -270,7 +269,6 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
         misclassified = 0
         ce_loss_target = 0
         ce_loss_pred = 0
-        # predictions, true_labels = [], []
 
         for i in range(n_samples):
             x = X[i]
@@ -279,8 +277,6 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
             z2 = W2_new @ a1 + b2_new
             pred = np.argmax(z2)
 
-            # predictions.append(pred)
-            # true_labels.append(label)
             if pred != label:
                 print(f"Sample {i} misclassified: true={label}, pred={pred}")
                 misclassified += 1
@@ -289,10 +285,10 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
             target_probs = softmax(Z2_target[i])
             ce_loss_pred += -np.log(pred_probs[label] + 1e-12)
             ce_loss_target += -np.log(target_probs[label] + 1e-12)
-        if misclassified != 1:
+        if misclassified != misclassification_count:
             with open(f"Stats_RAF/{dataset_name}_gurobi_log_tol.csv", "a") as f:
                 f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
-            GurobiBorder(dataset_name, n=n, tol=tol+5e-6)
+            GurobiBorder(dataset_name, n=n, tol=tol+5e-6, misclassification_count=misclassification_count)
         with open(f"Stats_RAF/{dataset_name}_gurobi_log.csv", "w") as f:
             f.write("-------Weight/Bias Offsets-------\n")
             f.write(f"W2 offsets: {np.sum(np.abs(W2_off))}\n")
@@ -486,7 +482,9 @@ if __name__ == "__main__":
         raf = RAF(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
         raf.run()
 
-    Gurobi_output = GurobiBorder(dataset_name, n=n_samples_gurobi)
+    # dataset_size = len(train_loader.dataset)
+    misclassification_count = n_samples_gurobi/100 # 1%
+    Gurobi_output = GurobiBorder(dataset_name, n=n_samples_gurobi, misclassification_count=misclassification_count)
     if Gurobi_output is None:
         print("Gurobi did not find a solution.")
         sys.exit(1)

@@ -98,7 +98,7 @@ class RAB:
         if self.phase == "Train":
             self.save_model(loss, save_suffix="")
         elif self.phase == "GurobiEdit":
-            self.save_model(loss, save_suffix="_GurobiEdit")
+            self.save_model(loss, save_suffix="_GE_RAB")
         elif self.phase == "ResumeTrain":
             self.save_model(loss, save_suffix="_Resume")
         
@@ -408,8 +408,7 @@ if __name__ == "__main__":
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
-        # Updated n_samples_gurobi
-        n_samples_gurobi = 9000
+        
         model = VGG(num_classes=10).to(device)
         model_g = VGG(num_classes=10).to(device)
 
