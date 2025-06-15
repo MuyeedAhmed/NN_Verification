@@ -43,8 +43,8 @@ def GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=-1, tol = 5e-6)
     model_g = gp.Model()
     # model_g.setParam("OutputFlag", 1)
 
-    W2_offset = model_g.addVars(*W2.shape, lb=-GRB.INFINITY, name="W2_offset")
-    b2_offset = model_g.addVars(l2_size, lb=-GRB.INFINITY, name="b2_offset")
+    W2_offset = model_g.addVars(*W2.shape, lb=-10000, ub=10000, name="W2_offset")
+    b2_offset = model_g.addVars(l2_size, lb=-10000, ub=10000, name="b2_offset")
 
     Z2_list = []
     max_min_diff = []
@@ -54,7 +54,7 @@ def GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=-1, tol = 5e-6)
         label_min = int(np.argmin(Z2_target[s]))
         A1_fixed = Z1[s]
 
-        Z2 = model_g.addVars(l2_size, lb=-GRB.INFINITY, name=f"Z2_{s}")
+        Z2 = model_g.addVars(l2_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z2_{s}")
         for j in range(l2_size):
             expr = gp.LinExpr()
             for i in range(l1_size):
@@ -71,7 +71,7 @@ def GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=-1, tol = 5e-6)
 
     objective = gp.quicksum(max_min_diff)
     model_g.setObjective(objective, GRB.MINIMIZE)
-    model_g.addConstr(objective >= 0, "ObjectiveLowerBound")
+    # model_g.addConstr(objective >= 0, "ObjectiveLowerBound")
     model_g.setParam('TimeLimit', timeLimit)
     model_g.optimize()
 
