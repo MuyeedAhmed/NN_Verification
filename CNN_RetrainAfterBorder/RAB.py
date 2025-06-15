@@ -12,6 +12,8 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
+from medmnist import PathMNIST, BloodMNIST, OrganAMNIST, OrganAMNIST, OrganSMNIST
+
 from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG
 
 
@@ -314,6 +316,17 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
         return None
         
         
+class WrapOneHotEncoding(torch.utils.data.Dataset):
+    def __init__(self, dataset):
+        self.dataset = dataset
+
+    def __getitem__(self, index):
+        image, label = self.dataset[index]
+        label = label.argmax().item()
+        return image, label
+
+    def __len__(self):
+        return len(self.dataset)
 
 
 if __name__ == "__main__":
@@ -396,6 +409,57 @@ if __name__ == "__main__":
 
         model = VGG(num_classes=10).to(device)
         model_g = VGG(num_classes=10).to(device)
+
+    elif dataset_name == "PathMNIST":
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[.5, .5, .5], std=[.5, .5, .5])
+        ])
+        train_raw = PathMNIST(split='train', download=True, transform=transform)
+        test_raw = PathMNIST(split='test', download=True, transform=transform)
+
+        train_dataset = WrapOneHotEncoding(train_raw)
+        test_dataset = WrapOneHotEncoding(test_raw)
+
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
+        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
+
+        model = VGG(num_classes=9).to(device)
+        model_g = VGG(num_classes=9).to(device)
+    
+    elif dataset_name == "BloodMNIST":
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[.5, .5, .5], std=[.5, .5, .5])
+        ])
+        train_raw = BloodMNIST(split='train', download=True, transform=transform)
+        test_raw = BloodMNIST(split='test', download=True, transform=transform)
+
+        train_dataset = WrapOneHotEncoding(train_raw)
+        test_dataset = WrapOneHotEncoding(test_raw)
+
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
+        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
+
+        model = VGG(num_classes=8).to(device)
+        model_g = VGG(num_classes=8).to(device)
+    
+    elif dataset_name == "OrganAMNIST":
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.5,), (0.5,))
+        ])
+        train_raw = OrganAMNIST(split='train', download=True, transform=transform)
+        test_raw = OrganAMNIST(split='test', download=True, transform=transform)
+
+        train_dataset = WrapOneHotEncoding(train_raw)
+        test_dataset = WrapOneHotEncoding(test_raw)
+
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
+        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
+
+        model = NIN_MNIST(num_classes=11).to(device)
+        model_g = NIN_MNIST(num_classes=11).to(device)
 
     if os.path.exists(f"./checkpoints/{dataset_name}/full_checkpoint.pth") == False:
         rab = RAB(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
