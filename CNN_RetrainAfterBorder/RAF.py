@@ -210,7 +210,7 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
 
     Z2_list = []
     max_min_diff = []
-
+    misclassified_flags = model.addVars(n_samples, vtype=GRB.BINARY, name="misclassified_flags")
     for s in range(n_samples):
         label_max = int(np.argmax(Z2_target[s]))
         label_min = int(np.argmin(Z2_target[s]))
