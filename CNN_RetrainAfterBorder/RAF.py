@@ -289,7 +289,7 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
             target_probs = softmax(Z2_target[i])
             ce_loss_pred += -np.log(pred_probs[label] + 1e-12)
             ce_loss_target += -np.log(target_probs[label] + 1e-12)
-        if misclassified > 0:
+        if misclassified != 1:
             with open(f"Stats_RAF/{dataset_name}_gurobi_log_tol.csv", "a") as f:
                 f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
             GurobiBorder(dataset_name, n=n, tol=tol+5e-6)
@@ -350,7 +350,7 @@ class WrapOneHotEncoding(torch.utils.data.Dataset):
 
 
 if __name__ == "__main__":
-    os.makedirs("Stats", exist_ok=True)
+    os.makedirs("Stats_RAF", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
     initEpoch = 200
