@@ -15,11 +15,10 @@ import numpy as np
 timeLimit = 7200
 
 
-def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
-    X_full = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
-    labels_full = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
-    pred_full = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
+def GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=-1, tol = 5e-6):
     X_full_size = X_full.shape[0]
+    if X_full_size < n:
+        return None
     if n == -1:
         X = X_full
         labels = labels_full
@@ -152,12 +151,18 @@ if __name__ == "__main__":
     os.makedirs("Stats", exist_ok=True)
     n_samples_gurobi = -1
     dataset_name = sys.argv[1] if len(sys.argv) > 1 else "EMNIST"
-
+    X_full = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
+    labels_full = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
+    pred_full = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
     with open(f"Stats/B_MisC_{dataset_name}.csv", "w") as f:
         f.write("DatasetSize,N_sample,Tol,RunTime,Objective Value,W2_offsets_sum,b2_offsets_sum,Avg_cross_Entropy_loss,Avg_cross_Entropy_loss_pred,Avg_cross_Entropy_loss_full,Avg_cross_Entropy_loss_pred_full,misclassified,misclassified_full\n")
-
-    for i in range(1, 50):
-        Gurobi_output = GurobiBorder(dataset_name, n=i*1000)
+    i = 1
+    while i <= 200:
+        Gurobi_output = GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=i*1000)
+        if i >= 10:
+            i += 5
+        else:
+            i += 1
         if Gurobi_output is None:
             break
 
