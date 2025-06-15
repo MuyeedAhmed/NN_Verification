@@ -104,9 +104,9 @@ def GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=-1, tol = 5e-6)
             ce_loss_target += -np.log(target_probs[label] + 1e-12)
         if misclassified > 0:
             with open(f"Stats/B_MisC_Error_{dataset_name}.csv", "a") as f:
-                f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
-            GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=n, tol=tol+5e-6)
-        
+                f.write(f"N: {n}, Tol:{tol}\nMisclassified: {misclassified}\n")
+            # GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=n, tol=tol+5e-6)
+            return -1
         W2_offsets_sum =  np.sum(np.abs(W2_off))
         b2_offsets_sum = np.sum(np.abs(b2_off))
         objective_value = model_g.ObjVal
@@ -135,11 +135,8 @@ def GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=-1, tol = 5e-6)
         with open(f"Stats/B_MisC_{dataset_name}.csv", "a") as f:
             f.write(f"{X_full_size},{n},{tol},{model_g.Runtime},{objective_value},{W2_offsets_sum},{b2_offsets_sum},{Avg_cross_Entropy_loss},{Avg_cross_Entropy_loss_pred},{Avg_cross_Entropy_loss_full},{Avg_cross_Entropy_loss_pred_full},{misclassified},{misclassified_full}\n")
 
-    
-        W2_new = W2 + W2_off
-        b2_new = b2 + b2_off
 
-        return [W2_new, b2_new]
+        return 1
     else:
         print("No solution found.")
         return None
@@ -156,13 +153,10 @@ if __name__ == "__main__":
     pred_full = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
     with open(f"Stats/B_MisC_{dataset_name}.csv", "w") as f:
         f.write("DatasetSize,N_sample,Tol,RunTime,Objective Value,W2_offsets_sum,b2_offsets_sum,Avg_cross_Entropy_loss,Avg_cross_Entropy_loss_pred,Avg_cross_Entropy_loss_full,Avg_cross_Entropy_loss_pred_full,misclassified,misclassified_full\n")
-    i = 1
+    i = 5
     while i <= 200:
         Gurobi_output = GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=i*1000)
-        if i >= 10:
-            i += 5
-        else:
-            i += 1
+        i += 5
         if Gurobi_output is None:
             break
 
