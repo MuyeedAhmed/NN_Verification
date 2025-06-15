@@ -396,6 +396,8 @@ if __name__ == "__main__":
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
         optimize = "SGD"
+        # Updated n_samples_gurobi
+        n_samples_gurobi = 4000
         model = NIN_EMNIST(num_classes=26).to(device)
         model_g = NIN_EMNIST(num_classes=26).to(device)
     
@@ -406,7 +408,8 @@ if __name__ == "__main__":
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
         test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
-
+        # Updated n_samples_gurobi
+        n_samples_gurobi = 9000
         model = VGG(num_classes=10).to(device)
         model_g = VGG(num_classes=10).to(device)
 
