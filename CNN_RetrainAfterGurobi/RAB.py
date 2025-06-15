@@ -98,7 +98,7 @@ class RAB:
         if self.phase == "Train":
             self.save_model(loss, save_suffix="")
         elif self.phase == "GurobiEdit":
-            self.save_model(loss, save_suffix="_GurobiEdit_RAB")
+            self.save_model(loss, save_suffix="_GE_RAB")
         elif self.phase == "ResumeTrain":
             self.save_model(loss, save_suffix="_Resume")
         

@@ -98,7 +98,7 @@ class RAF:
         if self.phase == "Train":
             self.save_model(loss, save_suffix="")
         elif self.phase == "GurobiEdit":
-            self.save_model(loss, save_suffix="_GurobiEdit")
+            self.save_model(loss, save_suffix="_GE_RAF")
         elif self.phase == "ResumeTrain":
             self.save_model(loss, save_suffix="_Resume")
         
@@ -223,7 +223,6 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6, misclassification_count=1):
                 expr += (W2[j, i] + W2_offset[j, i]) * A1_fixed[i]
             expr += b2[j] + b2_offset[j]
             model_g.addConstr(Z2[j] == expr)
-
         violations = model_g.addVars(l2_size, vtype=GRB.BINARY, name=f"violations_{s}")
         for k in range(l2_size):
             if k != label_max:
@@ -270,7 +269,6 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6, misclassification_count=1):
         misclassified = 0
         ce_loss_target = 0
         ce_loss_pred = 0
-        # predictions, true_labels = [], []
 
         for i in range(n_samples):
             x = X[i]
@@ -279,8 +277,6 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6, misclassification_count=1):
             z2 = W2_new @ a1 + b2_new
             pred = np.argmax(z2)
 
-            # predictions.append(pred)
-            # true_labels.append(label)
             if pred != label:
                 print(f"Sample {i} misclassified: true={label}, pred={pred}")
                 misclassified += 1
@@ -289,7 +285,7 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6, misclassification_count=1):
             target_probs = softmax(Z2_target[i])
             ce_loss_pred += -np.log(pred_probs[label] + 1e-12)
             ce_loss_target += -np.log(target_probs[label] + 1e-12)
-        if misclassified != 1:
+        if misclassified != misclassification_count:
             with open(f"Stats_RAF/{dataset_name}_gurobi_log_tol.csv", "a") as f:
                 f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
             GurobiBorder(dataset_name, n=n, tol=tol+5e-6, misclassification_count=misclassification_count)
@@ -486,7 +482,7 @@ if __name__ == "__main__":
         raf = RAF(dataset_name, model, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
         raf.run()
 
-    dataset_size = len(train_loader.dataset)
+    # dataset_size = len(train_loader.dataset)
     misclassification_count = n_samples_gurobi/100 # 1%
     Gurobi_output = GurobiBorder(dataset_name, n=n_samples_gurobi, misclassification_count=misclassification_count)
     if Gurobi_output is None:
