@@ -105,7 +105,7 @@ def GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=-1, tol = 5e-6)
         if misclassified > 0:
             with open(f"Stats/B_MisC_Error_{dataset_name}.csv", "a") as f:
                 f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
-            GurobiBorder(dataset_name, n=n, tol=tol+5e-6)
+            GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=n, tol=tol+5e-6)
         
         W2_offsets_sum =  np.sum(np.abs(W2_off))
         b2_offsets_sum = np.sum(np.abs(b2_off))
