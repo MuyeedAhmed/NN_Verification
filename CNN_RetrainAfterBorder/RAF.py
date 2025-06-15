@@ -227,8 +227,8 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
         violations = model_g.addVars(l2_size, vtype=GRB.BINARY, name=f"violations_{s}")
         for k in range(l2_size):
             if k != label_max:
-                model_g.addConstr((violations[k] == 1) >> (Z2[label_max] <= Z2[k] - epsilon), name=f"violation_1flip_{s}_{k}")
-                model_g.addConstr((violations[k] == 0) >> (Z2[label_max] >= Z2[k] + epsilon), name=f"violation_0flip_{s}_{k}")
+                model_g.addConstr((violations[k] == 1) >> (Z2[label_max] <= Z2[k] - tol), name=f"violation_1flip_{s}_{k}")
+                model_g.addConstr((violations[k] == 0) >> (Z2[label_max] >= Z2[k] + tol), name=f"violation_0flip_{s}_{k}")
             else:
                 model_g.addConstr(violations[k] == 0, name=f"violation_0_{s}_{k}")
 
