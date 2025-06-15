@@ -15,11 +15,10 @@ import numpy as np
 timeLimit = 7200
 
 
-def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
-    X_full = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
-    labels_full = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
-    pred_full = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
+def GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=-1, tol = 5e-6):
     X_full_size = X_full.shape[0]
+    if X_full_size < n:
+        return None
     if n == -1:
         X = X_full
         labels = labels_full
@@ -44,8 +43,8 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
     model_g = gp.Model()
     # model_g.setParam("OutputFlag", 1)
 
-    W2_offset = model_g.addVars(*W2.shape, lb=-GRB.INFINITY, name="W2_offset")
-    b2_offset = model_g.addVars(l2_size, lb=-GRB.INFINITY, name="b2_offset")
+    W2_offset = model_g.addVars(*W2.shape, lb=-10000, ub=10000, name="W2_offset")
+    b2_offset = model_g.addVars(l2_size, lb=-10000, ub=10000, name="b2_offset")
 
     Z2_list = []
     max_min_diff = []
@@ -55,7 +54,7 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
         label_min = int(np.argmin(Z2_target[s]))
         A1_fixed = Z1[s]
 
-        Z2 = model_g.addVars(l2_size, lb=-GRB.INFINITY, name=f"Z2_{s}")
+        Z2 = model_g.addVars(l2_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z2_{s}")
         for j in range(l2_size):
             expr = gp.LinExpr()
             for i in range(l1_size):
@@ -72,7 +71,7 @@ def GurobiBorder(dataset_name, n=-1, tol = 5e-6):
 
     objective = gp.quicksum(max_min_diff)
     model_g.setObjective(objective, GRB.MINIMIZE)
-    model_g.addConstr(objective >= 0, "ObjectiveLowerBound")
+    # model_g.addConstr(objective >= 0, "ObjectiveLowerBound")
     model_g.setParam('TimeLimit', timeLimit)
     model_g.optimize()
 
@@ -152,12 +151,18 @@ if __name__ == "__main__":
     os.makedirs("Stats", exist_ok=True)
     n_samples_gurobi = -1
     dataset_name = sys.argv[1] if len(sys.argv) > 1 else "EMNIST"
-
+    X_full = torch.load(f"checkpoints/{dataset_name}/fc_inputs.pt").numpy()
+    labels_full = torch.load(f"checkpoints/{dataset_name}/fc_labels.pt").numpy()
+    pred_full = torch.load(f"checkpoints/{dataset_name}/fc_preds.pt").numpy()
     with open(f"Stats/B_MisC_{dataset_name}.csv", "w") as f:
         f.write("DatasetSize,N_sample,Tol,RunTime,Objective Value,W2_offsets_sum,b2_offsets_sum,Avg_cross_Entropy_loss,Avg_cross_Entropy_loss_pred,Avg_cross_Entropy_loss_full,Avg_cross_Entropy_loss_pred_full,misclassified,misclassified_full\n")
-
-    for i in range(1, 50):
-        Gurobi_output = GurobiBorder(dataset_name, n=i*1000)
+    i = 1
+    while i <= 200:
+        Gurobi_output = GurobiBorder(dataset_name, X_full, labels_full, pred_full, n=i*1000)
+        if i >= 10:
+            i += 5
+        else:
+            i += 1
         if Gurobi_output is None:
             break
 
