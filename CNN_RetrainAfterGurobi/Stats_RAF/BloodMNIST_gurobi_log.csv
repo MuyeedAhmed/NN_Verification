@@ -1,0 +1,16 @@
+-------Weight/Bias Offsets-------
+W2 offsets: 0.0
+b2 offsets: 10.360157631738215
+Objective value: 10.360157631738215
+------------------------------------
+
+Misclassified: 1000
+Average Cross Entropy loss (Z2 vs labels): 0.00022169609
+Average Cross Entropy loss (z2 vs labels): 2.079320740743693
+
+
+-------Full Dataset Statistics-------
+Total samples in full dataset: 11959
+Total misclassified samples in full dataset: 12959
+Average Cross Entropy loss (Z2 vs labels): 0.00024025292077567428
+Average Cross Entropy loss (z2 vs labels): 2.2531915276612398
