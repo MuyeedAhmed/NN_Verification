@@ -1,4 +1,6 @@
 import torch
+torch.set_default_dtype(torch.float64)
+
 import torch.nn as nn
 import torch.optim as optim
 import torchvision
@@ -48,10 +50,11 @@ class RAB:
             with open(self.log_file, "w") as f:
                 f.write("Run,Phase,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
 
-    def train(self, early_stopping_patience=10, min_delta=1e-5):
+    def train(self, early_stopping_patience=10, min_delta=1e-5, stopper="Val"):
         self.model.train()
         loss = -1
         best_val_loss = float('inf')
+        best_loss = float('inf')
         epochs_no_improve = 0
 
         for epoch in range(self.num_epochs+self.resume_epochs):
