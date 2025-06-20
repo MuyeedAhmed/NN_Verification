@@ -58,8 +58,8 @@ class RAB:
             running_loss = 0.0
             correct = 0
             total = 0
-            for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
-            # for i, (inputs, labels) in enumerate(self.train_loader): ----------------------------------------------------------------------
+            # for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
+            for i, (inputs, labels) in enumerate(self.train_loader):
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 labels_for_loss = labels - 1 if self.dataset_name == "EMNIST" else labels
 
@@ -371,11 +371,9 @@ if __name__ == "__main__":
     os.makedirs("Stats_RAB_CrossVal", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    # initEpoch = 200
-    # G_epoch = 100
+    initEpoch = 200
+    G_epoch = 100
     n_samples_gurobi = -1
-    initEpoch = 1
-    G_epoch = 1
     optimize = "Adam"
 
     dataset_name = sys.argv[1] if len(sys.argv) > 1 else "MNIST"
@@ -471,8 +469,8 @@ if __name__ == "__main__":
     # if os.path.exists(f"./checkpoints/{dataset_name}/full_checkpoint.pth") == False:
     #     rab = RAB(dataset_name, model_t, train_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train")
     #     rab.run()
-
-    for i in range(1, 6):
+    total_run = 5
+    for i in range(1, total_run + 1):
         train_size = int(0.8 * len(train_dataset))
         val_size = len(train_dataset) - train_size
         generator = torch.Generator().manual_seed(i*42)
@@ -486,6 +484,8 @@ if __name__ == "__main__":
         Gurobi_output = GurobiBorder(dataset_name, rab.log_file, i, n=n_samples_gurobi)
         if Gurobi_output is None:
             print("Gurobi did not find a solution.")
+            if total_run < 10:
+                total_run += 1
             continue
         W2_new, b2_new = Gurobi_output
 
