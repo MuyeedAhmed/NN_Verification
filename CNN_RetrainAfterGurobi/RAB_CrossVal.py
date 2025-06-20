@@ -50,11 +50,11 @@ class RAB:
             with open(self.log_file, "w") as f:
                 f.write("Run,Phase,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
 
-    def train(self, early_stopping_patience=10, min_delta=1e-5, stopper="Val"):
+    def train(self, early_stopping_patience=15, min_delta=1e-5, stopper="Val"):
         self.model.train()
         loss = -1
         best_val_loss = float('inf')
-        best_loss = float('inf')
+        best_train_loss = float('inf')
         epochs_no_improve = 0
 
         for epoch in range(self.num_epochs+self.resume_epochs):
@@ -107,15 +107,25 @@ class RAB:
                 f.write(f"{self.run_id},{self.phase},{epoch+1},{avg_train_loss},{train_accuracy},"
                         f"{avg_val_loss},{val_accuracy}\n")
 
-            if best_val_loss - avg_val_loss > min_delta:
-                best_val_loss = avg_val_loss
-                epochs_no_improve = 0
-            else:
-                epochs_no_improve += 1
+            if stopper == "Train":
+                if best_train_loss - avg_train_loss > min_delta:
+                    best_train_loss = avg_train_loss
+                    epochs_no_improve = 0
+                else:
+                    epochs_no_improve += 1
+                if epochs_no_improve >= early_stopping_patience:
+                    print(f"Early stopping triggered after {epoch+1} epochs based on training loss.")
+                    break
+            elif stopper == "Val":
+                if best_val_loss - avg_val_loss > min_delta:
+                    best_val_loss = avg_val_loss
+                    epochs_no_improve = 0
+                else:
+                    epochs_no_improve += 1
 
-            if epochs_no_improve >= early_stopping_patience:
-                print(f"Early stopping triggered after {epoch+1} epochs based on validation loss.")
-                break
+                if epochs_no_improve >= early_stopping_patience:
+                    print(f"Early stopping triggered after {epoch+1} epochs based on validation loss.")
+                    break
 
             if epoch == self.num_epochs - 1:
                 if self.phase == "Train":
@@ -206,9 +216,9 @@ class RAB:
         torch.save(Y_true, f"{checkpoint_dir_input}/fc_labels{save_suffix}.pt")
         torch.save(Y_pred, f"{checkpoint_dir_input}/fc_preds{save_suffix}.pt")
 
-    def run(self):
+    def run(self, stopper="Val"):
         start_time = time.time()
-        self.train()
+        self.train(stopper=stopper)
         accuracy = self.test()
     
     def evaluate(self, dataset_type):
