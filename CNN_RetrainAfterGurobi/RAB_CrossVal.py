@@ -218,7 +218,8 @@ class RAB:
 
     def run(self, stopper="Val"):
         start_time = time.time()
-        self.train(stopper=stopper)
+        esp = 10 if stopper == "Train" else 15
+        self.train(early_stopping_patience=esp, stopper=stopper)
         accuracy = self.test()
     
     def evaluate(self, dataset_type):
@@ -390,6 +391,7 @@ if __name__ == "__main__":
     optimize = "Adam"
 
     dataset_name = sys.argv[1] if len(sys.argv) > 1 else "MNIST"
+    stopper = sys.argv[2] if len(sys.argv) > 2 else "Val"
 
     train_loader = None
     test_loader = None
@@ -493,7 +495,7 @@ if __name__ == "__main__":
         val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
         
         rab = RAB(dataset_name, model_t, train_loader, val_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train", run_id=i)
-        rab.run("Train")
+        rab.run(stopper)
         Gurobi_output = GurobiBorder(dataset_name, rab.log_file, i, n=n_samples_gurobi)
         if Gurobi_output is None:
             print("Gurobi did not find a solution.")
@@ -523,5 +525,5 @@ if __name__ == "__main__":
         with open(rab_after_g.log_file, "a") as f:
             f.write(f"{i},Gurobi_Complete_Eval,-1,{train_loss},{train_acc},{val_loss},{val_acc}\n")
 
-        rab_after_g.run("Train")
+        rab_after_g.run(stopper)
 
