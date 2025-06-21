@@ -80,24 +80,28 @@ class RAB:
             self.scheduler.step()
             avg_train_loss = running_loss / len(self.train_loader)
             train_accuracy = 100. * correct / total
-
-            self.model.eval()
-            val_loss = 0.0
-            val_correct = 0
-            val_total = 0
-            with torch.no_grad():
-                for inputs, labels in self.val_loader:
-                    inputs, labels = inputs.to(self.device), labels.to(self.device)
-                    labels_for_loss = labels - 1 if self.dataset_name == "EMNIST" else labels
-                    outputs = self.model(inputs)
-                    loss = self.criterion(outputs, labels_for_loss)
-                    val_loss += loss.item()
-                    _, predicted = outputs.max(1)
-                    val_total += labels.size(0)
-                    val_correct += predicted.eq(labels_for_loss).sum().item()
-            avg_val_loss = val_loss / len(self.val_loader)
-            val_accuracy = 100. * val_correct / val_total
-            self.model.train()
+            
+            if stopper == "Val":
+                self.model.eval()
+                val_loss = 0.0
+                val_correct = 0
+                val_total = 0
+                with torch.no_grad():
+                    for inputs, labels in self.val_loader:
+                        inputs, labels = inputs.to(self.device), labels.to(self.device)
+                        labels_for_loss = labels - 1 if self.dataset_name == "EMNIST" else labels
+                        outputs = self.model(inputs)
+                        loss = self.criterion(outputs, labels_for_loss)
+                        val_loss += loss.item()
+                        _, predicted = outputs.max(1)
+                        val_total += labels.size(0)
+                        val_correct += predicted.eq(labels_for_loss).sum().item()
+                avg_val_loss = val_loss / len(self.val_loader)
+                val_accuracy = 100. * val_correct / val_total
+                self.model.train()
+            else:
+                avg_val_loss = -1
+                val_accuracy = -1
 
             print(f'Epoch [{epoch+1}/{self.num_epochs}], '
                 f'Train Loss: {avg_train_loss:.4f}, Train Acc: {train_accuracy:.2f}%, '
@@ -495,7 +499,12 @@ if __name__ == "__main__":
         val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
         
         rab = RAB(dataset_name, model_t, train_loader, val_loader, test_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train", run_id=i)
-        rab.run(stopper)
+        try:
+            rab.run(stopper)
+        except Exception as e:
+            print(f"Error during training: {e}")
+            total_run += 1
+            continue
         Gurobi_output = GurobiBorder(dataset_name, rab.log_file, i, n=n_samples_gurobi)
         if Gurobi_output is None:
             print("Gurobi did not find a solution.")
@@ -524,6 +533,10 @@ if __name__ == "__main__":
 
         with open(rab_after_g.log_file, "a") as f:
             f.write(f"{i},Gurobi_Complete_Eval,-1,{train_loss},{train_acc},{val_loss},{val_acc}\n")
-
-        rab_after_g.run(stopper)
+        try:
+            rab_after_g.run(stopper)
+        except Exception as e:
+            print(f"Error during training: {e}")
+            total_run += 1
+            continue
 
