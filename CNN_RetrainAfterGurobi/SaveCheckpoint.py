@@ -342,7 +342,8 @@ if __name__ == "__main__":
 
         train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
         val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
-        
+        if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"):
+            continue
         rab = RAB(dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
         try:
             rab.run()

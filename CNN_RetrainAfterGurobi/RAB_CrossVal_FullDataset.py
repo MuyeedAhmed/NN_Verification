@@ -465,14 +465,16 @@ if __name__ == "__main__":
         train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
         val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
         
-        rab = RAB(dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
-        try:
-            rab.run()
-        except Exception as e:
-            print(f"Error during training: {e}")
-            total_run += 1
+        if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
+            rab = RAB(dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
+            try:
+                rab.run()
+            except Exception as e:
+                print(f"Error during training: {e}")
+                total_run += 1
+                continue
+        if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_RAB.pth"):
             continue
-
         rab_after_g = RAB(dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
 
         if device.type == 'cuda':
@@ -484,7 +486,7 @@ if __name__ == "__main__":
         rab_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
         rab_after_g.save_fc_inputs("Train")
         rab_after_g.save_fc_inputs("Val")
-        Gurobi_output = GurobiBorder(dataset_name, rab.log_file, i, n=n_samples_gurobi)
+        Gurobi_output = GurobiBorder(dataset_name, rab_after_g.log_file, i, n=n_samples_gurobi)
         if Gurobi_output is None:
             print("Gurobi did not find a solution.")
             if total_run < 10:
