@@ -6,8 +6,6 @@ import torchvision.transforms as transforms
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from tqdm import tqdm
 
-import gurobipy as gp
-from gurobipy import GRB
 import numpy as np
 
 
