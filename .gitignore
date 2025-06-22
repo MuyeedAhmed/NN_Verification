@@ -1,5 +1,5 @@
 .DS_Store
-CNN/data/
+Old_CNN/data/
 __pycache__/
 CNN_RetrainAfterGurobi/data/
 CNN_RetrainAfterGurobi/checkpoints/
