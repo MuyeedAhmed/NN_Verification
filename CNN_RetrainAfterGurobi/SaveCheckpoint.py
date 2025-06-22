@@ -11,8 +11,7 @@ from tqdm import tqdm
 import os
 import sys
 import time
-import gurobipy as gp
-from gurobipy import GRB
+
 import numpy as np
 
 from medmnist import PathMNIST
@@ -229,126 +228,6 @@ class RAB:
         avg_loss = total_loss / total
         accuracy = 100. * correct / total
         return avg_loss, accuracy
-
-
-def GurobiBorder(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5):
-    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
-    X_full_size = X_full.shape[0]
-    if n == -1:
-        X = X_full
-        labels_gt = labels_full
-        pred_checkpoint = pred_full
-    else:
-        X = X_full[0:n]
-        labels_gt = labels_full[0:n]
-        pred_checkpoint = pred_full[0:n]
-
-    W1 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_fc_hidden_weight.pt", map_location=torch.device('cpu')).numpy()
-    b1 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_fc_hidden_bias.pt", map_location=torch.device('cpu')).numpy()
-    W2 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
-    b2 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()
-
-    Z1 = np.maximum(0, X @ W1.T + b1)
-    Z2_target = Z1 @ W2.T + b2
-    
-    pred_target = np.argmax(Z2_target, axis=1)
-    # print(f"W2 dtype: {W2.dtype}, b2 dtype: {b2.dtype}")
-    # print("Size of X:", X.shape)
-    # print("Size of W2:", W2.shape)
-    # print("Size of b2:", b2.shape)
-    print("Mismatch: ", sum(pred_checkpoint != pred_target))
-
-    n_samples = len(X)
-    l1_size = W2.shape[1]
-    l2_size = W2.shape[0]
-
-    gurobi_model = gp.Model()
-    W2_offset = gurobi_model.addVars(*W2.shape, lb=-20, ub=20, name="W2_offset")
-    b2_offset = gurobi_model.addVars(l2_size, lb=-20, ub=20, name="b2_offset")
-
-    Z2_list = []
-    max_min_diff = []
-
-    for s in range(n_samples):
-        label_max = int(np.argmax(Z2_target[s]))
-        label_min = int(np.argmin(Z2_target[s]))
-        A1_fixed = Z1[s]
-
-        Z2 = gurobi_model.addVars(l2_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z2_{s}")
-        for j in range(l2_size):
-            expr = gp.LinExpr()
-            for i in range(l1_size):
-                expr += (W2[j, i] + W2_offset[j, i]) * A1_fixed[i]
-            expr += b2[j] + b2_offset[j]
-            gurobi_model.addConstr(Z2[j] == expr)
-
-        for k in range(l2_size):
-            if k != label_max:
-                gurobi_model.addConstr(Z2[label_max] >= Z2[k] + tol, f"Z2_max_{s}_{k}")
-
-        Z2_list.append(Z2)
-        max_min_diff.append(Z2[label_max] - Z2[label_min])
-
-    objective = gp.quicksum(max_min_diff)
-    gurobi_model.setObjective(objective, GRB.MINIMIZE)
-    # gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
-    gurobi_model.setParam('TimeLimit', timeLimit)
-    gurobi_model.optimize()
-
-    if gurobi_model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL] and gurobi_model.SolCount > 0:
-        W2_off = np.array([[W2_offset[i, j].X for j in range(W2.shape[1])] for i in range(W2.shape[0])])
-        b2_off = np.array([b2_offset[i].X for i in range(l2_size)])
-
-        W2_new = (W2 + W2_off)
-        b2_new = (b2 + b2_off)
-        # print(f"W2 dtype: {W2.dtype}, b2 dtype: {b2.dtype}")
-        # print(f"W2_new dtype: {W2_new.dtype}, b2_new dtype: {b2_new.dtype}")
-        def softmax(x):
-            x = x - np.max(x, axis=1, keepdims=True)
-            e_x = np.exp(x)
-            return e_x / np.sum(e_x, axis=1, keepdims=True)
-
-        A1 = np.maximum(0, X @ W1.T + b1)
-        Z2_pred_gurobi = A1 @ W2_new.T + b2_new
-        predictions_gurobi = np.argmax(Z2_pred_gurobi, axis=1)
-        misclassified_mask = predictions_gurobi != pred_checkpoint
-        misclassified = np.sum(misclassified_mask)
-        accuracy_gurobi = np.sum(predictions_gurobi == labels_gt) / len(labels_gt) * 100
-        
-        if misclassified > 0:
-            with open(f"Stats/RAB_CrossVal_All/{dataset_name}_gurobi_log_tol.csv", "a") as f:
-                f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
-            GurobiBorder(dataset_name, store_file_name, run_id, n=n, tol=tol+5e-6)
-
-        print(f"Total misclassified samples: {misclassified}")
-        with open(f"Stats/RAB_CrossVal_All/{dataset_name}_gurobi_log.csv", "a") as f:
-            f.write(f"-----\nRun ID: {run_id}\n\n")
-            f.write("-------Weight/Bias Offsets-------\n")
-            f.write(f"W2 offsets: {np.sum(np.abs(W2_off))}\n")
-            f.write(f"b2 offsets: {np.sum(np.abs(b2_off))}\n")
-            f.write(f"Objective value: {gurobi_model.ObjVal}\n")
-            f.write("------------------------------------\n\n")
-            f.write(f"Misclassified: {misclassified}\n")
-        
-        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
-        Z1_val = np.maximum(0, X_val @ W1.T + b1)
-        Z2_val_pred = Z1_val @ W2_new.T + b2_new
-        predictions_val = np.argmax(Z2_val_pred, axis=1)
-        accuracy_val = np.sum(predictions_val == labels_val) / len(labels_val) * 100
-        
-        with open(store_file_name, "a") as f:
-            f.write(f"{run_id},GurobiComplete_Train,-1,-1,{accuracy_gurobi}\n")
-            f.write(f"{run_id},GurobiComplete_Val,-1,-1,{accuracy_val}\n")
-
-        
-        return [W2_new, b2_new]
-    else:
-        print("No solution found.")
-        return None
         
         
 class WrapOneHotEncoding(torch.utils.data.Dataset):
@@ -421,7 +300,7 @@ if __name__ == "__main__":
         test_raw = PathMNIST(split='test', download=True, transform=transform)
 
         train_dataset = WrapOneHotEncoding(train_raw)
-        test_dataset = WrapOneHotEncoding(test_raw)    
+        test_dataset = WrapOneHotEncoding(test_raw)
     
     full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
     train_size = len(train_dataset)
@@ -450,7 +329,6 @@ if __name__ == "__main__":
         elif dataset_name == "PathMNIST":
             model_t = VGG(num_classes=9).to(device)
             model_g = VGG(num_classes=9).to(device)
-    
         start_experiment = True if i == 1 else False
 
         rng = np.random.default_rng(seed=i*42)
@@ -473,40 +351,4 @@ if __name__ == "__main__":
             total_run += 1
             continue
 
-        rab_after_g = RAB(dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
-
-        if device.type == 'cuda':
-            checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
-        else:
-            checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
-        rab_after_g.model.load_state_dict(checkpoint['model_state_dict'])
-        rab_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        rab_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-        rab_after_g.save_fc_inputs("Train")
-        rab_after_g.save_fc_inputs("Val")
-        Gurobi_output = GurobiBorder(dataset_name, rab.log_file, i, n=n_samples_gurobi)
-        if Gurobi_output is None:
-            print("Gurobi did not find a solution.")
-            if total_run < 10:
-                total_run += 1
-            continue
-        W2_new, b2_new = Gurobi_output
-        rab_after_g.delete_fc_inputs()
-        new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
-        new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
-        with torch.no_grad():
-            rab_after_g.model.classifier.weight.copy_(new_W)
-            rab_after_g.model.classifier.bias.copy_(new_b)
-        train_loss, train_acc = rab_after_g.evaluate("Train")
-        val_loss, val_acc = rab_after_g.evaluate("Val")
-
-        with open(rab_after_g.log_file, "a") as f:
-            f.write(f"{i},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
-            f.write(f"{i},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
-        try:
-            rab_after_g.run()
-        except Exception as e:
-            print(f"Error during training: {e}")
-            total_run += 1
-            continue
 
