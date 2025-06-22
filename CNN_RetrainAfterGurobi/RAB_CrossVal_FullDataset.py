@@ -383,32 +383,20 @@ if __name__ == "__main__":
         train_dataset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transform)
 
-        model_t = NIN_MNIST(num_classes=10).to(device)
-        model_g = NIN_MNIST(num_classes=10).to(device)
-
     elif dataset_name == "CIFAR10":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))])
         train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
-
-        model_t = VGG(num_classes=10).to(device)
-        model_g = VGG(num_classes=10).to(device)
 
     elif dataset_name == "FashionMNIST":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
         train_dataset = torchvision.datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.FashionMNIST(root='./data', train=False, download=True, transform=transform)
 
-        model_t = NIN_MNIST(num_classes=10).to(device)
-        model_g = NIN_MNIST(num_classes=10).to(device)
-
     elif dataset_name == "KMNIST":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         train_dataset = torchvision.datasets.KMNIST(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.KMNIST(root='./data', train=False, download=True, transform=transform)
-
-        model_t = NIN_MNIST(num_classes=10).to(device)
-        model_g = NIN_MNIST(num_classes=10).to(device)
     
     elif dataset_name == "EMNIST":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
@@ -418,16 +406,11 @@ if __name__ == "__main__":
         optimize = "SGD"
         # Updated n_samples_gurobi
         n_samples_gurobi = 5000
-        model_t = NIN_EMNIST(num_classes=26).to(device)
-        model_g = NIN_EMNIST(num_classes=26).to(device)
     
     elif dataset_name == "SVHN":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(mean=[0.4377, 0.4438, 0.4728], std=[0.1980, 0.2010, 0.1970])])
         train_dataset = torchvision.datasets.SVHN(root='./data', split='train', download=True, transform=transform)
         test_dataset = torchvision.datasets.SVHN(root='./data', split='test', download=True, transform=transform)
-        
-        model_t = VGG(num_classes=10).to(device)
-        model_g = VGG(num_classes=10).to(device)
 
     elif dataset_name == "PathMNIST":
         transform = transforms.Compose([
@@ -438,11 +421,7 @@ if __name__ == "__main__":
         test_raw = PathMNIST(split='test', download=True, transform=transform)
 
         train_dataset = WrapOneHotEncoding(train_raw)
-        test_dataset = WrapOneHotEncoding(test_raw)
-
-        model_t = VGG(num_classes=9).to(device)
-        model_g = VGG(num_classes=9).to(device)
-    
+        test_dataset = WrapOneHotEncoding(test_raw)    
     
     full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
     train_size = len(train_dataset)
@@ -450,6 +429,28 @@ if __name__ == "__main__":
     total_size = train_size + val_size
     total_run = 5
     for i in range(1, total_run + 1):
+        if dataset_name == "MNIST":
+            model_t = NIN_MNIST(num_classes=10).to(device)
+            model_g = NIN_MNIST(num_classes=10).to(device)
+        elif dataset_name == "CIFAR10":
+            model_t = VGG(num_classes=10).to(device)
+            model_g = VGG(num_classes=10).to(device)
+        elif dataset_name == "FashionMNIST":
+            model_t = NIN_MNIST(num_classes=10).to(device)
+            model_g = NIN_MNIST(num_classes=10).to(device)
+        elif dataset_name == "KMNIST":
+            model_t = NIN_MNIST(num_classes=10).to(device)
+            model_g = NIN_MNIST(num_classes=10).to(device)
+        elif dataset_name == "EMNIST":
+            model_t = NIN_EMNIST(num_classes=26).to(device)
+            model_g = NIN_EMNIST(num_classes=26).to(device)
+        elif dataset_name == "SVHN":
+            model_t = VGG(num_classes=10).to(device)
+            model_g = VGG(num_classes=10).to(device)
+        elif dataset_name == "PathMNIST":
+            model_t = VGG(num_classes=9).to(device)
+            model_g = VGG(num_classes=9).to(device)
+    
         start_experiment = True if i == 1 else False
 
         rng = np.random.default_rng(seed=i*42)
