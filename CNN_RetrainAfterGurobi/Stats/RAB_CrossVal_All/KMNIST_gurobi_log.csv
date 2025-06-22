@@ -28,23 +28,5 @@ Objective value: 18.72537504245156
 ------------------------------------
 
 Misclassified: 0
------
-Run ID: 4
 
--------Weight/Bias Offsets-------
-W2 offsets: 3200.0
-b2 offsets: 199.82873496821733
-Objective value: 0.5999999999772854
-------------------------------------
 
-Misclassified: 0
------
-Run ID: 5
-
--------Weight/Bias Offsets-------
-W2 offsets: 3200.0
-b2 offsets: 199.8603815554453
-Objective value: 0.5999999999772854
-------------------------------------
-
-Misclassified: 0
