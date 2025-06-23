@@ -109,10 +109,17 @@ for idx, row in flipAnyDf.iterrows():
     N_2 = len(X_full_scaled)
     k = len(flip_idxs)
 
+    # === Add: count correct->incorrect flips ===
+    correct_before = (y_pred_old_binary == y_gt_full)
+    incorrect_after = (y_pred_new_binary != y_gt_full)
+    num_correct_to_incorrect = np.sum(correct_before & incorrect_after)
+
     tsne_dir = os.path.join(tsne_dir_base, dataset_name)
     os.makedirs(tsne_dir, exist_ok=True)
 
     subset_labels = np.zeros(len(X_train_gb), dtype=int)
+    subset_point_full_idx = None
+    
     if len(gb_flipped_idxs) > 0 and len(X_train_gb) > 1 and X_train_gb.shape[1]>1:
         subset_labels[gb_flipped_idxs[0]] = 1
         tsne_subset = TSNE(n_components=2, random_state=42, perplexity=min(30, len(X_train_gb)-1))
@@ -128,6 +135,7 @@ for idx, row in flipAnyDf.iterrows():
         plt.close()
     else:
         print(f"{dataset_name}: No flipped points in Gurobi subset, skipping subset t-SNE.")
+        continue
 
     # --- 2. t-SNE plot of full data, highlight all flips ---
     if N_2 > 1 and X_full_scaled.shape[1] > 1:
@@ -157,9 +165,15 @@ for idx, row in flipAnyDf.iterrows():
         plt.close()
 
     # --- 3. Plot change in loss for flipped points ---
+    
     avg_flip_diff = median_flip_diff = avg_flip_diff_rel = median_flip_diff_rel = np.nan
     all_hist_dir = "Stats/all_histograms"
     os.makedirs(all_hist_dir, exist_ok=True)
+    scatter_dir_base = "Stats/scatter_plots"
+    os.makedirs(scatter_dir_base, exist_ok=True)
+    #scatter_dir = os.path.join(scatter_dir_base, dataset_name)
+    #os.makedirs(scatter_dir, exist_ok=True)
+
     if len(flip_idxs) > 0:
         pred_probs_old = y_pred_old[flip_idxs]
         pred_probs_new = y_pred_new[flip_idxs]
@@ -176,16 +190,27 @@ for idx, row in flipAnyDf.iterrows():
         avg_flip_diff_rel = np.mean(loss_diff_rel)
         median_flip_diff_rel = np.median(loss_diff_rel)
 
+        # Indices of correct-to-incorrect in flipped indices
+        correct_before_flipped = (y_pred_old_binary[flip_idxs] == y_gt_full[flip_idxs])
+        incorrect_after_flipped = (y_pred_new_binary[flip_idxs] != y_gt_full[flip_idxs])
+        correct_to_incorrect_mask = correct_before_flipped & incorrect_after_flipped
+        loss_diff_correct_to_incorrect = loss_diff[correct_to_incorrect_mask]
+
+        # === Plot histogram ===
         num_bins = 15
         all_bins = np.linspace(loss_diff.min(), loss_diff.max(), num_bins + 1)
         pos_diff = loss_diff[loss_diff >= 0]
         neg_diff = loss_diff[loss_diff < 0]
 
         plt.figure(figsize=(7, 5))
-        plt.hist(pos_diff, bins=all_bins, alpha=0.8, edgecolor='black', color='#3399ff', label='Positive (After > Before)')
-        plt.hist(neg_diff, bins=all_bins, alpha=0.8, edgecolor='black', color='#ff6666', label='Negative (After < Before)')
-        
-        # Add vertical line for subset-flipped point if it is among the flipped points
+        n_pos, bins_pos, _ = plt.hist(pos_diff, bins=all_bins, alpha=0.8, edgecolor='black', color='#3399ff', label='Positive (After > Before)')
+        n_neg, bins_neg, _ = plt.hist(neg_diff, bins=all_bins, alpha=0.8, edgecolor='black', color='#ff6666', label='Negative (After < Before)')
+
+        if len(loss_diff_correct_to_incorrect) > 0:
+            bin_centers = 0.5 * (all_bins[:-1] + all_bins[1:])
+            counts, _ = np.histogram(loss_diff_correct_to_incorrect, bins=all_bins)
+            plt.bar(bin_centers, counts, width=(all_bins[1]-all_bins[0])*0.3, color='limegreen', label='Correct → Incorrect', zorder=10, edgecolor='black')
+
         if subset_point_full_idx is not None and subset_point_full_idx in flip_idxs:
             idx_in_hist = np.where(flip_idxs == subset_point_full_idx)[0][0]
             plt.axvline(loss_diff[idx_in_hist], color='red', linestyle='--', linewidth=2, label='Subset Flipped')
@@ -196,12 +221,54 @@ for idx, row in flipAnyDf.iterrows():
         plt.ylabel("Count")
         plt.tight_layout()
         plt.savefig(f"{tsne_dir}/loss_change_flipped_hist.png")
-        # Also save in the all_histograms folder with the dataset name in filename
         plt.savefig(os.path.join(all_hist_dir, f"{dataset_name}_hist.png"))
         plt.close()
-        
+
+        # === Plot scatter: Loss After vs Loss Before ===
+        plt.figure(figsize=(6, 6))
+
+        # Flip type masks
+        incorrect_to_correct_mask = (~correct_before_flipped) & (~incorrect_after_flipped)
+        correct_to_incorrect_mask = correct_before_flipped & incorrect_after_flipped
+        other_mask = ~(correct_to_incorrect_mask | incorrect_to_correct_mask)
+
+        # Plot other flips
+        plt.scatter(loss_old[other_mask], loss_new[other_mask],
+                    color='gray', alpha=0.6, edgecolors='black', linewidths=0.5, label='Other Flips')
+
+        # Plot correct -> incorrect (red)
+        plt.scatter(loss_old[correct_to_incorrect_mask], loss_new[correct_to_incorrect_mask],
+                    color='red', edgecolors='black', linewidths=0.5, label='Correct → Incorrect')
+
+        # Plot incorrect -> correct (lime)
+        plt.scatter(loss_old[incorrect_to_correct_mask], loss_new[incorrect_to_correct_mask],
+                    color='lime', edgecolors='black', linewidths=0.5, label='Incorrect → Correct')
+
+        # Circle the driver point (subset_point_full_idx)
+        if subset_point_full_idx is not None and subset_point_full_idx in flip_idxs:
+            idx_in_scatter = np.where(flip_idxs == subset_point_full_idx)[0][0]
+            color = 'red' if correct_to_incorrect_mask[idx_in_scatter] else 'lime'
+            plt.scatter(loss_old[idx_in_scatter], loss_new[idx_in_scatter],
+                        facecolors='none', edgecolors=color, s=200, linewidths=2, label='Subset Flipped')
+
+        # Diagonal line
+        min_loss = min(loss_old.min(), loss_new.min())
+        max_loss = max(loss_old.max(), loss_new.max())
+        plt.plot([min_loss, max_loss], [min_loss, max_loss], color='gray', linestyle='--', linewidth=1.5, label='y = x')
+
+        plt.xlabel("Loss Before Flip")
+        plt.ylabel("Loss After Flip")
+        plt.title(f"{dataset_name}: Loss Before vs. After (Flipped Points)")
+        plt.legend()
+        plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.6)
+        plt.tight_layout()
+        plt.savefig(os.path.join(scatter_dir_base, f"loss_scatter_flipped_{dataset_name}.png"))
+        plt.close()
+
     else:
         print(f"No points were flipped in {dataset_name}, skipping loss change plot.")
+        continue
+
 
     row = {
         "Dataset": dataset_name,
@@ -213,7 +280,8 @@ for idx, row in flipAnyDf.iterrows():
         "average_flip_difference": avg_flip_diff,
         "median_flip_difference": median_flip_diff,
         "average_flip_difference_relative": avg_flip_diff_rel,
-        "median_flip_difference_relative": median_flip_diff_rel
+        "median_flip_difference_relative": median_flip_diff_rel,
+        "num_correct_to_incorrect": num_correct_to_incorrect
     }
     summary_rows.append(row)
 
