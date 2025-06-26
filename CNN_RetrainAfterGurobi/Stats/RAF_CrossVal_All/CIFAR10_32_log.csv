@@ -1,3 +1,4 @@
+Run,Phase,Epoch,Train_loss,Train_acc
 1,GurobiComplete_Train,-1,-1,95.39999999999999
 1,GurobiComplete_Val,-1,-1,78.43
 1,Gurobi_Complete_Eval_Train,-1,0.17177336153030395,95.254
