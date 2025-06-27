@@ -435,8 +435,6 @@ if __name__ == "__main__":
         test_dataset = torchvision.datasets.EMNIST(root='./data', split='letters', train=False, download=True, transform=transform)
 
         optimize = "SGD"
-        # Updated n_samples_gurobi
-        n_samples_gurobi = 5000
     
     elif dataset_name == "SVHN":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(mean=[0.4377, 0.4438, 0.4728], std=[0.1980, 0.2010, 0.1970])])
