@@ -90,7 +90,7 @@ class TrainModel:
                 print(f"Early stopping triggered after {epoch+1} epochs based on training loss.")
                 break
 
-            if epoch == self.num_epochs - 1:
+            if epoch == self.num_epochs:
                 if self.phase == "Train":
                     self.save_model(loss, save_suffix="")
                     test_accuracy = self.test()
