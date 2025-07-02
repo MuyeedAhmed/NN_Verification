@@ -281,11 +281,13 @@ class VGG_office31(nn.Module):
             nn.Conv2d(3, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
             nn.Conv2d(64, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
             nn.MaxPool2d(2),  # 16x16
+            nn.Dropout2d(p=0.5),
 
             nn.Conv2d(64, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
             nn.Conv2d(64, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
             nn.MaxPool2d(2),  # 8x8
-
+            nn.Dropout2d(p=0.5),
+            
             nn.Conv2d(64, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
             nn.AdaptiveAvgPool2d((1, 1))
         )
