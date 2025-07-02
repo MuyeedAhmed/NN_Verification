@@ -457,8 +457,12 @@ if __name__ == "__main__":
             transforms.Resize((224, 224)),
             transforms.ToTensor()
         ])
-        dataset = torchvision.datasets.Food101(root="./data", download=True, transform=transform)
-        train_dataset, test_dataset = torch.utils.data.random_split(dataset, [75000, 25000])
+        train_dataset = torchvision.datasets.Food101(
+            root="./data", split="train", download=True, transform=transform
+        )
+        test_dataset = torchvision.datasets.Food101(
+            root="./data", split="test", download=True, transform=transform
+        )
 
     elif dataset_name == "USPS":
         transform = transforms.Compose([
