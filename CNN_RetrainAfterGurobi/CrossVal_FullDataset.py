@@ -15,7 +15,7 @@ import numpy as np
 from TrainModel import TrainModel
 from medmnist import PathMNIST
 
-from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net
+from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net, VGG_office31
 
 
 def GetModel(dataset_name, num_classes=10, device=None):
@@ -50,8 +50,8 @@ def GetModel(dataset_name, num_classes=10, device=None):
         model_t = VGG(num_classes=101).to(device)
         model_g = VGG(num_classes=101).to(device)
     elif dataset_name == "office31":
-        model_t = VGG(num_classes=31).to(device)
-        model_g = VGG(num_classes=31).to(device)
+        model_t = VGG_office31(num_classes=31).to(device)
+        model_g = VGG_office31(num_classes=31).to(device)
 
     return model_t, model_g
 
@@ -205,9 +205,11 @@ if __name__ == "__main__":
         else:
             train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
             val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
-        
+        learningRate = 0.01
+        # if dataset_name == "office31":
+        #     learningRate = 1e-4
         if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
-            TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
+            TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
             # try:
             TM.run()
             # except Exception as e:
@@ -218,7 +220,7 @@ if __name__ == "__main__":
             continue
         if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
             continue
-        TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
+        TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
 
         if device.type == 'cuda':
             checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
