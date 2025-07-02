@@ -14,7 +14,8 @@ import time
 import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
-
+from TrainModel import TrainModel
+from RunGurobi import GurobiBorder, GurobiFlip
 from medmnist import PathMNIST
 
 from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net
@@ -169,14 +170,20 @@ if __name__ == "__main__":
     print(f'Using device: {device}')
     initEpoch = 200
     G_epoch = 100
-    n_samples_gurobi = 1000
     optimize = "Adam"
 
     method = sys.argv[1] if len(sys.argv) > 1 else "RAB"
     dataset_name = sys.argv[2] if len(sys.argv) > 2 else "MNIST"
+    
+    if method == "RAB":
+        n_samples_gurobi = -1
+    elif method == "RAF":
+        n_samples_gurobi = 1000
 
-    if method == "RAF":    
-        misclassification_count = 1    
+    if method == "RAF":
+        misclassification_count = 1
+
+    train_dataset, test_dataset = GetDataset(dataset_name)
 
     full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
     train_size = len(train_dataset)
@@ -208,9 +215,9 @@ if __name__ == "__main__":
             #     print(f"Error during training: {e}")
             #     total_run += 1
             #     continue
-        if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_RAF.pth"):
+        if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
             continue
-        TM_after_g = TrainModel(dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
+        TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
 
         if device.type == 'cuda':
             checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
