@@ -120,15 +120,7 @@ def GetDataset(dataset_name, root_dir='./data', device=None):
         test_dataset = torchvision.datasets.USPS(root='./data', train=False, download=True, transform=transform)
 
     elif dataset_name == "Caltech101":
-        transform = transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-        ])
-        dataset = torchvision.datasets.Caltech101(root='./data', download=True, transform=transform)
-        total_len = len(dataset)
-        train_len = int(0.7 * total_len)
-        test_len = total_len - train_len
-        train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_len, test_len])
+        train_dataset, test_dataset = get_loaders_from_folder("./data/caltech-101/101_ObjectCategories", image_size=(64, 64), batch_size=64, val_split=0.2)  
 
     elif dataset_name == "office31":
         train_dataset, test_dataset = get_loaders_from_folder("./data/office31/amazon", image_size=(16, 16), batch_size=32, val_split=0.2)
