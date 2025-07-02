@@ -101,7 +101,7 @@ def GetDataset(dataset_name, root_dir='./data', device=None):
         test_dataset = WrapOneHotEncoding(test_raw)
     
     elif dataset_name == "Food101":
-        transform = transforms.Compose([transforms.Resize((64, 64)),transforms.ToTensor(), transforms.Normalize(mean=[0.5]*3, std=[0.5]*3)])
+        transform = transforms.Compose([transforms.Resize((32, 32)),transforms.ToTensor(), transforms.Normalize(mean=[0.5]*3, std=[0.5]*3)])
         train_dataset = torchvision.datasets.Food101(root="./data", split="train", download=True, transform=transform)
         test_dataset = torchvision.datasets.Food101(root="./data", split="test", download=True, transform=transform)
 
@@ -189,8 +189,12 @@ if __name__ == "__main__":
         train_subset = Subset(full_dataset, new_train_indices)
         val_subset = Subset(full_dataset, new_val_indices)
 
-        train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
-        val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
+        if dataset_name == "Food101":
+            train_loader = DataLoader(train_subset, batch_size=32, shuffle=True)
+            val_loader = DataLoader(val_subset, batch_size=32, shuffle=False)
+        else:
+            train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
+            val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
         
         if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
             TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
