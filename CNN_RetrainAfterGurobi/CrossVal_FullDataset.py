@@ -116,7 +116,7 @@ def GetDataset(dataset_name, root_dir='./data', device=None):
         train_dataset, test_dataset = get_loaders_from_folder("./data/caltech-101/101_ObjectCategories", image_size=(64, 64), batch_size=64, val_split=0.2)  
 
     elif dataset_name == "office31":
-        train_dataset, test_dataset = get_loaders_from_folder("./data/office31/amazon", image_size=(16, 16), batch_size=32, val_split=0.2)
+        train_dataset, test_dataset = get_loaders_from_folder("./data/office31/amazon", image_size=(64, 64), batch_size=64, val_split=0.3)
 
     return train_dataset, test_dataset   
         
