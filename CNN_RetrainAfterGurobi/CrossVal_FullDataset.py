@@ -101,7 +101,7 @@ def GetDataset(dataset_name, root_dir='./data', device=None):
         test_dataset = WrapOneHotEncoding(test_raw)
     
     elif dataset_name == "Food101":
-        transform = transforms.Compose([transforms.Resize((32, 32)),transforms.ToTensor(), transforms.Normalize(mean=[0.5]*3, std=[0.5]*3)])
+        transform = transforms.Compose([transforms.Resize((64, 64)),transforms.ToTensor(), transforms.Normalize(mean=[0.5]*3, std=[0.5]*3)])
         train_dataset = torchvision.datasets.Food101(root="./data", split="train", download=True, transform=transform)
         test_dataset = torchvision.datasets.Food101(root="./data", split="test", download=True, transform=transform)
 
@@ -159,7 +159,11 @@ if __name__ == "__main__":
 
     method = sys.argv[1] if len(sys.argv) > 1 else "RAB"
     dataset_name = sys.argv[2] if len(sys.argv) > 2 else "MNIST"
-    
+    if dataset_name == "Food101":
+        initEpoch = 400
+        G_epoch = 200
+        # optimize = "SGD"
+
     if method == "RAB":
         n_samples_gurobi = -1
     elif method == "RAF":
