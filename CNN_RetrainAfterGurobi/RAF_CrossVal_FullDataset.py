@@ -17,7 +17,7 @@ import numpy as np
 
 from medmnist import PathMNIST
 
-from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG
+from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS
 
 
 timeLimit = 3600
@@ -452,6 +452,33 @@ if __name__ == "__main__":
         train_dataset = WrapOneHotEncoding(train_raw)
         test_dataset = WrapOneHotEncoding(test_raw)    
     
+    elif dataset_name == "Food101":
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor()
+        ])
+        dataset = torchvision.datasets.Food101(root="./data", download=True, transform=transform)
+        train_dataset, test_dataset = torch.utils.data.random_split(dataset, [75000, 25000])
+
+    elif dataset_name == "USPS":
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+        ])
+        train_dataset = torchvision.datasets.USPS(root='./data', train=True, download=True, transform=transform)
+        test_dataset = torchvision.datasets.USPS(root='./data', train=False, download=True, transform=transform)
+
+    elif dataset_name == "Caltech101":
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+        ])
+        dataset = torchvision.datasets.Caltech101(root='./data', download=True, transform=transform)
+        total_len = len(dataset)
+        train_len = int(0.7 * total_len)
+        test_len = total_len - train_len
+        train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_len, test_len])
+
+
     full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
     train_size = len(train_dataset)
     val_size = len(test_dataset)
@@ -479,6 +506,15 @@ if __name__ == "__main__":
         elif dataset_name == "PathMNIST":
             model_t = VGG(num_classes=9).to(device)
             model_g = VGG(num_classes=9).to(device)
+        elif dataset_name == "Food101":
+            model_t = VGG(num_classes=101).to(device)
+            model_g = VGG(num_classes=101).to(device)
+        elif dataset_name == "USPS":
+            model_t = CNN_USPS(num_classes=10).to(device)
+            model_g = CNN_USPS(num_classes=10).to(device)
+        elif dataset_name == "Caltech101":
+            model_t = VGG(num_classes=101).to(device)
+            model_g = VGG(num_classes=101).to(device)
     
         start_experiment = True if i == 1 else False
 
@@ -496,12 +532,12 @@ if __name__ == "__main__":
         
         if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
             raf = RAF(dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
-            try:
-                raf.run()
-            except Exception as e:
-                print(f"Error during training: {e}")
-                total_run += 1
-                continue
+            # try:
+            raf.run()
+            # except Exception as e:
+            #     print(f"Error during training: {e}")
+            #     total_run += 1
+            #     continue
         if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_RAF.pth"):
             continue
         raf_after_g = RAF(dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit", run_id=i)

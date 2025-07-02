@@ -76,6 +76,37 @@ class NIN_MNIST(nn.Module):
         return x
 
 
+class CNN_USPS(nn.Module):
+    def __init__(self, num_classes=10):
+        super(CNN_USPS, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
+        self.relu1 = nn.ReLU()
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.relu2 = nn.ReLU()
+        self.pool1 = nn.MaxPool2d(2, 2)
+        
+        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
+        self.relu3 = nn.ReLU()
+        self.pool2 = nn.MaxPool2d(2, 2)
+
+        self.flatten = nn.Flatten()
+        self.fc_hidden = nn.Linear(128 * 4 * 4, 128)
+        self.relu = nn.ReLU()
+        self.classifier = nn.Linear(128, num_classes)
+
+    def forward(self, x, extract_fc_input=False):
+        x = self.relu1(self.conv1(x))
+        x = self.pool1(self.relu2(self.conv2(x)))
+        x = self.pool2(self.relu3(self.conv3(x)))
+        x = self.flatten(x)
+        if extract_fc_input:
+            return x.clone().detach(), None
+        x = self.fc_hidden(x)
+        x = self.relu(x)
+        x = self.classifier(x)
+        return x
+
+
 
 class NIN_EMNIST(nn.Module):
     def __init__(self, num_classes=10):
