@@ -1,5 +1,4 @@
 import torch
-torch.set_default_dtype(torch.float64)
 
 import torch.nn as nn
 import torch.optim as optim
@@ -11,11 +10,9 @@ from tqdm import tqdm
 import os
 import sys
 import time
-import gurobipy as gp
-from gurobipy import GRB
+
 import numpy as np
 from TrainModel import TrainModel
-from RunGurobi import GurobiBorder, GurobiFlip
 from medmnist import PathMNIST
 
 from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net
@@ -159,6 +156,11 @@ if __name__ == "__main__":
 
     method = sys.argv[1] if len(sys.argv) > 1 else "RAB"
     dataset_name = sys.argv[2] if len(sys.argv) > 2 else "MNIST"
+    save_checkpoint = sys.argv[3] if len(sys.argv) > 3 else "N"
+    if save_checkpoint == "N":
+        from RunGurobi import GurobiBorder, GurobiFlip
+        torch.set_default_dtype(torch.float64)
+
     if dataset_name == "Food101":
         initEpoch = 400
         G_epoch = 200
@@ -212,6 +214,8 @@ if __name__ == "__main__":
             #     print(f"Error during training: {e}")
             #     total_run += 1
             #     continue
+        if save_checkpoint == "Y":
+            continue
         if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
             continue
         TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=0.01, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
