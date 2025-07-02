@@ -166,6 +166,10 @@ if __name__ == "__main__":
 
     if method == "RAB":
         n_samples_gurobi = -1
+        if dataset_name == "EMNIST":
+            n_samples_gurobi = 5000
+        elif dataset_name == "office31":
+            n_samples_gurobi = 20000
     elif method == "RAF":
         n_samples_gurobi = 1000
 
