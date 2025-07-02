@@ -393,6 +393,26 @@ class WrapOneHotEncoding(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.dataset)
 
+def get_loaders_from_folder(root_dir, image_size=(224, 224), batch_size=32, val_split=0.2, seed=42):
+    transform = transforms.Compose([
+        transforms.Resize(image_size),
+        transforms.CenterCrop(image_size),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5]*3, std=[0.5]*3),
+    ])
+
+    full_dataset = torchvision.datasets.ImageFolder(root=root_dir, transform=transform)
+
+    val_size = int(len(full_dataset) * val_split)
+    train_size = len(full_dataset) - val_size
+    train_dataset, val_dataset = random_split(full_dataset, [train_size, val_size], generator=torch.Generator().manual_seed(seed))
+    return train_dataset, val_dataset
+    # train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+    # val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+
+    # return train_loader, val_loader
+
+
 if __name__ == "__main__":
     os.makedirs("Stats/RAF_CrossVal_All", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -482,6 +502,8 @@ if __name__ == "__main__":
         test_len = total_len - train_len
         train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_len, test_len])
 
+    elif dataset_name == "office31":
+        train_dataset, test_dataset = get_loaders_from_folder("./data/office31/amazon", image_size=(16, 16), batch_size=32, val_split=0.2)
 
     full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
     train_size = len(train_dataset)
@@ -519,6 +541,9 @@ if __name__ == "__main__":
         elif dataset_name == "Caltech101":
             model_t = VGG(num_classes=101).to(device)
             model_g = VGG(num_classes=101).to(device)
+        elif dataset_name == "office31":
+            model_t = VGG(num_classes=31).to(device)
+            model_g = VGG(num_classes=31).to(device)
     
         start_experiment = True if i == 1 else False
 
