@@ -101,16 +101,9 @@ def GetDataset(dataset_name, root_dir='./data', device=None):
         test_dataset = WrapOneHotEncoding(test_raw)
     
     elif dataset_name == "Food101":
-        transform = transforms.Compose([
-            transforms.Resize((128, 128)),
-            transforms.ToTensor()
-        ])
-        train_dataset = torchvision.datasets.Food101(
-            root="./data", split="train", download=True, transform=transform
-        )
-        test_dataset = torchvision.datasets.Food101(
-            root="./data", split="test", download=True, transform=transform
-        )
+        transform = transforms.Compose([transforms.Resize((64, 64)),transforms.ToTensor(), transforms.Normalize(mean=[0.5]*3, std=[0.5]*3)])
+        train_dataset = torchvision.datasets.Food101(root="./data", split="train", download=True, transform=transform)
+        test_dataset = torchvision.datasets.Food101(root="./data", split="test", download=True, transform=transform)
 
     elif dataset_name == "USPS":
         transform = transforms.Compose([
