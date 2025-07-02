@@ -17,7 +17,7 @@ import numpy as np
 
 from medmnist import PathMNIST
 
-from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS
+from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net
 
 
 timeLimit = 3600
@@ -454,7 +454,7 @@ if __name__ == "__main__":
     
     elif dataset_name == "Food101":
         transform = transforms.Compose([
-            transforms.Resize((224, 224)),
+            transforms.Resize((128, 128)),
             transforms.ToTensor()
         ])
         train_dataset = torchvision.datasets.Food101(
@@ -511,8 +511,8 @@ if __name__ == "__main__":
             model_t = VGG(num_classes=9).to(device)
             model_g = VGG(num_classes=9).to(device)
         elif dataset_name == "Food101":
-            model_t = VGG(num_classes=101).to(device)
-            model_g = VGG(num_classes=101).to(device)
+            model_t = Food101Net(num_classes=101).to(device)
+            model_g = Food101Net(num_classes=101).to(device)
         elif dataset_name == "USPS":
             model_t = CNN_USPS(num_classes=10).to(device)
             model_g = CNN_USPS(num_classes=10).to(device)
