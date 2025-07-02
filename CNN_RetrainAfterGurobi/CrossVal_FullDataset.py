@@ -198,7 +198,6 @@ if __name__ == "__main__":
         
         train_subset = Subset(full_dataset, new_train_indices)
         val_subset = Subset(full_dataset, new_val_indices)
-        print("Size of full dataset:", total_size, "Train size:", len(train_subset), "Val size:", len(val_subset))
 
         if dataset_name == "Food101":
             train_loader = DataLoader(train_subset, batch_size=32, shuffle=True)
