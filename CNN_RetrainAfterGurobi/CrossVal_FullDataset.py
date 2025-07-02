@@ -98,7 +98,7 @@ def GetDataset(dataset_name, root_dir='./data', device=None):
         test_dataset = WrapOneHotEncoding(test_raw)
     
     elif dataset_name == "Food101":
-        transform = transforms.Compose([transforms.Resize((64, 64)),transforms.ToTensor(), transforms.Normalize(mean=[0.5]*3, std=[0.5]*3)])
+        transform = transforms.Compose([transforms.Resize((64, 64)),transforms.ToTensor()])
         train_dataset = torchvision.datasets.Food101(root="./data", split="train", download=True, transform=transform)
         test_dataset = torchvision.datasets.Food101(root="./data", split="test", download=True, transform=transform)
 
@@ -110,10 +110,10 @@ def GetDataset(dataset_name, root_dir='./data', device=None):
         test_dataset = torchvision.datasets.USPS(root='./data', train=False, download=True, transform=transform)
 
     elif dataset_name == "Caltech101":
-        train_dataset, test_dataset = get_loaders_from_folder("./data/caltech-101/101_ObjectCategories", image_size=(64, 64), batch_size=64, val_split=0.25)  
+        train_dataset, test_dataset = get_loaders_from_folder("./data/caltech-101/101_ObjectCategories", image_size=(64, 64), val_split=0.25)  
 
     elif dataset_name == "office31":
-        train_dataset, test_dataset = get_loaders_from_folder("./data/office31/amazon", image_size=(64, 64), batch_size=64, val_split=0.25)
+        train_dataset, test_dataset = get_loaders_from_folder("./data/office31/amazon", image_size=(64, 64), val_split=0.2)
 
     return train_dataset, test_dataset   
         
@@ -129,7 +129,7 @@ class WrapOneHotEncoding(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.dataset)
 
-def get_loaders_from_folder(root_dir, image_size=(224, 224), batch_size=32, val_split=0.2, seed=42):
+def get_loaders_from_folder(root_dir, image_size=(224, 224), val_split=0.2, seed=42):
     transform = transforms.Compose([
         transforms.Resize(image_size),
         transforms.CenterCrop(image_size),
@@ -170,8 +170,6 @@ if __name__ == "__main__":
         n_samples_gurobi = -1
         if dataset_name == "EMNIST":
             n_samples_gurobi = 5000
-        elif dataset_name == "office31":
-            n_samples_gurobi = 20000
     elif method == "RAF":
         n_samples_gurobi = 1000
 
@@ -195,16 +193,15 @@ if __name__ == "__main__":
 
         new_train_indices = all_indices[:train_size]
         new_val_indices = all_indices[train_size:]
-        
+        if dataset_name == "Food101":
+            new_train_indices = all_indices[:40000]
+            new_val_indices = all_indices[40000:]
+
         train_subset = Subset(full_dataset, new_train_indices)
         val_subset = Subset(full_dataset, new_val_indices)
 
-        if dataset_name == "Food101":
-            train_loader = DataLoader(train_subset, batch_size=32, shuffle=True)
-            val_loader = DataLoader(val_subset, batch_size=32, shuffle=False)
-        else:
-            train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
-            val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
+        train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
+        val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
         learningRate = 0.01
         # if dataset_name == "office31":
         #     learningRate = 1e-4
