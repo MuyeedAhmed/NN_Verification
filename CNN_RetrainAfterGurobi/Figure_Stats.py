@@ -32,6 +32,8 @@ def summarize_statistics(df, dataset_name, run_id):
     
     S1_train_acc = train_df['Train_acc'].iloc[-1]
     S1_train_loss = train_df['Train_loss'].iloc[-1]
+    print(f"Unique phases in df: {df['Phase'].unique()}")
+    print(df[df['Phase'] == 'Train_Test'])
     S1_test_acc = df[df['Phase'] == 'Train_Test']['Train_acc'].iloc[0]
     S1_test_loss = df[df['Phase'] == 'Train_Test']['Train_loss'].iloc[0]
     
@@ -158,12 +160,12 @@ def main():
         for run_id in history['Run'].unique():
             run_history = history[history['Run'] == run_id]
             if not run_history.empty:
-                try:
+                # try:
                 # plot_training_history(run_history, dataset_name, run_id, fig_folder)
-                    summary_df = summarize_statistics(run_history, dataset_name, run_id)
-                    dataset_stats_summary = pd.concat([dataset_stats_summary, summary_df], ignore_index=True)
-                except Exception as e:
-                    print(f"Error processing {dataset_name} Run {run_id}: {e}")
+                summary_df = summarize_statistics(run_history, dataset_name, run_id)
+                dataset_stats_summary = pd.concat([dataset_stats_summary, summary_df], ignore_index=True)
+                # except Exception as e:
+                #     print(f"Error processing {dataset_name} Run {run_id}: {e}")
         if not dataset_stats_summary.empty:
             if Test == "RAF_CrossVal_All":
                 avg_summary = pd.DataFrame({
@@ -234,14 +236,14 @@ def FillStatsFileFromTrain():
 
         if raf_history[raf_history['Phase'] == 'Train'].empty:
             print(f"RAF {dataset_name}. Size: {raf_history.shape}")
-            rab_train_history = rab_history[rab_history['Phase'] == 'Train']
+            rab_train_history = rab_history[(rab_history['Phase'] == 'Train') | (rab_history['Phase'] == 'ResumeTrain') | (rab_history['Phase'] == 'Train_Test') | (rab_history['Phase'] == 'ResumeTrain_Test')]
             if not rab_train_history.empty:
                 raf_history = pd.concat([raf_history, rab_train_history], ignore_index=True)
                 raf_history.to_csv(raf_file_path, index=False)
             print(f"RAF {dataset_name}. New size: {raf_history.shape}")
         elif rab_history[rab_history['Phase'] == 'Train'].empty:
             print(f"RAB {dataset_name}. Size: {rab_history.shape}")
-            raf_train_history = raf_history[raf_history['Phase'] == 'Train']
+            raf_train_history = raf_history[(raf_history['Phase'] == 'Train') | (raf_history['Phase'] == 'ResumeTrain') | (raf_history['Phase'] == 'Train_Test') | (raf_history['Phase'] == 'ResumeTrain_Test')]
             if not raf_train_history.empty:
                 rab_history = pd.concat([rab_history, raf_train_history], ignore_index=True)
                 rab_history.to_csv(rab_file_path, index=False)
