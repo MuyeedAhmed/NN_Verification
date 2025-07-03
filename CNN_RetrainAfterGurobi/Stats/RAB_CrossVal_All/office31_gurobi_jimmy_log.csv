@@ -1,0 +1,20 @@
+-----
+Run ID: 2
+
+-------Weight/Bias Offsets-------
+W2 offsets: 57003.39699775648
+b2 offsets: 608.7635451373735
+Objective value: 0.048221663631693445
+------------------------------------
+
+Misclassified: 0
+-----
+Run ID: 3
+
+-------Weight/Bias Offsets-------
+W2 offsets: 76735.50815499353
+b2 offsets: 608.0266696563835
+Objective value: 0.04733218675016815
+------------------------------------
+
+Misclassified: 0
