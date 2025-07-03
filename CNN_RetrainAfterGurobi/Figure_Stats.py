@@ -65,7 +65,8 @@ def SummarizeStatsPerDataset(df, dataset_name, run_id):
         S2_test_acc = df[df['Phase'] == 'ResumeTrain_Test']['Train_acc'].iloc[0]
         S2_test_loss = df[df['Phase'] == 'ResumeTrain_Test']['Train_loss'].iloc[0]
 
-    
+    if df[df['Phase'] == 'Gurobi_Complete_Eval_Train'].empty:
+        return pd.DataFrame() 
     S3_Start_train_acc = df[df['Phase'] == 'Gurobi_Complete_Eval_Train']['Train_acc'].iloc[0]
     S3_Start_train_loss = df[df['Phase'] == 'Gurobi_Complete_Eval_Train']['Train_loss'].iloc[0]
     S3_Start_test_acc = df[df['Phase'] == 'Gurobi_Complete_Eval_Val']['Train_acc'].iloc[0]
