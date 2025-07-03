@@ -231,26 +231,30 @@ def SummarizeAllFiles(Test):
     plt.savefig(f"Figures/Boxplot_{Test}.pdf")
     plt.close()
 
-    # # Plot TrainDiff
-    # plt.figure(figsize=(12, 6))
-    # sns.boxplot(data=all_diffs, x="Dataset", y="TrainDiff")
-    # plt.axhline(0, color='black', linestyle='--', linewidth=1)
-    # plt.title("Train Accuracy Difference (S3 - S2)")
-    # plt.xticks(rotation=45)
-    # plt.tight_layout()
-    # # plt.savefig(f"Stats/Boxplot_TrainDiff_{Test}.png")
-    # plt.show()
+def SummarizeAllFiles_NoReTraining(Test):
+    results = pd.read_excel(f"Stats/ResultAllFile_{Test}.xlsx")
 
-    # # Plot TestDiff
-    # plt.figure(figsize=(12, 6))
-    # sns.boxplot(data=all_diffs, x="Dataset", y="TestDiff")
-    # plt.axhline(0, color='black', linestyle='--', linewidth=1)
-    # plt.title("Test Accuracy Difference (S3 - S2)")
-    # plt.xticks(rotation=45)
-    # plt.tight_layout()
-    # # plt.savefig(f"Stats/Boxplot_TestDiff_{Test}.png")
-    # plt.show()
+    dataset_names = results['Dataset'].unique()
+    all_diffs = pd.DataFrame()
 
+    for dataset_name in dataset_names:
+        dataset_results = results[results['Dataset'] == dataset_name].copy()
+        dataset_results["TrainDiff"] = dataset_results["S3_Start_Train_Acc"] - dataset_results["S1_Train_Acc"]
+        dataset_results["TestDiff"] = dataset_results["S3_Start_Test_Acc"] - dataset_results["S1_Test_Acc"]
+
+        all_diffs = pd.concat([all_diffs, dataset_results], ignore_index=True)
+
+    fig, axes = plt.subplots(1, 1, figsize=(16, 6), sharey=True)
+
+
+    sns.boxplot(data=all_diffs, x="Dataset", y="TestDiff", ax=axes)
+    axes.axhline(0, color='black', linestyle='--', linewidth=1)
+    axes.set_title("Test Accuracy Difference (AfterGurobi - BeforeGurobi)")
+    axes.tick_params(axis='x', rotation=45)
+
+    plt.tight_layout()
+    plt.savefig(f"Figures/Boxplot_{Test}_NoReTraining.pdf")
+    plt.close()
 
 if __name__ == "__main__":
     # FillStatsFileWithTrain()
@@ -258,4 +262,6 @@ if __name__ == "__main__":
     ResultAllFile("RAB")
     SummarizeAllFiles("RAF")
     SummarizeAllFiles("RAB")
+    SummarizeAllFiles_NoReTraining("RAF")
+    SummarizeAllFiles_NoReTraining("RAB")
 
