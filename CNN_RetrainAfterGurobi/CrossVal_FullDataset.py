@@ -10,7 +10,7 @@ from tqdm import tqdm
 import os
 import sys
 import time
-
+import random
 import numpy as np
 from TrainModel import TrainModel
 from medmnist import PathMNIST
@@ -101,6 +101,18 @@ def GetDataset(dataset_name, root_dir='./data', device=None):
         transform = transforms.Compose([transforms.Resize((64, 64)),transforms.ToTensor()])
         train_dataset = torchvision.datasets.Food101(root="./data", split="train", download=True, transform=transform)
         test_dataset = torchvision.datasets.Food101(root="./data", split="test", download=True, transform=transform)
+        all_classes = train_dataset.classes
+        random.seed(42)
+        selected_classes = random.sample(all_classes, 10)
+
+        def fast_filter_food101(dataset, selected_classes):
+            class_names = dataset.classes
+            label_names = [class_names[label] for label in dataset._labels]
+            selected_indices = [i for i, name in enumerate(label_names) if name in selected_classes]
+            return Subset(dataset, selected_indices)
+
+        train_dataset = fast_filter_food101(train_dataset, selected_classes)
+        test_dataset = fast_filter_food101(test_dataset, selected_classes)
 
     elif dataset_name == "USPS":
         transform = transforms.Compose([
@@ -193,9 +205,6 @@ if __name__ == "__main__":
 
         new_train_indices = all_indices[:train_size]
         new_val_indices = all_indices[train_size:]
-        if dataset_name == "Food101":
-            new_train_indices = all_indices[:40000]
-            new_val_indices = all_indices[40000:]
 
         train_subset = Subset(full_dataset, new_train_indices)
         val_subset = Subset(full_dataset, new_val_indices)
@@ -203,8 +212,7 @@ if __name__ == "__main__":
         train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
         val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
         learningRate = 0.01
-        # if dataset_name == "office31":
-        #     learningRate = 1e-4
+        
         if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
             TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
             # try:
