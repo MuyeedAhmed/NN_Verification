@@ -206,7 +206,52 @@ def main():
     # Save the summary statistics to a CSV file
     Stats_summary.to_excel(f'{Stats_folder}/Summary_{Test}.xlsx', index=False)              
         
-    
+def FillStatsFileFromTrain():
+    raf_folder_path = "Stats/RAF_CrossVal_All"
+    rab_folder_path = "Stats/RAB_CrossVal_All"
+
+    Stats_folder = "Stats"
+
+    raf_log_files = [f for f in os.listdir(raf_folder_path) if f.endswith('_log.csv') and "gurobi" not in f]
+    rab_log_files = [f for f in os.listdir(rab_folder_path) if f.endswith('_log.csv') and "gurobi" not in f]
+
+    for file in raf_log_files:
+        dataset_name = file.split('_log')[0]
+        raf_file_path = os.path.join(raf_folder_path, file)
+        rab_file_path = os.path.join(rab_folder_path, file)
+        
+        if not os.path.exists(rab_file_path):
+            print(f"RAB file not found for {dataset_name}.")
+            continue
+        raf_history = pd.read_csv(raf_file_path)
+        rab_history = pd.read_csv(rab_file_path)
+        if "Phase" not in rab_history.columns:
+            rab_history = pd.read_csv(rab_file_path, header=None)
+            rab_history.columns = ['Run', 'Phase', 'Epoch', 'Train_loss', 'Train_acc']
+        if "Phase" not in raf_history.columns:
+            raf_history = pd.read_csv(raf_file_path, header=None)
+            raf_history.columns = ['Run', 'Phase', 'Epoch', 'Train_loss', 'Train_acc']
+
+        if raf_history[raf_history['Phase'] == 'Train'].empty:
+            print(f"RAF {dataset_name}. Size: {raf_history.shape}")
+            rab_train_history = rab_history[rab_history['Phase'] == 'Train']
+            if not rab_train_history.empty:
+                raf_history = pd.concat([raf_history, rab_train_history], ignore_index=True)
+                raf_history.to_csv(raf_file_path, index=False)
+            print(f"RAF {dataset_name}. New size: {raf_history.shape}")
+        elif rab_history[rab_history['Phase'] == 'Train'].empty:
+            print(f"RAB {dataset_name}. Size: {rab_history.shape}")
+            raf_train_history = raf_history[raf_history['Phase'] == 'Train']
+            if not raf_train_history.empty:
+                rab_history = pd.concat([rab_history, raf_train_history], ignore_index=True)
+                rab_history.to_csv(rab_file_path, index=False)
+            print(f"RAB {dataset_name}. New size: {rab_history.shape}")
+        else:
+            print(f"Both RAF and RAB have Train Phase for {dataset_name}.")
+
+
+
 if __name__ == "__main__":
-    main()
+    # main()
+    FillStatsFileFromTrain()
     
