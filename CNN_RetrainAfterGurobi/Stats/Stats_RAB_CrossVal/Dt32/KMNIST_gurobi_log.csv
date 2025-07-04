@@ -1,0 +1,50 @@
+-----
+Run ID: 1
+
+-------Weight/Bias Offsets-------
+W2 offsets: 3110.040421639387
+b2 offsets: 190.09935652661798
+Objective value: 530.6451230119176
+------------------------------------
+
+Misclassified: 0
+-----
+Run ID: 2
+
+-------Weight/Bias Offsets-------
+W2 offsets: 3086.2977019205327
+b2 offsets: 193.84264947146877
+Objective value: 266.8072482741144
+------------------------------------
+
+Misclassified: 0
+-----
+Run ID: 3
+
+-------Weight/Bias Offsets-------
+W2 offsets: 3103.2642794707435
+b2 offsets: 193.83111853396818
+Objective value: 434.9604667209739
+------------------------------------
+
+Misclassified: 0
+-----
+Run ID: 4
+
+-------Weight/Bias Offsets-------
+W2 offsets: 3094.1707490658073
+b2 offsets: 194.99466130029245
+Objective value: 203.97210567454613
+------------------------------------
+
+Misclassified: 0
+-----
+Run ID: 5
+
+-------Weight/Bias Offsets-------
+W2 offsets: 3113.0340516168153
+b2 offsets: 193.3698145254392
+Objective value: 272.95382967191836
+------------------------------------
+
+Misclassified: 0
