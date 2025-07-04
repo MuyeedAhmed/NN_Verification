@@ -199,7 +199,7 @@ if __name__ == "__main__":
     train_size = len(train_dataset)
     val_size = len(test_dataset)
     total_size = train_size + val_size
-    total_run = 5
+    total_run = 1
     total_restart = 5
     for i in range(1, total_run + 1):
         model_t, model_g = GetModel(dataset_name, device=device)
