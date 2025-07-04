@@ -1,4 +1,5 @@
 import shutil
+import sys
 import os
 
 def rename_checkpoints(dataset_name):
