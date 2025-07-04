@@ -4,3 +4,6 @@ __pycache__/
 CNN_RetrainAfterGurobi/data/
 CNN_RetrainAfterGurobi/checkpoints/
 CNN_RetrainAfterGurobi/checkpoints_inputs/
+RAF_CNN_Restart/data/
+RAF_CNN_Restart/checkpoints/
+RAF_CNN_Restart/checkpoints_inputs/
