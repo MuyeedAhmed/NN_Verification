@@ -41,8 +41,8 @@ def GetModel(dataset_name, num_classes=10, device=None):
         model_t = VGG(num_classes=9).to(device)
         model_g = VGG(num_classes=9).to(device)
     elif dataset_name == "Food101":
-            model_t = Food101Net(num_classes=101).to(device)
-            model_g = Food101Net(num_classes=101).to(device)
+            model_t = VGG(num_classes=10).to(device)
+            model_g = VGG(num_classes=10).to(device)
     elif dataset_name == "USPS":
         model_t = CNN_USPS(num_classes=10).to(device)
         model_g = CNN_USPS(num_classes=10).to(device)
@@ -111,8 +111,13 @@ def GetDataset(dataset_name, root_dir='./data', device=None):
             selected_indices = [i for i, name in enumerate(label_names) if name in selected_classes]
             return Subset(dataset, selected_indices)
 
-        train_dataset = fast_filter_food101(train_dataset, selected_classes)
-        test_dataset = fast_filter_food101(test_dataset, selected_classes)
+        class_map = {cls_name: i for i, cls_name in enumerate(selected_classes)}
+        train_filtered = fast_filter_food101(train_dataset, selected_classes)
+        test_filtered = fast_filter_food101(test_dataset, selected_classes)
+
+        train_dataset = RelabelSubset(train_filtered, class_map, train_dataset)
+        test_dataset = RelabelSubset(test_filtered, class_map, test_dataset)
+
 
     elif dataset_name == "USPS":
         transform = transforms.Compose([
@@ -128,7 +133,22 @@ def GetDataset(dataset_name, root_dir='./data', device=None):
         train_dataset, test_dataset = get_loaders_from_folder("./data/office31/amazon", image_size=(64, 64), val_split=0.2)
 
     return train_dataset, test_dataset   
-        
+
+class RelabelSubset(torch.utils.data.Dataset):
+    def __init__(self, subset, class_map, orig_dataset):
+        self.subset = subset
+        self.class_map = class_map
+        self.orig_dataset = orig_dataset  # Needed to map labels to class names
+
+    def __len__(self):
+        return len(self.subset)
+
+    def __getitem__(self, index):
+        image, label = self.subset[index]
+        class_name = self.orig_dataset.classes[label]  # e.g., 'apple_pie'
+        new_label = self.class_map[class_name]         # e.g., 0–9
+        return image, new_label
+
 class WrapOneHotEncoding(torch.utils.data.Dataset):
     def __init__(self, dataset):
         self.dataset = dataset
@@ -195,6 +215,7 @@ if __name__ == "__main__":
     val_size = len(test_dataset)
     total_size = train_size + val_size
     total_run = 5
+
     for i in range(1, total_run + 1):
         model_t, model_g = GetModel(dataset_name, device=device)
     
