@@ -1,12 +1,3 @@
-import torch
-
-import torch.nn as nn
-import torch.optim as optim
-import torchvision
-import torchvision.transforms as transforms
-from torch.optim.lr_scheduler import CosineAnnealingLR
-from torch.utils.data import random_split, DataLoader, Subset
-from tqdm import tqdm
 import os
 import sys
 import time
