@@ -191,7 +191,7 @@ if __name__ == "__main__":
     dataset_name = sys.argv[1] if len(sys.argv) > 1 else "MNIST"
     
     n_samples_gurobi = 1000
-    misclassification_count = 1
+    misclassification_count = 10
 
     train_dataset, test_dataset = GetDataset(dataset_name)
 

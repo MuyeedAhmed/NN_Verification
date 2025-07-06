@@ -410,7 +410,7 @@ def GurobiFlip_Restart(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, 
         if misclassified != misclassification_count:
             with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log_tol.csv", "a") as f:
                 f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
-            GurobiFlip(dataset_name, store_file_name, run_id, n=n, tol=tol+5e-6, misclassification_count=misclassified_count)
+            GurobiFlip_Restart(dataset_name, store_file_name, run_id, n=n, tol=tol+5e-6, misclassification_count=misclassified_count, restart_no=restart_no)
 
         print(f"Total misclassified samples: {misclassified}")
         with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv", "a") as f:
