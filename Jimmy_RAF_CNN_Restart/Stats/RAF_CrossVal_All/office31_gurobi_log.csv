@@ -24,3 +24,42 @@ Misclassified: 10
 Total samples in full dataset: 2254
 Total misclassified samples in full dataset: 18
 Accuracy on full dataset: 87.3114463176575
+-----
+Run ID: 2
+
+-------Weight/Bias Offsets-------
+W2 offsets: 0.018361162552454763
+b2 offsets: 0.0
+Objective value: 0.018361162552454763
+------------------------------------
+
+Misclassified: 5
+Total samples in full dataset: 2254
+Total misclassified samples in full dataset: 5
+Accuracy on full dataset: 82.83052351375333
+-----
+Run ID: 4
+
+-------Weight/Bias Offsets-------
+W2 offsets: 0.07272073130319484
+b2 offsets: 0.0
+Objective value: 0.07272073130319484
+------------------------------------
+
+Misclassified: 5
+Total samples in full dataset: 2254
+Total misclassified samples in full dataset: 9
+Accuracy on full dataset: 84.78260869565217
+-----
+Run ID: 5
+
+-------Weight/Bias Offsets-------
+W2 offsets: 0.112066718106142
+b2 offsets: 0.0
+Objective value: 0.11206671810614201
+------------------------------------
+
+Misclassified: 5
+Total samples in full dataset: 2254
+Total misclassified samples in full dataset: 12
+Accuracy on full dataset: 85.93611357586512
