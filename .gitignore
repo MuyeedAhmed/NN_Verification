@@ -7,3 +7,7 @@ CNN_RetrainAfterGurobi/checkpoints_inputs/
 RAF_CNN_Restart/data/
 RAF_CNN_Restart/checkpoints/
 RAF_CNN_Restart/checkpoints_inputs/
+RAF_CNN_correctVany/checkpoints/
+RAF_CNN_correctVany/G_checkpoints/
+RAF_CNN_correctVany/checkpoints_inputs/
+RAF_CNN_correctVany/data/
