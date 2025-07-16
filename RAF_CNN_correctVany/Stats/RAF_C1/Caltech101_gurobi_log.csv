@@ -1,0 +1,65 @@
+-----
+Run ID: 1
+
+-------Weight/Bias Offsets-------
+W2 offsets: 8.127968464558268
+b2 offsets: 0.0
+Objective value: 8.127968464558268
+------------------------------------
+
+Misclassified: 1
+Total samples in full dataset: 6508
+Total misclassified samples in full dataset: 54
+Accuracy on full dataset: 89.2901044867855
+-----
+Run ID: 2
+
+-------Weight/Bias Offsets-------
+W2 offsets: 10.260816162936583
+b2 offsets: 0.0
+Objective value: 10.260816162936583
+------------------------------------
+
+Misclassified: 1
+Total samples in full dataset: 6508
+Total misclassified samples in full dataset: 39
+Accuracy on full dataset: 78.36508912108174
+-----
+Run ID: 3
+
+-------Weight/Bias Offsets-------
+W2 offsets: 7.747953084010741
+b2 offsets: 0.0
+Objective value: 7.7479530840107405
+------------------------------------
+
+Misclassified: 1
+Total samples in full dataset: 6508
+Total misclassified samples in full dataset: 42
+Accuracy on full dataset: 91.62569145666872
+-----
+Run ID: 4
+
+-------Weight/Bias Offsets-------
+W2 offsets: 9.208513377336953
+b2 offsets: 0.0
+Objective value: 9.208513377336953
+------------------------------------
+
+Misclassified: 1
+Total samples in full dataset: 6508
+Total misclassified samples in full dataset: 33
+Accuracy on full dataset: 79.08727719729563
+-----
+Run ID: 5
+
+-------Weight/Bias Offsets-------
+W2 offsets: 10.511359149390422
+b2 offsets: 0.0
+Objective value: 10.511359149390422
+------------------------------------
+
+Misclassified: 1
+Total samples in full dataset: 6508
+Total misclassified samples in full dataset: 37
+Accuracy on full dataset: 89.96619545175169

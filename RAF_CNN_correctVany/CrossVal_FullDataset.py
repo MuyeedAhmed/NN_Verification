@@ -203,7 +203,7 @@ if __name__ == "__main__":
             n_samples_gurobi = 5000
     elif method == "RAF":
         n_samples_gurobi = 1000
-        misclassification_count = 1
+        misclassification_count = 10
 
     train_dataset, test_dataset = GetDataset(dataset_name)
 
@@ -261,7 +261,7 @@ if __name__ == "__main__":
             Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
         elif method == "RAF":
             Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
-            Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
+            # Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
         if Gurobi_output is None:
             print("Gurobi did not find a solution.")
             if total_run < 10:
