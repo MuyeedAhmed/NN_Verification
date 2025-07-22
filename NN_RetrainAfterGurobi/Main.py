@@ -6,19 +6,30 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import numpy as np
 import os
+import pandas as pd
 
 from Networks import TabularMLP
-from RunGurobi import FlipBinary, FlipMulticlass, BorderBinary, BorderMulticlass
+from RunGurobi import FlipBinary_A, FlipBinary_C, FlipMulticlass, BorderBinary, BorderMulticlass
 
 
 def LoadDataset(name="adult", run_id=0):
-    dataset = fetch_openml(name, version=1, as_frame=True)
-    df = dataset.frame.dropna()
+    if name == "santander":
+        df = pd.read_csv(f"data/{name}/train.csv")
+        target_col = "target"
+    elif name == "kdd98":
+        df = pd.read_csv(f"data/kdd98/cup98lrn.txt", low_memory=False)
+        target_col = "TARGET_B"
+        df = df.drop(columns=["TARGET_D", "CONTROLN"])
+        df = df.dropna()
 
+    else:
+        dataset = fetch_openml(name, version=1, as_frame=True)
+        df = dataset.frame.dropna()
+        target_col = dataset.target_names[0] if hasattr(dataset, 'target_names') else dataset.target
+    
     # if len(df) > max_rows:
     #     df = df.sample(n=max_rows, random_state=42).reset_index(drop=True)
     
-    target_col = dataset.target_names[0] if hasattr(dataset, 'target_names') else dataset.target
     y = df[target_col]
     X = df.drop(columns=[target_col])
 
@@ -117,9 +128,9 @@ def TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=2, patience=3
                 train_acc = accuracy_multiclass(train_logits, y_train)
                 test_acc = accuracy_multiclass(test_logits, y_test)
 
-        print(f"Epoch {epoch+1} | Train Loss: {loss.item():.4f} | Train Acc: {train_acc:.4f} | Test Acc: {test_acc:.4f}")
+        print(f"Epoch {epoch+1} | Train Loss: {loss.item():.8f} | Train Acc: {train_acc:.8f} | Test Acc: {test_acc:.8f}")
         with open(IntermediateStatsFile, "a") as f:
-            f.write(f"{epoch+1},{loss.item():.4f},{train_acc:.4f},{test_acc:.4f},{Method}\n")
+            f.write(f"{epoch+1},{loss.item():.8f},{train_acc:.8f},{test_acc:.8f},{Method}\n")
         if loss.item() < best_loss - 1e-4:
             best_loss = loss.item()
             patience_counter = 0
@@ -130,7 +141,7 @@ def TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=2, patience=3
                 break
 
     with open(AllFileStats, "a") as f:
-        f.write(f"{Dataset},{run_id},{loss.item():.4f},{train_acc:.4f},{test_acc:.4f},{Method}\n")
+        f.write(f"{Dataset},{run_id},{loss.item():.8f},{train_acc:.8f},{test_acc:.8f},{Method}\n")
             
     
     torch.save(model.state_dict(), checkpoint_path)
@@ -194,9 +205,14 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
 
     y_gt = np.load(GT_path, allow_pickle=True)
     y_preds = np.load(prediction_path, allow_pickle=True)
-    if Method == "F":
+    if Method == "F_A":
         if num_classes == 2:            
-            G_result = FlipBinary(Dataset, A_last, y_preds, y_gt, W, b, n_samples, tol, flipCount)
+            G_result = FlipBinary_A(Dataset, A_last, y_preds, y_gt, W, b, n_samples, tol, flipCount)
+        else:
+            G_result = FlipMulticlass(Dataset, A_last, y_preds, y_gt, W, b, n_samples, tol, flipCount)
+    elif Method == "F_C":
+        if num_classes == 2:
+            G_result = FlipBinary_C(Dataset, A_last, y_preds, y_gt, W, b, n_samples, tol, flipCount)
         else:
             G_result = FlipMulticlass(Dataset, A_last, y_preds, y_gt, W, b, n_samples, tol, flipCount)
 
@@ -221,7 +237,7 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
     test_loss, test_acc, gurobi_test_preds = evaluate_tensors(model, X_test, y_test, num_classes)
 
     with open(AllFileStats, "a") as f:
-        f.write(f"{Dataset},{run_id},{train_loss:.4f},{train_acc:.4f},{test_acc:.4f},{Method}\n")
+        f.write(f"{Dataset},{run_id},{train_loss:.8f},{train_acc:.8f},{test_acc:.8f},{Method}{flipCount}\n")
     
     Total_flips = np.sum(gurobi_train_preds != y_preds.reshape(-1)).item()
     if Total_flips != flipCount:
@@ -232,17 +248,25 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
 
     torch.save(model.state_dict(), G_checkpoint_path)
 
-    if Method == "F":
-        TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=15, max_epochs=200000, preset_weights_path=G_checkpoint_path, run_id=run_id, Method=f"RA{Method}")
+    # if Method == "F":
+    TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=15, max_epochs=200000, preset_weights_path=G_checkpoint_path, run_id=run_id, Method=f"RA{Method}{flipCount}")
 
 
 if __name__ == "__main__":
-    Datasets = ["Adult", "higgs", "GiveMeSomeCredit", "bank-marketing"]
+    # Datasets = ["Adult", "higgs", "GiveMeSomeCredit", "bank-marketing", "santander", "kddcup98"]
+    Datasets = ["kdd98"]
+    # X_train, y_train, X_test, y_test, num_classes = LoadDataset(Datasets[0], run_id=0)
+
     for dataset in Datasets:
         for run in range(5):
             X_train, y_train, X_test, y_test, num_classes = LoadDataset(dataset, run_id=run)
-            # TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=15, max_epochs=200000, preset_weights_path=None, run_id=run, Method="Train")
+            TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=15, max_epochs=200000, preset_weights_path=None, run_id=run, Method="Train")
 
-            # ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=1, tol=1e-5, run_id=run, Method="F")
+            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=1, tol=1e-5, run_id=run, Method="F_C")
+            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=10, tol=1e-5, run_id=run, Method="F_C")
+            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=1, tol=1e-5, run_id=run, Method="F_A")
+            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=10, tol=1e-5, run_id=run, Method="F_A")
+            
+
             ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=-1, flipCount=0, tol=1e-5, run_id=run, Method="B")
 
