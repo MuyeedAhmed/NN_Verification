@@ -442,13 +442,9 @@ def BorderMulticlass(file_name, X, y, y_gt, W, b, n_samples, tol):
     Z_target = X @ W.T + b
     
 
-    y_ = y.ravel()  
-    pred_target = np.argmax(Z_target, axis=1)
-    pred = pred_target.cpu().numpy() if pred_target.is_cuda else pred_target.numpy()
-    print("Mismatch: ", np.sum(y_ != pred))
-    print("Predicted:", pred)
-    print("y        :", y_)
-    W_size = W.shape[1]
+    # y_ = y.ravel()  
+    # pred_target = np.argmax(Z_target, axis=1)
+    # pred = pred_target.cpu().numpy() if pred_target.is_cuda else pred_target.numpy()
     Output_size = W.shape[0]
 
     model = gp.Model("BorderMulticlass")
