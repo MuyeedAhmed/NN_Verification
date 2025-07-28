@@ -17,11 +17,11 @@ def LoadDataset(name="adult", run_id=0):
         df = pd.read_csv(f"data/{name}/train.csv")
         target_col = "target"
     elif name == "kdd98":
-        df = pd.read_csv(f"data/kdd98/cup98lrn.txt", low_memory=False)
+        df = pd.read_csv(f"data/kdd98/cup98lrn.txt", low_memory=False, na_values=[" ", "", "XXXX"])
         target_col = "TARGET_B"
+        df = df[df["TARGET_B"].notna()]
         df = df.drop(columns=["TARGET_D", "CONTROLN"])
-        df = df.dropna()
-
+        print(df.shape)
     else:
         dataset = fetch_openml(name, version=1, as_frame=True)
         df = dataset.frame.dropna()

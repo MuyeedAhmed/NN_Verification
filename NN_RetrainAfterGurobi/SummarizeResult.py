@@ -60,30 +60,38 @@ def Summarize(df):
 def GetTables(summary, method):
     for row in summary.iterrows():
         Init_train_loss = row[1][f"Train Train Loss"]
-        Init_train_acc = row[1][f"Train Train Acc"]
-        Init_test_acc = row[1][f"Train Test Acc"]
+        Init_train_acc = row[1][f"Train Train Acc"]*100
+        Init_test_acc = row[1][f"Train Test Acc"]*100
 
         G_train_loss = row[1][f"{method} Train Loss"]
-        G_train_acc = row[1][f"{method} Train Acc"]
-        G_test_acc = row[1][f"{method} Test Acc"]
+        G_train_acc = row[1][f"{method} Train Acc"]*100
+        G_test_acc = row[1][f"{method} Test Acc"]*100
 
         RAG_train_loss = row[1][f"RA{method} Train Loss"]
-        RAG_train_acc = row[1][f"RA{method} Train Acc"]
-        RAG_test_acc = row[1][f"RA{method} Test Acc"]
+        RAG_train_acc = row[1][f"RA{method} Train Acc"]*100
+        RAG_test_acc = row[1][f"RA{method} Test Acc"]*100
 
         # STC Loss and Acc
         # print(f"{row[1]['Dataset']} & {Init_train_acc:.2f} & {Init_train_loss:.2f} & {G_train_acc:.2f} &  {G_train_loss:.2f} \\\\")
         # STC Test Acc
-        print(f"{row[1]['Dataset']} & {Init_test_acc:.2f} & {G_test_acc:.2f} & {(G_test_acc-Init_test_acc)} \\\\")
+        # print(f"{row[1]['Dataset']} & {Init_test_acc:.2f} & {G_test_acc:.2f} & {(G_test_acc-Init_test_acc)} \\\\")
 
+        # Change 1 classification
+        print(f"{row[1]['Dataset']} & {Init_train_acc:.2f} & {Init_test_acc:.2f} & {G_train_acc:.2f} &  {G_test_acc:.2f} & {RAG_train_acc:.2f} &  {RAG_test_acc:.2f}  & {(G_train_acc-Init_train_acc):.3f} & {(G_test_acc-Init_test_acc):.3f}  & {(RAG_train_acc-Init_train_acc):.3f} & {(RAG_test_acc-Init_test_acc):.3f} \\\\")
 
-        # print(f"Init: {Init_train_loss}, {Init_train_acc}, {Init_test_acc}")
-        # print(f"G: {G_train_loss}, {G_train_acc}, {G_test_acc}")
-        # print(f"RAG: {RAG_train_loss}, {RAG_train_acc}, {RAG_test_acc}")
+        # Change All
+        # print(f"{row[1]['Dataset']} & {(RAG_test_acc-Init_test_acc):.3f}")
+        # print(f"{(RAG_test_acc-Init_test_acc):.3f}")
+        
         
 
 if __name__ == "__main__":
     df = pd.read_csv("Stats/Summary.csv")
     summary = Summarize(df)
-    print(summary)
-    GetTables(summary, "B0")
+    # print(summary)
+    # GetTables(summary, "B0")
+    GetTables(summary, "F_A1")
+    # GetTables(summary, "F_A10")
+    # GetTables(summary, "F_C1")
+    # GetTables(summary, "F_C10")
+    
