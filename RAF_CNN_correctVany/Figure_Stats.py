@@ -53,6 +53,9 @@ def SummarizeStatsPerDataset(df, dataset_name, run_id):
     resume_df = df[df['Phase'] == 'ResumeTrain']
     gurobi_df = df[df['Phase'] == 'GurobiEdit']
     
+    if train_df.empty or gurobi_df.empty:
+        print(f"Skipping {dataset_name} due to missing Train or GurobiEdit data.")
+        return pd.DataFrame()
     S1_train_acc = train_df['Train_acc'].iloc[-1]
     S1_train_loss = train_df['Train_loss'].iloc[-1]
     
@@ -151,8 +154,8 @@ def plot_training_history(df, dataset_name, run_id, fig_folder):
 
 
 def ResultAllFile(Test):
-    folder_path = f"Stats/{Test}_CrossVal_All"
-    fig_folder = f"Figures/{Test}_CrossVal_All"
+    folder_path = f"Stats/{Test}"
+    fig_folder = f"Figures/{Test}"
     Stats_folder = "Stats"
     # if not os.path.exists(fig_folder):
     #     os.makedirs(fig_folder)
@@ -259,9 +262,9 @@ def SummarizeAllFiles_NoReTraining(Test):
 
 if __name__ == "__main__":
     # FillStatsFileWithTrain()
-    ResultAllFile("RAF")
+    ResultAllFile("RAF_C10")
 
-    SummarizeAllFiles("RAF")
+    SummarizeAllFiles("RAF_C10")
 
     # SummarizeAllFiles_NoReTraining("RAF")
 
