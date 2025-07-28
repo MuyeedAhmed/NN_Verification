@@ -8,8 +8,8 @@ import numpy as np
 import os
 import pandas as pd
 
-from Networks import TabularMLP
-from RunGurobi import FlipBinary_A, FlipBinary_C, FlipMulticlass, BorderBinary, BorderMulticlass
+from Networks import TabularMLP, TabularMLP_Mult
+from RunGurobi import FlipBinary_A, FlipBinary_C, FlipMulticlass_A, FlipMulticlass_C, BorderBinary, BorderMulticlass
 
 
 def LoadDataset(name="adult", run_id=0):
@@ -193,7 +193,10 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
     AllFileStats = f"Stats/Summary.csv"
 
     input_dim = X_train.shape[1]
-    model = TabularMLP(input_dim=input_dim)
+    if num_classes == 2:
+        model = TabularMLP(input_dim=input_dim)
+    else:
+        model = TabularMLP_Mult(input_dim=input_dim, num_classes=num_classes)
     model.load_state_dict(torch.load(checkpoint_path))
     model.eval()
 
@@ -209,12 +212,12 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
         if num_classes == 2:            
             G_result = FlipBinary_A(Dataset, A_last, y_preds, y_gt, W, b, n_samples, tol, flipCount)
         else:
-            G_result = FlipMulticlass(Dataset, A_last, y_preds, y_gt, W, b, n_samples, tol, flipCount)
+            G_result = FlipMulticlass_A(Dataset, A_last, y_preds, y_gt, W, b, n_samples, tol, flipCount)
     elif Method == "F_C":
         if num_classes == 2:
             G_result = FlipBinary_C(Dataset, A_last, y_preds, y_gt, W, b, n_samples, tol, flipCount)
         else:
-            G_result = FlipMulticlass(Dataset, A_last, y_preds, y_gt, W, b, n_samples, tol, flipCount)
+            G_result = FlipMulticlass_C(Dataset, A_last, y_preds, y_gt, W, b, n_samples, tol, flipCount)
 
     elif Method == "B":
         if num_classes == 2:
@@ -240,6 +243,8 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
         f.write(f"{Dataset},{run_id},{train_loss:.8f},{train_acc:.8f},{test_acc:.8f},{Method}{flipCount}\n")
     
     Total_flips = np.sum(gurobi_train_preds != y_preds.reshape(-1)).item()
+    with open(f"Stats/Log.txt", "a") as f:
+        f.write(f"Dataset: {Dataset}, Method: {Method}{flipCount}, Run ID: {run_id}, Total Flips: {Total_flips}, Expected Flips: {flipCount}\n")
     if Total_flips != flipCount:
         print(f"Warning: Expected {flipCount} flips, but found {Total_flips} flips after Gurobi optimization.")
 
@@ -254,12 +259,13 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
 
 if __name__ == "__main__":
     # Datasets = ["Adult", "higgs", "GiveMeSomeCredit", "bank-marketing", "santander", "kddcup98"]
-    Datasets = ["kdd98"]
+    Datasets = ["covertype", "KDDCup99"]
     # X_train, y_train, X_test, y_test, num_classes = LoadDataset(Datasets[0], run_id=0)
 
     for dataset in Datasets:
         for run in range(5):
             X_train, y_train, X_test, y_test, num_classes = LoadDataset(dataset, run_id=run)
+            # print(f"{dataset}, {len(X_train)+len(X_test)} samples, {num_classes} classes")
             TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=15, max_epochs=200000, preset_weights_path=None, run_id=run, Method="Train")
 
             ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=1, tol=1e-5, run_id=run, Method="F_C")
