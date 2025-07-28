@@ -356,7 +356,6 @@ def FlipMulticlass_C(file_name, X, y, y_gt, W, b, n_samples, tol, flipCount):
         return None
   
 def BorderBinary(file_name, X, y, y_gt, W, b, n_samples, tol):
-    # n_samples = 10
     if n_samples == -1:
         n_samples = X.shape[0]
     y = y.reshape(-1, 1)[:n_samples]
@@ -395,25 +394,6 @@ def BorderBinary(file_name, X, y, y_gt, W, b, n_samples, tol):
         abs_Z_vars.append(abs_Z)
 
     model.setObjective(gp.quicksum(abs_Z_vars), GRB.MINIMIZE)
-    # for i in range(n_samples):
-    #     y_scalar = int(y[i])
-    #     if y_scalar == 1:
-    #         model.addConstr(Z[i, 0] >= tol, f"Z_{i}_positive")
-    #     else:
-    #         model.addConstr(Z[i, 0] <= -tol, f"Z_{i}_negative")
-
-    # abs_diffs = []
-    # for i in range(len(X)):
-    #     diff = model.addVar(lb=0.0, name=f"abs_diff_{i}")
-    #     model.addConstr(diff >= Z[i, 0] - int(y[i]), name=f"abs_upper_{i}")
-    #     model.addConstr(diff >= int(y[i]) - Z[i, 0], name=f"abs_lower_{i}")
-    #     abs_diffs.append(diff)
-    # l1_loss = gp.quicksum(abs_diffs)
-    # model.addConstr(l1_loss <= 10000, "ObjectiveUpperBound")
-    # # model.addConstr(l1_loss >= 1, "ObjectiveNonNegative")
-    # model.setObjective(l1_loss, GRB.MAXIMIZE)
-
-    # model.setParam('TimeLimit', timeLimit)
     model.optimize()
 
     if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
@@ -434,6 +414,7 @@ def BorderBinary(file_name, X, y, y_gt, W, b, n_samples, tol):
 
 
 def BorderMulticlass(file_name, X, y, y_gt, W, b, n_samples, tol):
+    n_samples = 100
     if n_samples == -1:
         n_samples = X.shape[0]
     y = y.reshape(-1, 1)[:n_samples]
@@ -441,10 +422,7 @@ def BorderMulticlass(file_name, X, y, y_gt, W, b, n_samples, tol):
 
     Z_target = X @ W.T + b
     
-
-    # y_ = y.ravel()  
-    # pred_target = np.argmax(Z_target, axis=1)
-    # pred = pred_target.cpu().numpy() if pred_target.is_cuda else pred_target.numpy()
+    W_size = W.shape[1]
     Output_size = W.shape[0]
 
     model = gp.Model("BorderMulticlass")
@@ -475,19 +453,10 @@ def BorderMulticlass(file_name, X, y, y_gt, W, b, n_samples, tol):
                 model.addConstr(Z[i, label_max] >= Z[i, k] + tol, f"Z_{i}_positive_{k}")
         max_min_diff.append(Z[i, label_max] - Z[i, label_min])
         
-        # y_scalar = int(y[i])
-        # if y_scalar == 1:
-        #     model.addConstr(Z[i, 0] >= tol, f"Z_{i}_positive")
-        # else:
-        #     model.addConstr(Z[i, 0] <= -tol, f"Z_{i}_negative")
-
-        # abs_Z = model.addVar(lb=0.0, name=f"abs_Z_{i}")
-        # model.addConstr(abs_Z >= Z[i, 0], name=f"abs_upper_{i}")
-        # model.addConstr(abs_Z >= -Z[i, 0], name=f"abs_lower_{i}")
-        # abs_Z_vars.append(abs_Z)
-    # model.setObjective(gp.quicksum(abs_Z_vars), GRB.MINIMIZE)
     objective = gp.quicksum(max_min_diff)
     model.setObjective(objective, GRB.MINIMIZE)
+    model.setParam('TimeLimit', timeLimit)
+
     model.optimize()
 
     if model.status == GRB.TIME_LIMIT or model.status == GRB.OPTIMAL:
