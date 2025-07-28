@@ -414,7 +414,7 @@ def BorderBinary(file_name, X, y, y_gt, W, b, n_samples, tol):
 
 
 def BorderMulticlass(file_name, X, y, y_gt, W, b, n_samples, tol):
-    n_samples = 100
+
     if n_samples == -1:
         n_samples = X.shape[0]
     y = y.reshape(-1, 1)[:n_samples]
