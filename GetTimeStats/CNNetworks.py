@@ -46,7 +46,7 @@ class NIN_CIFAR10(nn.Module):
 
 
 class NIN_MNIST(nn.Module):
-    def __init__(self, num_classes=10):
+    def __init__(self, num_classes=10, output_layer_size=16):
         super(NIN_MNIST, self).__init__()
         def nin_block(in_channels, out_channels, kernel_size, stride, padding):
             return nn.Sequential(
@@ -61,9 +61,9 @@ class NIN_MNIST(nn.Module):
             # nn.AdaptiveAvgPool2d((1, 1))
         )
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(32*14*14, 16)
+        self.fc_hidden = nn.Linear(32*14*14, output_layer_size)
         self.relu = nn.ReLU()
-        self.classifier = nn.Linear(16, num_classes)
+        self.classifier = nn.Linear(output_layer_size, num_classes)
 
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
@@ -209,7 +209,7 @@ class NIN(nn.Module):
         return x
 
 class VGG(nn.Module):
-    def __init__(self, num_classes=10):
+    def __init__(self, num_classes=10, output_layer_size=16):
         super().__init__()
         self.features = nn.Sequential(
             nn.Conv2d(3, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
@@ -225,9 +225,9 @@ class VGG(nn.Module):
         )
 
         self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(256, 16)
+        self.fc_hidden = nn.Linear(256, output_layer_size)
         self.relu = nn.ReLU()
-        self.classifier = nn.Linear(16, num_classes)
+        self.classifier = nn.Linear(output_layer_size, num_classes)
     
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)

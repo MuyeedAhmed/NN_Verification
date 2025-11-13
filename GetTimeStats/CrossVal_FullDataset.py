@@ -18,13 +18,13 @@ from medmnist import PathMNIST
 from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net, VGG_office31
 
 
-def GetModel(dataset_name, num_classes=10, device=None):
+def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16):
     if dataset_name == "MNIST":
-        model_t = NIN_MNIST(num_classes=10).to(device)
-        model_g = NIN_MNIST(num_classes=10).to(device)
+        model_t = NIN_MNIST(num_classes=10, output_layer_size=output_layer_size).to(device)
+        model_g = NIN_MNIST(num_classes=10, output_layer_size=output_layer_size).to(device)
     elif dataset_name == "CIFAR10":
-        model_t = VGG(num_classes=10).to(device)
-        model_g = VGG(num_classes=10).to(device)
+        model_t = VGG(num_classes=10, output_layer_size=output_layer_size).to(device)
+        model_g = VGG(num_classes=10, output_layer_size=output_layer_size).to(device)
     elif dataset_name == "FashionMNIST":
         model_t = NIN_MNIST(num_classes=10).to(device)
         model_g = NIN_MNIST(num_classes=10).to(device)
@@ -182,7 +182,7 @@ if __name__ == "__main__":
     os.makedirs("Stats/RAF_CrossVal_All", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    initEpoch = 300
+    initEpoch = 150
     G_epoch = 100
     optimize = "Adam"
 
@@ -211,82 +211,84 @@ if __name__ == "__main__":
     total_size = train_size + val_size
     total_run = 2
 
-    for i in range(1, total_run + 1):
-        model_t, model_g = GetModel(dataset_name, device=device)
-    
-        start_experiment = True if i == 1 else False
-
-        rng = np.random.default_rng(seed=i*42)
-        all_indices = rng.permutation(total_size)
-
-        new_train_indices = all_indices[:train_size]
-        new_val_indices = all_indices[train_size:]
-
-        train_subset = Subset(full_dataset, new_train_indices)
-        val_subset = Subset(full_dataset, new_val_indices)
-
-        train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
-        val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
-        learningRate = 0.01
+    ol_sizes = [16, 32, 64, 128, 256]
+    for l_size in ol_sizes:
+        for i in range(1, total_run + 1):
+            model_t, model_g = GetModel(dataset_name, device=device, output_layer_size=l_size)
         
-        if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
-            TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
+            start_experiment = True if i == 1 else False
+
+            rng = np.random.default_rng(seed=i*42)
+            all_indices = rng.permutation(total_size)
+
+            new_train_indices = all_indices[:train_size]
+            new_val_indices = all_indices[train_size:]
+
+            train_subset = Subset(full_dataset, new_train_indices)
+            val_subset = Subset(full_dataset, new_val_indices)
+
+            train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
+            val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
+            learningRate = 0.01
+            
+            if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
+                TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
+                # try:
+                TM.run()
+                # except Exception as e:
+                #     print(f"Error during training: {e}")
+                #     total_run += 1
+                #     continue
+            if save_checkpoint == "Y":
+                continue
+            if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
+                print(f"Checkpoint for run {i} already exists. Skipping Gurobi edit.")
+                continue
+            TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
+
+            if device.type == 'cuda':
+                checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
+            else:
+                checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
+            TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
+            TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+            print(f"Loaded model for run {i} from checkpoint.")
+            TM_after_g.save_fc_inputs("Train")
+            TM_after_g.save_fc_inputs("Val")
+            print(f"Saved FC inputs for run {i}.")
+            time0 = time.time()
+            if method == "RAB":
+                Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
+            elif method == "RAF":
+                # Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
+                Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
+            time1 = time.time()
+            with open("Stats/TimeStats.txt", "a") as f:
+                f.write(f"{dataset_name},{l_size},Run{i},{method},{time1 - time0}\n")
+            # print(f"Gurobi optimization for run {i} took {time1 - time0} seconds.")
+            # if Gurobi_output is None:
+            #     print("Gurobi did not find a solution.")
+            #     if total_run < 10:
+            #         total_run += 1
+            #     continue
+            # W2_new, b2_new = Gurobi_output
+            # TM_after_g.delete_fc_inputs()
+            # new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
+            # new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
+            # with torch.no_grad():
+            #     TM_after_g.model.classifier.weight.copy_(new_W)
+            #     TM_after_g.model.classifier.bias.copy_(new_b)
+            # train_loss, train_acc = TM_after_g.evaluate("Train")
+            # val_loss, val_acc = TM_after_g.evaluate("Val")
+
+            # with open(TM_after_g.log_file, "a") as f:
+            #     f.write(f"{i},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
+            #     f.write(f"{i},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
             # try:
-            TM.run()
+            #     TM_after_g.run()
             # except Exception as e:
             #     print(f"Error during training: {e}")
             #     total_run += 1
             #     continue
-        if save_checkpoint == "Y":
-            continue
-        if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
-            print(f"Checkpoint for run {i} already exists. Skipping Gurobi edit.")
-            continue
-        TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
-
-        if device.type == 'cuda':
-            checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
-        else:
-            checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
-        TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
-        TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-        print(f"Loaded model for run {i} from checkpoint.")
-        TM_after_g.save_fc_inputs("Train")
-        TM_after_g.save_fc_inputs("Val")
-        print(f"Saved FC inputs for run {i}.")
-        time0 = time.time()
-        if method == "RAB":
-            Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
-        elif method == "RAF":
-            # Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
-            Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
-        time1 = time.time()
-        with open("Stats/TimeStats.txt", "a") as f:
-            f.write(f"{dataset_name},Run{i},{method},{time1 - time0}\n")
-        # print(f"Gurobi optimization for run {i} took {time1 - time0} seconds.")
-        if Gurobi_output is None:
-            print("Gurobi did not find a solution.")
-            if total_run < 10:
-                total_run += 1
-            continue
-        W2_new, b2_new = Gurobi_output
-        TM_after_g.delete_fc_inputs()
-        new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
-        new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
-        with torch.no_grad():
-            TM_after_g.model.classifier.weight.copy_(new_W)
-            TM_after_g.model.classifier.bias.copy_(new_b)
-        train_loss, train_acc = TM_after_g.evaluate("Train")
-        val_loss, val_acc = TM_after_g.evaluate("Val")
-
-        with open(TM_after_g.log_file, "a") as f:
-            f.write(f"{i},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
-            f.write(f"{i},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
-        try:
-            TM_after_g.run()
-        except Exception as e:
-            print(f"Error during training: {e}")
-            total_run += 1
-            continue
 
