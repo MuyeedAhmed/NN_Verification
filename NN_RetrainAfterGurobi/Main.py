@@ -258,8 +258,8 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
 
 
 if __name__ == "__main__":
-    # Datasets = ["Adult", "higgs", "GiveMeSomeCredit", "bank-marketing", "santander", "kddcup98"]
-    Datasets = ["covertype", "KDDCup99"]
+    Datasets = ["Adult", "higgs", "GiveMeSomeCredit", "bank-marketing", "santander", "kddcup98"]
+    # Datasets = ["covertype", "KDDCup99"]
     # X_train, y_train, X_test, y_test, num_classes = LoadDataset(Datasets[0], run_id=0)
 
     for dataset in Datasets:
