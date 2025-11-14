@@ -182,8 +182,8 @@ if __name__ == "__main__":
     os.makedirs("Stats/RAF_CrossVal_All", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    initEpoch = 150
-    G_epoch = 100
+    initEpoch = 3
+    G_epoch = 0
     optimize = "Adam"
 
     method = sys.argv[1] if len(sys.argv) > 1 else "RAB"
@@ -241,9 +241,9 @@ if __name__ == "__main__":
                 #     continue
             if save_checkpoint == "Y":
                 continue
-            if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
-                print(f"Checkpoint for run {i} already exists. Skipping Gurobi edit.")
-                continue
+            # if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
+            #     print(f"Checkpoint for run {i} already exists. Skipping Gurobi edit.")
+            #     continue
             TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
 
             if device.type == 'cuda':
