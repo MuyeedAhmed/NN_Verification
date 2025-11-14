@@ -231,14 +231,14 @@ if __name__ == "__main__":
             val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
             learningRate = 0.01
             
-            if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
-                TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
-                # try:
-                TM.run()
-                # except Exception as e:
-                #     print(f"Error during training: {e}")
-                #     total_run += 1
-                #     continue
+            # if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
+            TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
+            # try:
+            TM.run()
+            # except Exception as e:
+            #     print(f"Error during training: {e}")
+            #     total_run += 1
+            #     continue
             if save_checkpoint == "Y":
                 continue
             # if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
