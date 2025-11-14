@@ -183,7 +183,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
     initEpoch = 3
-    G_epoch = 0
+    G_epoch = 1
     optimize = "Adam"
 
     method = sys.argv[1] if len(sys.argv) > 1 else "RAB"
