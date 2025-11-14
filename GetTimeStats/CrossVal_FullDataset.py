@@ -209,10 +209,10 @@ if __name__ == "__main__":
     train_size = len(train_dataset)
     val_size = len(test_dataset)
     total_size = train_size + val_size
-    total_run = 5
 
     ol_sizes = [16, 32, 64, 128, 256, 512, 1024]
     for l_size in ol_sizes:
+        total_run = 5
         for i in range(1, total_run + 1):
             model_t, model_g = GetModel(dataset_name, device=device, output_layer_size=l_size)
         
@@ -231,25 +231,20 @@ if __name__ == "__main__":
             val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
             learningRate = 0.01
             
-            # if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
             TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
-            # try:
+            
             TM.run()
-            # except Exception as e:
-            #     print(f"Error during training: {e}")
-            #     total_run += 1
-            #     continue
+            
             if save_checkpoint == "Y":
                 continue
-            # if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
-            #     print(f"Checkpoint for run {i} already exists. Skipping Gurobi edit.")
-            #     continue
+            
             TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
 
             if device.type == 'cuda':
                 checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
             else:
                 checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
+            
             TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
             TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
             TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
@@ -261,11 +256,11 @@ if __name__ == "__main__":
             if method == "RAB":
                 Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
             elif method == "RAF":
-                # Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
-                Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
+                Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
+                # Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
             time1 = time.time()
             
-            # print(f"Gurobi optimization for run {i} took {time1 - time0} seconds.")
+            
             if Gurobi_output is None:
                 print("Gurobi did not find a solution.")
                 if total_run < 10:
@@ -273,24 +268,5 @@ if __name__ == "__main__":
             else:
                 with open("Stats/TimeStats.txt", "a") as f:
                     f.write(f"{dataset_name},{l_size},Run{i},{method},{time1 - time0}\n")
-            #     continue
-            # W2_new, b2_new = Gurobi_output
-            # TM_after_g.delete_fc_inputs()
-            # new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
-            # new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
-            # with torch.no_grad():
-            #     TM_after_g.model.classifier.weight.copy_(new_W)
-            #     TM_after_g.model.classifier.bias.copy_(new_b)
-            # train_loss, train_acc = TM_after_g.evaluate("Train")
-            # val_loss, val_acc = TM_after_g.evaluate("Val")
-
-            # with open(TM_after_g.log_file, "a") as f:
-            #     f.write(f"{i},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
-            #     f.write(f"{i},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
-            # try:
-            #     TM_after_g.run()
-            # except Exception as e:
-            #     print(f"Error during training: {e}")
-            #     total_run += 1
-            #     continue
-
+            
+            
