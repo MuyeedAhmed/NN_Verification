@@ -182,7 +182,7 @@ if __name__ == "__main__":
     os.makedirs("Stats/RAF_CrossVal_All", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    initEpoch = 3
+    initEpoch = 50
     G_epoch = 1
     optimize = "Adam"
 
@@ -209,9 +209,9 @@ if __name__ == "__main__":
     train_size = len(train_dataset)
     val_size = len(test_dataset)
     total_size = train_size + val_size
-    total_run = 2
+    total_run = 5
 
-    ol_sizes = [16, 32, 64, 128, 256]
+    ol_sizes = [16, 32, 64, 128, 256, 512, 1024]
     for l_size in ol_sizes:
         for i in range(1, total_run + 1):
             model_t, model_g = GetModel(dataset_name, device=device, output_layer_size=l_size)
@@ -264,13 +264,15 @@ if __name__ == "__main__":
                 # Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
                 Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
             time1 = time.time()
-            with open("Stats/TimeStats.txt", "a") as f:
-                f.write(f"{dataset_name},{l_size},Run{i},{method},{time1 - time0}\n")
+            
             # print(f"Gurobi optimization for run {i} took {time1 - time0} seconds.")
-            # if Gurobi_output is None:
-            #     print("Gurobi did not find a solution.")
-            #     if total_run < 10:
-            #         total_run += 1
+            if Gurobi_output is None:
+                print("Gurobi did not find a solution.")
+                if total_run < 10:
+                    total_run += 1
+            else:
+                with open("Stats/TimeStats.txt", "a") as f:
+                    f.write(f"{dataset_name},{l_size},Run{i},{method},{time1 - time0}\n")
             #     continue
             # W2_new, b2_new = Gurobi_output
             # TM_after_g.delete_fc_inputs()
