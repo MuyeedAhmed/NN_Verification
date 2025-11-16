@@ -239,6 +239,47 @@ class VGG(nn.Module):
         x = self.classifier(x)
         return x
 
+class VGG_var_layers(nn.Module):
+    def __init__(self, num_classes=10, output_layer_size=16, extra_conv_layers=0):
+        super().__init__()
+        layers = [
+            nn.Conv2d(3, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
+            nn.Conv2d(64, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
+            nn.MaxPool2d(2),  # 16x16
+
+            nn.Conv2d(64, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
+            nn.Conv2d(128, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
+            nn.MaxPool2d(2),  # 8x8
+
+            nn.Conv2d(128, 256, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(256),
+        ]
+        for _ in range(extra_conv_layers):
+            layers += [
+                nn.Conv2d(256, 256, 3, padding=1),
+                nn.ReLU(),
+                nn.BatchNorm2d(256),
+            ]
+
+        layers.append(nn.AdaptiveAvgPool2d((1, 1)))
+
+        self.features = nn.Sequential(*layers)
+
+        self.flatten = nn.Flatten()
+        self.fc_hidden = nn.Linear(256, output_layer_size)
+        self.relu = nn.ReLU()
+        self.classifier = nn.Linear(output_layer_size, num_classes)
+    
+    def forward(self, x, extract_fc_input=False):
+        x = self.features(x)
+        x = self.flatten(x)
+        if extract_fc_input:
+            return x.clone().detach(), None
+        x = self.fc_hidden(x)
+        x = self.relu(x)
+        x = self.classifier(x)
+        return x
+
+
 class Food101Net(nn.Module):
     def __init__(self, num_classes=101):
         super().__init__()
