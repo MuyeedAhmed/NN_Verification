@@ -11,3 +11,7 @@ RAF_CNN_correctVany/checkpoints/
 RAF_CNN_correctVany/G_checkpoints/
 RAF_CNN_correctVany/checkpoints_inputs/
 RAF_CNN_correctVany/data/
+NN_RetrainAfterGurobi/data/
+NN_RetrainAfterGurobi/checkpoints/
+NN_RetrainAfterGurobi/checkpoints_/
+NN_RetrainAfterGurobi/checkpoints_3/

@@ -2,64 +2,64 @@
 Run ID: 1
 
 -------Weight/Bias Offsets-------
-W2 offsets: 0.2786259220171491
+W2 offsets: 0.28683073191493136
 b2 offsets: 0.0
-Objective value: 0.2786259220171491
+Objective value: 0.28683073191493136
 ------------------------------------
 
 Misclassified: 10
 Total samples in full dataset: 60000
-Total misclassified samples in full dataset: 398
-Accuracy on full dataset: 99.325
+Total misclassified samples in full dataset: 673
+Accuracy on full dataset: 98.87
 -----
 Run ID: 2
 
 -------Weight/Bias Offsets-------
-W2 offsets: 0.30071691373718284
+W2 offsets: 0.2766773418756879
 b2 offsets: 0.0
-Objective value: 0.30071691373718284
+Objective value: 0.2766773418756879
 ------------------------------------
 
 Misclassified: 10
 Total samples in full dataset: 60000
-Total misclassified samples in full dataset: 719
-Accuracy on full dataset: 98.79666666666667
+Total misclassified samples in full dataset: 545
+Accuracy on full dataset: 99.08666666666667
 -----
 Run ID: 3
 
 -------Weight/Bias Offsets-------
-W2 offsets: 0.2234078100223126
+W2 offsets: 0.26481431259509297
 b2 offsets: 0.0
-Objective value: 0.22340781001719748
+Objective value: 0.26481431259509297
 ------------------------------------
 
 Misclassified: 10
 Total samples in full dataset: 60000
-Total misclassified samples in full dataset: 307
-Accuracy on full dataset: 99.47500000000001
+Total misclassified samples in full dataset: 566
+Accuracy on full dataset: 99.03833333333333
 -----
 Run ID: 4
 
 -------Weight/Bias Offsets-------
-W2 offsets: 0.27585302098704184
+W2 offsets: 0.32560112488605836
 b2 offsets: 0.0
-Objective value: 0.27585302098704184
+Objective value: 0.32560112488605836
 ------------------------------------
 
 Misclassified: 10
 Total samples in full dataset: 60000
-Total misclassified samples in full dataset: 405
-Accuracy on full dataset: 99.31666666666666
+Total misclassified samples in full dataset: 251
+Accuracy on full dataset: 99.56666666666666
 -----
 Run ID: 5
 
 -------Weight/Bias Offsets-------
-W2 offsets: 0.27192491676573805
+W2 offsets: 0.15442692683676146
 b2 offsets: 0.0
-Objective value: 0.27192491676573805
+Objective value: 0.1544269268367613
 ------------------------------------
 
 Misclassified: 10
 Total samples in full dataset: 60000
-Total misclassified samples in full dataset: 218
-Accuracy on full dataset: 97.80833333333334
+Total misclassified samples in full dataset: 147
+Accuracy on full dataset: 97.89166666666667
