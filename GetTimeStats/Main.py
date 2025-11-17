@@ -23,11 +23,12 @@ def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, ex
         model_t = NIN_MNIST(num_classes=10, output_layer_size=output_layer_size).to(device)
         model_g = NIN_MNIST(num_classes=10, output_layer_size=output_layer_size).to(device)
     elif dataset_name == "CIFAR10":
-        model_t = VGG(num_classes=10, output_layer_size=output_layer_size).to(device)
-        model_g = VGG(num_classes=10, output_layer_size=output_layer_size).to(device)
         if extra_conv_layers > 0:
             model_t = VGG_var_layers(num_classes=10, output_layer_size=output_layer_size, extra_conv_layers=extra_conv_layers).to(device)
             model_g = VGG_var_layers(num_classes=10, output_layer_size=output_layer_size, extra_conv_layers=extra_conv_layers).to(device)
+        else:
+            model_t = VGG(num_classes=10, output_layer_size=output_layer_size).to(device)
+            model_g = VGG(num_classes=10, output_layer_size=output_layer_size).to(device)
     elif dataset_name == "FashionMNIST":
         model_t = NIN_MNIST(num_classes=10).to(device)
         model_g = NIN_MNIST(num_classes=10).to(device)
