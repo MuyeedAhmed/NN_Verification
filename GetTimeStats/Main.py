@@ -339,7 +339,8 @@ if __name__ == "__main__":
                     with open("Stats/TimeStats_SampleSize.txt", "a") as f:
                         f.write(f"{dataset_name},{n_samples_gurobi},Run{i},{method},{time1 - time0}\n")
     elif test == "layers":
-        extra_layers = [1, 2, 3, 4, 5]
+        # extra_layers = [1, 2, 3, 4, 5]
+        extra_layers = [6, 7, 8, 9]
         for el in extra_layers:
             total_run = 5
             for i in range(1, total_run + 1):
