@@ -397,5 +397,5 @@ if __name__ == "__main__":
                     if total_run < 10:
                         total_run += 1
                 else:
-                    with open("Stats/TimeStats.txt", "a") as f:
-                        f.write(f"{dataset_name},{l_size},Run{i},{method},{time1 - time0}\n")
+                    with open("Stats/TimeStats_ExtraLayers.txt", "a") as f:
+                        f.write(f"{dataset_name},{extra_layers},Run{i},{method},{time1 - time0}\n")
