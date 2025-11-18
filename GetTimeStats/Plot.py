@@ -53,7 +53,7 @@ def plot_time_stats_LayerSize(file_name):
     df = pd.read_csv(file_name)
     df['Time'] = df['Time'].astype(float)
     df['ExtraLayers'] = df['ExtraLayers']+2
-    print(df)
+    # print(df)
     # grayscale = df[df['Dataset']=="MNIST"]
     rgb = df[df['Dataset']=="CIFAR10"]
 
@@ -76,5 +76,6 @@ def plot_time_stats_LayerSize(file_name):
 
 if __name__ == "__main__":
     # plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
-    # plot_time_stats_SampleSize("Stats/TimeStats_SampleSize.csv")
+    plot_time_stats_SampleSize("Stats/TimeStats_SampleSize.csv")
     plot_time_stats_LayerSize("Stats/TimeStats_LayerSize.csv")
+    

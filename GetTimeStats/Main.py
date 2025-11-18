@@ -321,7 +321,8 @@ if __name__ == "__main__":
             TM_after_g.save_fc_inputs("Train")
             TM_after_g.save_fc_inputs("Val")
 
-            n_samples_gurobis = [100, 500, 1000, 5000, 10000]
+            # n_samples_gurobis = [100, 500, 1000, 5000, 10000]
+            n_samples_gurobis = [1000, 3000, 4000, 5000, 6000, 7000, 8000, 9000]
             for n_samples_gurobi in n_samples_gurobis:
                 time0 = time.time()
                 if method == "RAB":
