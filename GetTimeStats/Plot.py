@@ -46,7 +46,7 @@ def plot_time_stats_SampleSize(file_name):
     plt.legend()
     # plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.savefig("Figures/TimeStats_SampleSize.pdf", format='pdf', bbox_inches='tight')
+    plt.savefig("Figures/TimeStats_SampleSize_New.pdf", format='pdf', bbox_inches='tight')
     # plt.show()
 
 def plot_time_stats_LayerSize(file_name):
@@ -70,6 +70,7 @@ def plot_time_stats_LayerSize(file_name):
     plt.legend()
     # plt.xticks(rotation=45)
     plt.tight_layout()
+    plt.yticks(np.arange(0, 100, 10))
     plt.savefig("Figures/TimeStats_LayerSize.pdf", format='pdf', bbox_inches='tight')
     # plt.show()
 
