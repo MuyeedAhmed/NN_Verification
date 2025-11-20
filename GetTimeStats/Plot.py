@@ -18,10 +18,12 @@ def plot_time_stats_NodeSize(file_name):
     plt.plot(rgb['Nodes'], rgb['Time'], marker='o', label='RGB')
     plt.plot(grayscale['Nodes'], grayscale['Time'], marker='s', label='Grayscale')
 
-    plt.xlabel('# Nodes')
-    plt.ylabel('Average Time (seconds)')
-    plt.legend()
+    plt.xlabel('# Nodes', fontsize=14)
+    plt.ylabel('Average Time (seconds)', fontsize=14)
+    plt.legend(fontsize=14)
     # plt.xticks(rotation=45)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
     plt.tight_layout()
     plt.savefig("Figures/TimeStats_NodeSize.pdf", format='pdf', bbox_inches='tight')
     # plt.show()
@@ -41,12 +43,14 @@ def plot_time_stats_SampleSize(file_name):
     plt.plot(rgb['Sample_Size'], rgb['Time'], marker='o', label='RGB')
     plt.plot(grayscale['Sample_Size'], grayscale['Time'], marker='s', label='Grayscale')
 
-    plt.xlabel('# Samples')
-    plt.ylabel('Average Time (seconds)')
-    plt.legend()
+    plt.xlabel('# Samples', fontsize=14)
+    plt.ylabel('Average Time (seconds)', fontsize=14)
+    plt.legend(fontsize=14)
     # plt.xticks(rotation=45)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
     plt.tight_layout()
-    plt.savefig("Figures/TimeStats_SampleSize_New.pdf", format='pdf', bbox_inches='tight')
+    plt.savefig("Figures/TimeStats_SampleSize.pdf", format='pdf', bbox_inches='tight')
     # plt.show()
 
 def plot_time_stats_LayerSize(file_name):
@@ -65,17 +69,17 @@ def plot_time_stats_LayerSize(file_name):
     plt.plot(rgb['ExtraLayers'], rgb['Time'], marker='o', label='RGB')
     # plt.plot(grayscale['ExtraLayers'], grayscale['Time'], marker='s', label='Grayscale')
 
-    plt.xlabel('# Layers')
-    plt.ylabel('Average Time (seconds)')
-    plt.legend()
+    plt.xlabel('# Layers', fontsize=14)
+    plt.ylabel('Average Time (seconds)', fontsize=14)
+    plt.legend(fontsize=14)
     # plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.yticks(np.arange(0, 100, 10))
+    plt.yticks(np.arange(0, 100, 10), fontsize=12)
+    plt.xticks(fontsize=12)
     plt.savefig("Figures/TimeStats_LayerSize.pdf", format='pdf', bbox_inches='tight')
     # plt.show()
 
 if __name__ == "__main__":
-    # plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
+    plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
     plot_time_stats_SampleSize("Stats/TimeStats_SampleSize.csv")
     plot_time_stats_LayerSize("Stats/TimeStats_LayerSize.csv")
-    
