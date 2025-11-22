@@ -28,7 +28,7 @@ def plot_time_stats_NodeSize(file_name):
     plt.savefig("Figures/TimeStats_NodeSize.pdf", format='pdf', bbox_inches='tight')
     # plt.show()
 
-def plot_time_stats_SampleSize(file_name):
+def plot_time_stats_SampleSize(file_name, method):
     df = pd.read_csv(file_name)
     df['Time'] = df['Time'].astype(float)
 
@@ -50,7 +50,7 @@ def plot_time_stats_SampleSize(file_name):
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.tight_layout()
-    plt.savefig("Figures/TimeStats_SampleSize.pdf", format='pdf', bbox_inches='tight')
+    plt.savefig(f"Figures/TimeStats_SampleSize_{method}.pdf", format='pdf', bbox_inches='tight')
     # plt.show()
 
 def plot_time_stats_LayerSize(file_name):
@@ -81,5 +81,6 @@ def plot_time_stats_LayerSize(file_name):
 
 if __name__ == "__main__":
     plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
-    plot_time_stats_SampleSize("Stats/TimeStats_SampleSize.csv")
+    plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAB.csv", "RAB")
+    plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAF.csv", "RAF")
     plot_time_stats_LayerSize("Stats/TimeStats_LayerSize.csv")
