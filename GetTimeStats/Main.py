@@ -214,7 +214,7 @@ if __name__ == "__main__":
     val_size = len(test_dataset)
     total_size = train_size + val_size
 
-    test = "samples" # "nodes" or "samples" or "layers"
+    test = "else" # "nodes" or "samples" or "layers"
 
     if test == "nodes":
         ol_sizes = [16, 32, 64, 128, 256, 512, 1024]
@@ -402,3 +402,68 @@ if __name__ == "__main__":
                 else:
                     with open("Stats/TimeStats_ExtraLayers.txt", "a") as f:
                         f.write(f"{dataset_name},{el},Run{i},{method},{time1 - time0}\n")
+    
+    else:
+        total_run = 1
+        for i in range(1, total_run + 1):
+            if dataset_name == "MNIST":
+                ols = 16
+            elif dataset_name == "CIFAR10":
+                ols = 128
+            model_t, model_g = GetModel(dataset_name, device=device, output_layer_size=ols)
+        
+            start_experiment = True if i == 1 else False
+
+            rng = np.random.default_rng(seed=i*42)
+            all_indices = rng.permutation(total_size)
+
+            new_train_indices = all_indices[:train_size]
+            new_val_indices = all_indices[train_size:]
+
+            train_subset = Subset(full_dataset, new_train_indices)
+            val_subset = Subset(full_dataset, new_val_indices)
+
+            train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
+            val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
+            learningRate = 0.01
+            
+            if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
+                TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
+                
+                TM.run()
+            
+            if save_checkpoint == "Y":
+                continue
+            
+            TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
+
+            if device.type == 'cuda':
+                checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
+            else:
+                checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
+            
+            TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
+            TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+
+            TM_after_g.save_fc_inputs("Train")
+            TM_after_g.save_fc_inputs("Val")
+
+            # n_samples_gurobis = [100, 500, 1000, 5000, 10000]
+            n_samples_gurobis = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
+            for n_samples_gurobi in n_samples_gurobis:
+                time0 = time.time()
+                if method == "RAB":
+                    Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
+                elif method == "RAF":
+                    Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
+                time1 = time.time()
+                
+                
+                if Gurobi_output is None:
+                    print("Gurobi did not find a solution.")
+                    if total_run < 10:
+                        total_run += 1
+                else:
+                    with open("Stats/TimeStats_SampleSize.txt", "a") as f:
+                        f.write(f"{dataset_name},{n_samples_gurobi},Run{i},{method},{time1 - time0}\n")
