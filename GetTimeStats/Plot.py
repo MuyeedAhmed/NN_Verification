@@ -50,7 +50,7 @@ def plot_time_stats_SampleSize(file_name, method):
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.tight_layout()
-    plt.savefig(f"Figures/TimeStats_SampleSize_{method}.pdf", format='pdf', bbox_inches='tight')
+    plt.savefig(f"Figures/{file_name.split('/')[1].split('.')[0]}_{method}.pdf", format='pdf', bbox_inches='tight')
     # plt.show()
 
 def plot_time_stats_LayerSize(file_name):
@@ -80,7 +80,13 @@ def plot_time_stats_LayerSize(file_name):
     # plt.show()
 
 if __name__ == "__main__":
-    plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
-    plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAB.csv", "RAB")
+    # plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
+    # plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAB.csv", "RAB")
     plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAF.csv", "RAF")
-    plot_time_stats_LayerSize("Stats/TimeStats_LayerSize.csv")
+    # plot_time_stats_LayerSize("Stats/TimeStats_LayerSize.csv")
+
+
+    # plot_time_stats_SampleSize("Stats/TimeStats_S_Louise.csv", "RAF")
+    # plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma.csv", "RAF")
+    # plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_Small.csv", "RAF")
+
