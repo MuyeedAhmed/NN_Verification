@@ -13,7 +13,7 @@ import time
 import random
 import numpy as np
 from TrainModel import TrainModel
-from medmnist import PathMNIST
+
 
 from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net, VGG_office31, VGG_var_layers
 
@@ -426,7 +426,7 @@ if __name__ == "__main__":
             train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
             val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
             learningRate = 0.01
-            
+
             if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
                 TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
                 

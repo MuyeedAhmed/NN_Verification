@@ -13,7 +13,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-from medmnist import PathMNIST
+
 
 from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG
 
