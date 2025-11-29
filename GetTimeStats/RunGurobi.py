@@ -18,7 +18,7 @@ import numpy as np
 from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG
 
 
-timeLimit = 3600
+timeLimit = 7200
 
 
 
@@ -401,14 +401,7 @@ def GurobiFlip_Any(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misc
             GurobiFlip_Any(dataset_name, store_file_name, run_id, n=n, tol=tol+5e-6, misclassification_count=misclassification_count)
 
         print(f"Total misclassified samples: {misclassified}")
-        with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv", "a") as f:
-            f.write(f"-----\nRun ID: {run_id}\n\n")
-            f.write("-------Weight/Bias Offsets-------\n")
-            f.write(f"W2 offsets: {np.sum(np.abs(W2_off))}\n")
-            f.write(f"b2 offsets: {np.sum(np.abs(b2_off))}\n")
-            f.write(f"Objective value: {gurobi_model.ObjVal}\n")
-            f.write("------------------------------------\n\n")
-            f.write(f"Misclassified: {misclassified}\n")
+        
         
         X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
         labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
@@ -416,23 +409,27 @@ def GurobiFlip_Any(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misc
         Z1_val = np.maximum(0, X_val @ W1.T + b1)
         Z2_val_pred = Z1_val @ W2_new.T + b2_new
         predictions_val = np.argmax(Z2_val_pred, axis=1)
-        accuracy_val = np.sum(predictions_val == labels_val) / len(labels_val) * 100
         
+        accuracy_val = np.sum(predictions_val == labels_val) / len(labels_val) * 100
+        A1_full = np.maximum(0, X_full @ W1.T + b1)
+        Z2_pred_gurobi_full = A1_full @ W2_new.T + b2_new
+        predictions_gurobi_full = np.argmax(Z2_pred_gurobi_full, axis=1)
+        misclassified_mask_full = predictions_gurobi_full != pred_full
+        misclassified_full = np.sum(misclassified_mask_full)
+        accuracy_gurobi_full = np.sum(predictions_gurobi_full == labels_full)  / len(labels_full) * 100
+
         with open(store_file_name, "a") as f:
             f.write(f"{run_id},GurobiComplete_Train,-1,-1,{accuracy_gurobi}\n")
             f.write(f"{run_id},GurobiComplete_Val,-1,-1,{accuracy_val}\n")
 
-        if n != -1:
-            A1_full = np.maximum(0, X_full @ W1.T + b1)
-            Z2_pred_gurobi_full = A1_full @ W2_new.T + b2_new
-            predictions_gurobi_full = np.argmax(Z2_pred_gurobi_full, axis=1)
-            misclassified_mask_full = predictions_gurobi_full != pred_full
-            misclassified_full = np.sum(misclassified_mask_full)
-            accuracy_gurobi_full = np.sum(predictions_gurobi_full == labels_full)  / len(labels_full) * 100
+        if os.path.exists(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv") == False:
+            with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv", "w") as f:
+                f.write("RunID,W2_offset_sum,b2_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,GlobalMisclassified\n")
+        else:
             with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv", "a") as f:
-                f.write(f"Total samples in full dataset: {X_full_size}\n")
-                f.write(f"Total misclassified samples in full dataset: {misclassified_full}\n")
-                f.write(f"Accuracy on full dataset: {accuracy_gurobi_full}\n")
+                f.write(f"{run_id},{np.sum(np.abs(W2_off))},{np.sum(np.abs(b2_off))},{gurobi_model.ObjVal},{n},{misclassified},{accuracy_gurobi_full},{misclassified_full}\n")
+        
+        
 
         return [W2_new, b2_new]
     else:
