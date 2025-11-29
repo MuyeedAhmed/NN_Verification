@@ -18,7 +18,7 @@ import numpy as np
 from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG
 
 
-timeLimit = 7200
+timeLimit = 10800
 
 
 
@@ -425,9 +425,9 @@ def GurobiFlip_Any(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misc
         if os.path.exists(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv") == False:
             with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv", "w") as f:
                 f.write("RunID,W2_offset_sum,b2_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,GlobalMisclassified\n")
-        else:
-            with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv", "a") as f:
-                f.write(f"{run_id},{np.sum(np.abs(W2_off))},{np.sum(np.abs(b2_off))},{gurobi_model.ObjVal},{n},{misclassified},{accuracy_gurobi_full},{misclassified_full}\n")
+
+        with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv", "a") as f:
+            f.write(f"{run_id},{np.sum(np.abs(W2_off))},{np.sum(np.abs(b2_off))},{gurobi_model.ObjVal},{n},{misclassified},{accuracy_gurobi_full},{misclassified_full}\n")
         
         
 
