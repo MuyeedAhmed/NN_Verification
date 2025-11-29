@@ -404,7 +404,7 @@ if __name__ == "__main__":
                         f.write(f"{dataset_name},{el},Run{i},{method},{time1 - time0}\n")
     
     else:
-        total_run = 1
+        total_run = 5
         for i in range(1, total_run + 1):
             if dataset_name == "MNIST":
                 ols = 16
@@ -450,7 +450,7 @@ if __name__ == "__main__":
             TM_after_g.save_fc_inputs("Val")
 
             # n_samples_gurobis = [100, 500, 1000, 5000, 10000]
-            n_samples_gurobis = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
+            n_samples_gurobis = [12500, 15000, 17500, 20000, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
             for n_samples_gurobi in n_samples_gurobis:
                 time0 = time.time()
                 if method == "RAB":
