@@ -199,10 +199,10 @@ if __name__ == "__main__":
     if save_checkpoint == "N":
         from RunGurobi import GurobiBorder, GurobiFlip_Any, GurobiFlip_Correct
         
-    if dataset_name == "Food101":
-        initEpoch = 400
-        G_epoch = 200
-        # optimize = "SGD"
+    # if dataset_name == "Food101":
+    #     initEpoch = 400
+    #     G_epoch = 200
+    #     # optimize = "SGD"
 
     if method == "RAB":
         n_samples_gurobi = -1
@@ -437,7 +437,8 @@ if __name__ == "__main__":
                 train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
                 val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
                 learningRate = 0.01
-                
+                if dataset_name == "Food101":
+                    learningRate = 0.05
                 TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
                 
                 TM.run()
