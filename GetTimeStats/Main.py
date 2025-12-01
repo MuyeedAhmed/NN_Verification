@@ -45,8 +45,8 @@ def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, ex
         model_t = VGG(num_classes=9).to(device)
         model_g = VGG(num_classes=9).to(device)
     elif dataset_name == "Food101":
-            model_t = VGG(num_classes=num_classes).to(device)
-            model_g = VGG(num_classes=num_classes).to(device)
+            model_t = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
+            model_g = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
     elif dataset_name == "USPS":
         model_t = CNN_USPS(num_classes=10).to(device)
         model_g = CNN_USPS(num_classes=10).to(device)
@@ -409,7 +409,7 @@ if __name__ == "__main__":
         classCounts = [5, 6, 7, 8, 9, 10, 15, 20]
         if dataset_name == "MNIST":
             ols = 16
-        elif dataset_name == "CIFAR10":
+        elif dataset_name == "CIFAR10" or dataset_name == "Food101":
             ols = 128
         total_run = 5
         for i in range(1, total_run + 1):
@@ -481,6 +481,8 @@ if __name__ == "__main__":
                 ols = 16
             elif dataset_name == "CIFAR10":
                 ols = 128
+            elif dataset_name == "Food101":
+                ols = 256
             model_t, model_g = GetModel(dataset_name, device=device, output_layer_size=ols)
         
             start_experiment = True if i == 1 else False
