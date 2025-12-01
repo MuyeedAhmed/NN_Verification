@@ -45,8 +45,8 @@ def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, ex
         model_t = VGG(num_classes=9).to(device)
         model_g = VGG(num_classes=9).to(device)
     elif dataset_name == "Food101":
-            model_t = VGG(num_classes=10).to(device)
-            model_g = VGG(num_classes=10).to(device)
+            model_t = VGG(num_classes=num_classes).to(device)
+            model_g = VGG(num_classes=num_classes).to(device)
     elif dataset_name == "USPS":
         model_t = CNN_USPS(num_classes=10).to(device)
         model_g = CNN_USPS(num_classes=10).to(device)
@@ -59,7 +59,7 @@ def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, ex
 
     return model_t, model_g
 
-def GetDataset(dataset_name, root_dir='./data', device=None):
+def GetDataset(dataset_name, root_dir='./data', device=None, classCount=None):
     if dataset_name == "MNIST":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         train_dataset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform)
@@ -107,7 +107,10 @@ def GetDataset(dataset_name, root_dir='./data', device=None):
         test_dataset = torchvision.datasets.Food101(root="./data", split="test", download=True, transform=transform)
         all_classes = train_dataset.classes
         random.seed(42)
-        selected_classes = random.sample(all_classes, 10)
+        if classCount is not None:
+            selected_classes = random.sample(all_classes, classCount)
+        else:
+            selected_classes = random.sample(all_classes, 10)
 
         def fast_filter_food101(dataset, selected_classes):
             class_names = dataset.classes
@@ -402,7 +405,75 @@ if __name__ == "__main__":
                 else:
                     with open("Stats/TimeStats_ExtraLayers.txt", "a") as f:
                         f.write(f"{dataset_name},{el},Run{i},{method},{time1 - time0}\n")
-    
+    elif test == "classes":
+        classCounts = [5, 6, 7, 8, 9, 10, 15, 20]
+        if dataset_name == "MNIST":
+            ols = 16
+        elif dataset_name == "CIFAR10":
+            ols = 128
+        total_run = 5
+        for i in range(1, total_run + 1):
+            for cc in classCounts:
+                train_dataset, test_dataset = GetDataset(dataset_name, classCount=cc)
+
+                full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
+                train_size = len(train_dataset)
+                val_size = len(test_dataset)
+                total_size = train_size + val_size
+
+                model_t, model_g = GetModel(dataset_name, device=device, output_layer_size=ols, num_classes=cc)
+            
+                start_experiment = True if i == 1 else False
+
+                rng = np.random.default_rng(seed=i*42)
+                all_indices = rng.permutation(total_size)
+
+                new_train_indices = all_indices[:train_size]
+                new_val_indices = all_indices[train_size:]
+
+                train_subset = Subset(full_dataset, new_train_indices)
+                val_subset = Subset(full_dataset, new_val_indices)
+
+                train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
+                val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
+                learningRate = 0.01
+                
+                TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
+                
+                TM.run()
+                
+                if save_checkpoint == "Y":
+                    continue
+                
+                TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
+
+                if device.type == 'cuda':
+                    checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
+                else:
+                    checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
+                
+                TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
+                TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+                TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+                print(f"Loaded model for run {i} from checkpoint.")
+                TM_after_g.save_fc_inputs("Train")
+                TM_after_g.save_fc_inputs("Val")
+                print(f"Saved FC inputs for run {i}.")
+                time0 = time.time()
+                if method == "RAB":
+                    Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
+                elif method == "RAF":
+                    Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
+                time1 = time.time()
+                
+                
+                if Gurobi_output is None:
+                    print("Gurobi did not find a solution.")
+                    # if total_run < 10:
+                    #     total_run += 1
+                else:
+                    with open("Stats/TimeStats_Classes.txt", "a") as f:
+                        f.write(f"{dataset_name},{cc},Run{i},{method},{time1 - time0}\n")
     else:
         total_run = 5
         for i in range(1, total_run + 1):
