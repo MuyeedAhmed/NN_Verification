@@ -406,7 +406,7 @@ if __name__ == "__main__":
                     with open("Stats/TimeStats_ExtraLayers.txt", "a") as f:
                         f.write(f"{dataset_name},{el},Run{i},{method},{time1 - time0}\n")
     elif test == "classes":
-        classCounts = [5, 6, 7, 8, 9, 10, 15, 20]
+        classCounts = [5, 10, 15, 20, 25]
         if dataset_name == "MNIST":
             ols = 16
         elif dataset_name == "CIFAR10" or dataset_name == "Food101":
