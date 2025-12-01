@@ -217,7 +217,7 @@ if __name__ == "__main__":
     val_size = len(test_dataset)
     total_size = train_size + val_size
 
-    test = "else" # "nodes" or "samples" or "layers"
+    test = "classes" # "nodes" or "samples" or "layers"
 
     if test == "nodes":
         ol_sizes = [16, 32, 64, 128, 256, 512, 1024]
