@@ -27,8 +27,8 @@ def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, ex
             model_t = VGG_var_layers(num_classes=10, output_layer_size=output_layer_size, extra_conv_layers=extra_conv_layers).to(device)
             model_g = VGG_var_layers(num_classes=10, output_layer_size=output_layer_size, extra_conv_layers=extra_conv_layers).to(device)
         else:
-            model_t = VGG(num_classes=10, output_layer_size=output_layer_size).to(device)
-            model_g = VGG(num_classes=10, output_layer_size=output_layer_size).to(device)
+            model_t = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
+            model_g = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
     elif dataset_name == "FashionMNIST":
         model_t = NIN_MNIST(num_classes=10).to(device)
         model_g = NIN_MNIST(num_classes=10).to(device)
@@ -69,6 +69,24 @@ def GetDataset(dataset_name, root_dir='./data', device=None, classCount=None):
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))])
         train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
         test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
+        all_classes = train_dataset.classes
+        random.seed(42)
+        if classCount is not None:
+            selected_classes = random.sample(all_classes, classCount)
+        else:
+            selected_classes = random.sample(all_classes, 10)
+        def fast_filter(dataset, selected_classes):
+            class_names = dataset.classes
+            label_names = [class_names[label] for label in dataset.targets]
+            selected_indices = [i for i, name in enumerate(label_names) if name in selected_classes]
+            return Subset(dataset, selected_indices)
+
+        class_map = {cls_name: i for i, cls_name in enumerate(selected_classes)}
+        train_filtered = fast_filter(train_dataset, selected_classes)
+        test_filtered = fast_filter(test_dataset, selected_classes)
+
+        train_dataset = RelabelSubset(train_filtered, class_map, train_dataset)
+        test_dataset = RelabelSubset(test_filtered, class_map, test_dataset)
 
     elif dataset_name == "FashionMNIST":
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
@@ -189,8 +207,8 @@ if __name__ == "__main__":
     os.makedirs("Stats/RAF_CrossVal_All", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    initEpoch = 50
-    G_epoch = 1
+    initEpoch = 1
+    G_epoch = 0
     optimize = "Adam"
 
     method = sys.argv[1] if len(sys.argv) > 1 else "RAB"
@@ -406,7 +424,7 @@ if __name__ == "__main__":
                     with open("Stats/TimeStats_ExtraLayers.txt", "a") as f:
                         f.write(f"{dataset_name},{el},Run{i},{method},{time1 - time0}\n")
     elif test == "classes":
-        classCounts = [5, 10, 15, 20, 25]
+        classCounts = [2, 4, 6, 8, 10]
         if dataset_name == "MNIST":
             ols = 16
         elif dataset_name == "CIFAR10" or dataset_name == "Food101":
