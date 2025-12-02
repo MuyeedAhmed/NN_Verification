@@ -207,8 +207,8 @@ if __name__ == "__main__":
     os.makedirs("Stats/RAF_CrossVal_All", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    initEpoch = 1
-    G_epoch = 0
+    initEpoch = 50
+    G_epoch = 1
     optimize = "Adam"
 
     method = sys.argv[1] if len(sys.argv) > 1 else "RAB"
