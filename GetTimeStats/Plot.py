@@ -65,7 +65,10 @@ def plot_time_stats_SampleSize(file_name, method):
             fontsize=14
         )
     plt.yticks(fontsize=14)
-    plt.title("(a) STC", fontsize=18)
+    if method == "RAB":
+        plt.title("(a) STC", fontsize=18)
+    else:
+        plt.title("(b) CmC", fontsize=18)
     plt.tight_layout()
     plt.savefig(f"Figures/{file_name.split('/')[1].split('.')[0]}_{method}.pdf", format='pdf', bbox_inches='tight')
     # plt.show()
@@ -126,17 +129,44 @@ def plot_time_stats_LayerSize(file_name):
     plt.savefig("Figures/TimeStats_LayerSize.pdf", format='pdf', bbox_inches='tight')
     # plt.show()
 
+def plot_GlobalMisclassified(file_name):
+    df = pd.read_csv(file_name)
+    # df = df.sort_values(by="n")
+
+    plt.figure(figsize=(8,4))
+
+    for run_id, group in df.groupby("RunID"):
+        plt.plot(
+            group["n"],
+            group["GlobalMisclassified"],
+            marker='o',
+            label=f"Run {run_id}"
+        )
+
+    plt.xlabel("Subset Sizes", fontsize=16)
+    plt.ylabel("Total Misclassified Samples", fontsize=16)
+    plt.legend(fontsize=16)
+    plt.xticks(
+        ticks=[2000, 4000, 6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000],
+        labels=["2k", "4k", "6k", "8k", "10k", "12k", "14k", "16k", "18k", "20k"],
+        fontsize=14
+    )
+    plt.yticks(fontsize=14)
+    plt.tight_layout()
+    plt.savefig("Figures/GlobalFlips.pdf", format='pdf', bbox_inches='tight')
+
+
 if __name__ == "__main__":
-    # plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
-    plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAB.csv", "RAB")
-    plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_20k.csv", "RAF")
+    # # plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
+    # plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAB.csv", "RAB")
+    # plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_20k.csv", "RAF")
 
-    # plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAF.csv", "RAF")
-    # plot_time_stats_LayerSize("Stats/TimeStats_LayerSize.csv")
-
-
-    # plot_time_stats_SampleSize("Stats/TimeStats_S_Louise.csv", "RAF")
-    TimeVSample_1st_Best("Stats/TimeStats_S_Thelma_20k_1s.csv", "Stats/TimeStats_S_Thelma_20k.csv", "RAF")
-    # plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_Small.csv", "RAF")
+    # # plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAF.csv", "RAF")
+    # # plot_time_stats_LayerSize("Stats/TimeStats_LayerSize.csv")
 
 
+    # # plot_time_stats_SampleSize("Stats/TimeStats_S_Louise.csv", "RAF")
+    # TimeVSample_1st_Best("Stats/TimeStats_S_Thelma_20k_1s.csv", "Stats/TimeStats_S_Thelma_20k.csv", "RAF")
+    # # plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_Small.csv", "RAF")
+
+    plot_GlobalMisclassified("Stats/GlobalFlips.csv")
