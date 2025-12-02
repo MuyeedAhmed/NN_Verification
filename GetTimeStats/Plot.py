@@ -97,7 +97,7 @@ def TimeVSample_1st_Best(file_name1, file_name2, method):
         fontsize=14
     )
     plt.yticks(fontsize=14)
-    plt.title("(b) CmC", fontsize=18)
+    # plt.title("(b) CmC", fontsize=18)
 
     plt.tight_layout()
     plt.savefig(f"Figures/FirstSolutionVSBest.pdf", format='pdf', bbox_inches='tight')
@@ -166,7 +166,7 @@ if __name__ == "__main__":
 
 
     # # plot_time_stats_SampleSize("Stats/TimeStats_S_Louise.csv", "RAF")
-    # TimeVSample_1st_Best("Stats/TimeStats_S_Thelma_20k_1s.csv", "Stats/TimeStats_S_Thelma_20k.csv", "RAF")
+    TimeVSample_1st_Best("Stats/TimeStats_S_Thelma_20k_1s.csv", "Stats/TimeStats_S_Thelma_20k.csv", "RAF")
     # # plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_Small.csv", "RAF")
 
     plot_GlobalMisclassified("Stats/GlobalFlips.csv")
