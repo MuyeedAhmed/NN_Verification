@@ -96,6 +96,39 @@ def plot_time_stats_SampleSize(file_name, method):
     plt.tight_layout()
     plt.savefig(f"Figures/{file_name.split('/')[1].split('.')[0]}_{method}.pdf", format='pdf', bbox_inches='tight')
 
+def plotyFit(file_name, method):
+    df = pd.read_csv(file_name)
+    df['Time'] = df['Time'].astype(float)
+    print(df)
+    x = df['Sample_Size'].values
+    y = df['Time'].values
+
+    logx = np.log(x)
+    logy = np.log(y)
+
+    p, c = np.polyfit(logx, logy, 1)
+    a = np.exp(c)
+
+    print("Best exponent p =", p)
+    print("Coefficient a =", a)
+
+    x_dense = np.linspace(min(x), max(x), 500)
+    y_pred = a * x_dense**p
+
+    plt.figure(figsize=(8,5))
+    plt.scatter(x, y, label="Actual Data", color="blue")
+    plt.plot(x_dense, y_pred, label="Regression", linewidth=2, color="red")
+
+    plt.xlabel("N")
+    plt.ylabel("Time")
+    plt.legend()
+    plt.grid(True, linestyle="--", alpha=0.5)
+
+    plt.show()
+
+
+
+
 def TimeVSample_1st_Best(file_name1, file_name2, method):
     df1 = pd.read_csv(file_name1)
     df2 = pd.read_csv(file_name2)
@@ -180,18 +213,20 @@ def plot_GlobalMisclassified(file_name):
 
 
 if __name__ == "__main__":
-    plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
+    # plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
     # plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAB.csv", "RAB")
     # plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_20k.csv", "RAF")
 
     # # plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAF.csv", "RAF")
-    plot_time_stats_LayerSize("Stats/TimeStats_LayerSize.csv")
+    # plot_time_stats_LayerSize("Stats/TimeStats_LayerSize.csv")
 
 
     # # plot_time_stats_SampleSize("Stats/TimeStats_S_Louise.csv", "RAF")
-    TimeVSample_1st_Best("Stats/TimeStats_S_Thelma_20k_1s.csv", "Stats/TimeStats_S_Thelma_20k.csv", "RAF")
+    # TimeVSample_1st_Best("Stats/TimeStats_S_Thelma_20k_1s.csv", "Stats/TimeStats_S_Thelma_20k.csv", "RAF") ## Remove MNIST From stats
     # # plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_Small.csv", "RAF")
 
     # plot_GlobalMisclassified("Stats/GlobalFlips.csv")
 
     # plot_time_stats_Classes("Stats/TimeStats_Classes.csv")
+    plotyFit("Stats/TimeStats_S_Thelma_20k_1s.csv", "RAF")
+    plotyFit("Stats/TimeStats_S_Thelma_20k.csv", "RAF")
