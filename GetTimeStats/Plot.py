@@ -99,32 +99,34 @@ def plot_time_stats_SampleSize(file_name, method):
 def plotyFit(file_name, method):
     df = pd.read_csv(file_name)
     df['Time'] = df['Time'].astype(float)
-    print(df)
+
+    df = df.groupby(['Sample_Size'])['Time'].mean().reset_index()
+
+
     x = df['Sample_Size'].values
     y = df['Time'].values
-
     logx = np.log(x)
     logy = np.log(y)
 
     p, c = np.polyfit(logx, logy, 1)
     a = np.exp(c)
 
-    print("Best exponent p =", p)
+    print("Exponent p =", p)
     print("Coefficient a =", a)
 
     x_dense = np.linspace(min(x), max(x), 500)
     y_pred = a * x_dense**p
 
     plt.figure(figsize=(8,5))
-    plt.scatter(x, y, label="Actual Data", color="blue")
+    plt.scatter(x, y, label="CIFAR10", color="blue")
     plt.plot(x_dense, y_pred, label="Regression", linewidth=2, color="red")
 
     plt.xlabel("N")
     plt.ylabel("Time")
     plt.legend()
-    plt.grid(True, linestyle="--", alpha=0.5)
-
-    plt.show()
+    plt.tight_layout()
+    plt.savefig(f"Figures/Curvefit_{file_name.split('/')[1].split('.')[0]}.pdf", format='pdf', bbox_inches='tight')
+    # plt.show()
 
 
 
