@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import numpy as np
+from scipy.optimize import curve_fit
 
 
 def plot_time_stats_NodeSize(file_name):
@@ -96,38 +97,6 @@ def plot_time_stats_SampleSize(file_name, method):
     plt.tight_layout()
     plt.savefig(f"Figures/{file_name.split('/')[1].split('.')[0]}_{method}.pdf", format='pdf', bbox_inches='tight')
 
-def plotyFit(file_name, method):
-    df = pd.read_csv(file_name)
-    df['Time'] = df['Time'].astype(float)
-
-    df = df.groupby(['Sample_Size'])['Time'].mean().reset_index()
-
-
-    x = df['Sample_Size'].values
-    y = df['Time'].values
-    logx = np.log(x)
-    logy = np.log(y)
-
-    p, c = np.polyfit(logx, logy, 1)
-    a = np.exp(c)
-
-    print("Exponent p =", p)
-    print("Coefficient a =", a)
-
-    x_dense = np.linspace(min(x), max(x), 500)
-    y_pred = a * x_dense**p
-
-    plt.figure(figsize=(8,5))
-    plt.scatter(x, y, label="CIFAR10", color="blue")
-    plt.plot(x_dense, y_pred, label="Regression", linewidth=2, color="red")
-
-    plt.xlabel("N")
-    plt.ylabel("Time")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(f"Figures/Curvefit_{file_name.split('/')[1].split('.')[0]}.pdf", format='pdf', bbox_inches='tight')
-    # plt.show()
-
 
 
 
@@ -214,6 +183,60 @@ def plot_GlobalMisclassified(file_name):
     plt.savefig("Figures/GlobalFlips.pdf", format='pdf', bbox_inches='tight')
 
 
+
+
+def polyFit(file_name, method):
+    df = pd.read_csv(file_name)
+    df = df[df['Dataset']!="MNIST"]
+    df['Time'] = df['Time'].astype(float)
+
+    df = df.groupby(['Sample_Size'])['Time'].mean().reset_index()
+
+
+    x = df['Sample_Size'].values
+    y = df['Time'].values
+    logx = np.log(x)
+    logy = np.log(y)
+
+    p, c = np.polyfit(logx, logy, 1)
+    a = np.exp(c)
+
+    print("Exponent p =", p)
+    print("Coefficient a =", a)
+
+    x_dense = np.linspace(min(x), max(x), 500)
+    y_pred = a * x_dense**p
+
+    # Curve Fit
+    def model(x, a, p):
+        return a * np.power(x, p)
+    p0 = (7, 2)
+
+    params, cov = curve_fit(model, x, y, p0=p0)
+    a_hat, p_hat = params
+    print("a_hat =", a_hat)
+    print("p_hat =", p_hat)
+    x_smooth = np.linspace(np.min(x), np.max(x), 500)
+    y_smooth = model(x_smooth, a_hat, p_hat)
+
+    
+    plt.figure(figsize=(8,5))
+    plt.scatter(x, y, label="CIFAR10", color="blue")
+    # plt.plot(x_dense, y_pred, label="Regression", linewidth=2, color="red")
+    plt.plot(x_smooth, y_smooth, color="orange", linewidth=2, label=f"y = {a_hat:.4f} * x^{p_hat:.4f}")
+
+    plt.xlabel("N")
+    plt.ylabel("Time")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"Figures/Curvefit_{file_name.split('/')[1].split('.')[0]}.pdf", format='pdf', bbox_inches='tight')
+    # plt.show()
+
+
+
+
+
+
 if __name__ == "__main__":
     # plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
     # plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAB.csv", "RAB")
@@ -230,5 +253,5 @@ if __name__ == "__main__":
     # plot_GlobalMisclassified("Stats/GlobalFlips.csv")
 
     # plot_time_stats_Classes("Stats/TimeStats_Classes.csv")
-    plotyFit("Stats/TimeStats_S_Thelma_20k_1s.csv", "RAF")
-    plotyFit("Stats/TimeStats_S_Thelma_20k.csv", "RAF")
+    polyFit("Stats/TimeStats_S_Thelma_20k_1s.csv", "RAF")
+    polyFit("Stats/TimeStats_S_Thelma_20k.csv", "RAF")
