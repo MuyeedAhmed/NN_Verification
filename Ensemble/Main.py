@@ -327,7 +327,7 @@ if __name__ == "__main__":
         TM.run()
     
     if save_checkpoint == "Y":
-        return
+        exit()
     
     TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
 
