@@ -191,13 +191,31 @@ def get_loaders_from_folder(root_dir, image_size=(224, 224), val_split=0.2, seed
     return train_dataset, val_dataset
 
 
+@torch.no_grad()
+def evaluate_loader(model, loader, device):
+    model.eval()
+    correct = 0
+    total = 0
+    loss_sum = 0.0
+    import torch.nn.functional as F
+    for x, y in loader:
+        x = x.to(device)
+        y = y.to(device)
+        logits = model(x)
+        loss = F.cross_entropy(logits, y, reduction="sum")
+        loss_sum += loss.item()
+        preds = logits.argmax(dim=1)
+        correct += (preds == y).sum().item()
+        total += y.numel()
+    return loss_sum / total, correct / total
+
 if __name__ == "__main__":
     os.makedirs("Stats/RAB_CrossVal_All", exist_ok=True)
     os.makedirs("Stats/RAF_CrossVal_All", exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
-    initEpoch = 50
-    G_epoch = 1
+    initEpoch = 300
+    G_epoch = 0
     optimize = "Adam"
 
     method = sys.argv[1] if len(sys.argv) > 1 else "RAB"
@@ -210,6 +228,12 @@ if __name__ == "__main__":
     #     initEpoch = 400
     #     G_epoch = 200
     #     # optimize = "SGD"
+    if dataset_name == "MNIST":
+        ols = 16
+    elif dataset_name == "CIFAR10":
+        ols = 128
+    elif dataset_name == "Food101":
+        ols = 256
 
     if method == "RAB":
         n_samples_gurobi = -1
@@ -220,71 +244,117 @@ if __name__ == "__main__":
     train_dataset, test_dataset = GetDataset(dataset_name)
 
     full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
-    train_size = len(train_dataset)
-    val_size = len(test_dataset)
+    train_size = int(len(train_dataset) * 0.8)
+    val_size = int(len(train_dataset) * 0.2)
     total_size = train_size + val_size
 
+    i = 1
+    model_t, model_g = GetModel(dataset_name, device=device, output_layer_size=ols)
+
+    rng = np.random.default_rng(seed=i*42)
+    all_indices = rng.permutation(total_size)
+
+    new_train_indices = all_indices[:train_size]
+    new_val_indices = all_indices[train_size:]
+
+    train_subset = Subset(train_dataset, new_train_indices)
+    val_subset = Subset(train_dataset, new_val_indices)
+
+    train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
+    val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
+    learningRate = 0.01
+
+    if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
+        TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=True)
+        TM.run()
     
-    total_run = 5
-    for i in range(1, total_run + 1):
-        if dataset_name == "MNIST":
-            ols = 16
-        elif dataset_name == "CIFAR10":
-            ols = 128
-        elif dataset_name == "Food101":
-            ols = 256
-        model_t, model_g = GetModel(dataset_name, device=device, output_layer_size=ols)
+    if save_checkpoint == "Y":
+        continue
     
-        start_experiment = True if i == 1 else False
+    TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
 
-        rng = np.random.default_rng(seed=i*42)
-        all_indices = rng.permutation(total_size)
+    if device.type == 'cuda':
+        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
+    else:
+        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
+    
+    TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
+    TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+    print(f"Loaded model for run {i} from checkpoint.")
 
-        new_train_indices = all_indices[:train_size]
-        new_val_indices = all_indices[train_size:]
+    TM_after_g.save_fc_inputs("Train")
+    TM_after_g.save_fc_inputs("Val")
 
-        train_subset = Subset(full_dataset, new_train_indices)
-        val_subset = Subset(full_dataset, new_val_indices)
-
-        train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
-        val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
-        learningRate = 0.01
-
-        if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
-            TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=start_experiment)
-            
-            TM.run()
-        
-        if save_checkpoint == "Y":
-            continue
-        
-        TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
-
-        if device.type == 'cuda':
-            checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
-        else:
-            checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
-        
-        TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
-        TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-
-        TM_after_g.save_fc_inputs("Train")
-        TM_after_g.save_fc_inputs("Val")
-
-        
+    print(f"Saved FC inputs for run {i}.")
+    
+    results = []
+    
+    for candidate in range(20):
         time0 = time.time()
-        if method == "RAB":
-            Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
-        elif method == "RAF":
-            Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count)
+        # if method == "RAB":
+        #     Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
+        # elif method == "RAF":
+
+        Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
         time1 = time.time()
-        
         
         if Gurobi_output is None:
             print("Gurobi did not find a solution.")
-            if total_run < 10:
-                total_run += 1
-        else:
-            with open("Stats/TimeStats_SampleSize.txt", "a") as f:
-                f.write(f"{dataset_name},{n_samples_gurobi},Run{i},{method},{time1 - time0}\n")
+            continue
+
+        W2_new, b2_new = Gurobi_output
+        TM_after_g.delete_fc_inputs()
+        new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
+        new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
+        with torch.no_grad():
+            TM_after_g.model.classifier.weight.copy_(new_W)
+            TM_after_g.model.classifier.bias.copy_(new_b)
+        checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{candidate}.pth"
+        torch.save({
+            'epoch': TM_after_g.num_epochs,
+            'model_state_dict': TM_after_g.model.state_dict(),
+            'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
+            'scheduler_state_dict': TM_after_g.scheduler.state_dict(),
+            'loss': TM_after_g.loss.item()
+        }, checkpoint_dir)
+        
+        train_loss, train_acc = TM_after_g.evaluate("Train")
+        val_loss, val_acc = TM_after_g.evaluate("Val")
+        test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+
+        with open(TM_after_g.log_file, "a") as f:
+            f.write(f"{i},{candidate},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
+            f.write(f"{i},{candidate},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
+            f.write(f"{i},{candidate},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
+
+        results.append({
+            "Candidate": candidate,
+            "Checkpoint": checkpoint_dir,
+            "Train_loss": float(train_loss),
+            "Train_acc": float(train_acc),
+            "Val_loss": float(val_loss),
+            "Val_acc": float(val_acc),
+            "Test_loss": float(test_loss),
+            "Test_acc": float(test_acc),
+            "Solve_Time": float(time1 - time0),
+        })
+        print(f"[Run {run_id} cand {candidate}] val_acc={val_acc:.4f} test_acc={test_acc:.4f} time={time1 - time0:.1f}s")
+
+    summary_path = os.path.join(out_dir, "Stats/Summary.json")
+    with open(summary_path, "w") as f:
+        json.dump(results, f, indent=2)
+
+    results_sorted = sorted(
+        results,
+        key=lambda r: r["Val_acc"],
+        reverse=True
+    )
+
+    top5_paths = [r["Checkpoint"] for r in results_sorted[:5]]
+    for r in top5_paths:
+        print(r["Candidate"], r["Val_acc"], r["Checkpoint"])
+
+
+    

@@ -135,7 +135,7 @@ def GurobiBorder(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5):
         return None
 
 
-def GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=1):
+def GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=1, candidate=0):
     X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
     labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
     pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
@@ -290,7 +290,7 @@ def GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, 
         return None
         
 
-def GurobiFlip_Any(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=1):
+def GurobiFlip_Any(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=1, candidate=0):
     X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
     labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
     pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
