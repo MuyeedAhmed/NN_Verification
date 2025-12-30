@@ -1,5 +1,6 @@
 import torch
 
+import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
 import torchvision
@@ -191,6 +192,62 @@ def get_loaders_from_folder(root_dir, image_size=(224, 224), val_split=0.2, seed
     return train_dataset, val_dataset
 
 
+
+@torch.no_grad()
+def ensemble_test_accuracy(model_ctor, checkpoint_paths, test_loader, device, mode="logits"):
+    models = []
+    for p in checkpoint_paths:
+        ckpt = torch.load(p, map_location=(None if device.type=="cuda" else torch.device("cpu")))
+        m = model_ctor().to(device)
+        m.load_state_dict(ckpt["model_state_dict"])
+        m.eval()
+        models.append(m)
+
+    correct = 0
+    total = 0
+
+    for x, y in test_loader:
+        x = x.to(device)
+        y = y.to(device)
+
+        if mode == "logits":
+            agg = None
+            for m in models:
+                logits = m(x)
+                agg = logits if agg is None else (agg + logits)
+            agg = agg / len(models)
+            preds = agg.argmax(dim=1)
+
+        elif mode == "probs":
+            agg = None
+            for m in models:
+                probs = F.softmax(m(x), dim=1)
+                agg = probs if agg is None else (agg + probs)
+            agg = agg / len(models)
+            preds = agg.argmax(dim=1)
+        else:
+            raise ValueError("mode must be 'logits' or 'probs'")
+
+        correct += (preds == y).sum().item()
+        total += y.numel()
+
+    return correct / total
+
+
+def load_models(checkpoint_paths, dataset_name, device, ols):
+    models = []
+
+    for path in checkpoint_paths:
+        model, _ = GetModel(dataset_name, device=device, output_layer_size=ols)
+        ckpt = torch.load(path, map_location=device)
+        model.load_state_dict(ckpt["model_state_dict"])
+        model.eval()
+        models.append(model)
+
+    return models
+
+
+
 @torch.no_grad()
 def evaluate_loader(model, loader, device):
     model.eval()
@@ -357,4 +414,12 @@ if __name__ == "__main__":
         print(r["Candidate"], r["Val_acc"], r["Checkpoint"])
 
 
-    
+    models = load_models(top_k_paths, dataset_name, device, ols)
+
+    ensemble_acc = ensemble_test_accuracy(
+        models=models,
+        test_loader=test_loader,
+        device=device
+    )
+
+    print(f"Ensemble Test Accuracy: {ensemble_acc:.4f}")
