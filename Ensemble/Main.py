@@ -1,5 +1,5 @@
 import torch
-
+import csv
 import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
@@ -194,15 +194,7 @@ def get_loaders_from_folder(root_dir, image_size=(224, 224), val_split=0.2, seed
 
 
 @torch.no_grad()
-def ensemble_test_accuracy(model_ctor, checkpoint_paths, test_loader, device, mode="logits"):
-    models = []
-    for p in checkpoint_paths:
-        ckpt = torch.load(p, map_location=(None if device.type=="cuda" else torch.device("cpu")))
-        m = model_ctor().to(device)
-        m.load_state_dict(ckpt["model_state_dict"])
-        m.eval()
-        models.append(m)
-
+def ensemble_test_accuracy(models, test_loader, device):
     correct = 0
     total = 0
 
@@ -210,25 +202,16 @@ def ensemble_test_accuracy(model_ctor, checkpoint_paths, test_loader, device, mo
         x = x.to(device)
         y = y.to(device)
 
-        if mode == "logits":
-            agg = None
-            for m in models:
-                logits = m(x)
-                agg = logits if agg is None else (agg + logits)
-            agg = agg / len(models)
-            preds = agg.argmax(dim=1)
+        probs_sum = None
+        for m in models:
+            logits = m(x)
+            probs = F.softmax(logits, dim=1)
+            probs_sum = probs if probs_sum is None else probs_sum + probs
 
-        elif mode == "probs":
-            agg = None
-            for m in models:
-                probs = F.softmax(m(x), dim=1)
-                agg = probs if agg is None else (agg + probs)
-            agg = agg / len(models)
-            preds = agg.argmax(dim=1)
-        else:
-            raise ValueError("mode must be 'logits' or 'probs'")
+        avg_probs = probs_sum / len(models)
+        pred = avg_probs.argmax(dim=1)
 
-        correct += (preds == y).sum().item()
+        correct += (pred == y).sum().item()
         total += y.numel()
 
     return correct / total
@@ -274,6 +257,9 @@ if __name__ == "__main__":
     initEpoch = 300
     G_epoch = 0
     optimize = "Adam"
+    misclassification_count = 1
+    top_k = 10
+    total_candidates = 20
 
     method = sys.argv[1] if len(sys.argv) > 1 else "RAB"
     dataset_name = sys.argv[2] if len(sys.argv) > 2 else "MNIST"
@@ -296,7 +282,7 @@ if __name__ == "__main__":
         n_samples_gurobi = -1
     elif method == "RAF":
         n_samples_gurobi = 1000
-        misclassification_count = 1
+        
 
     train_dataset, test_dataset = GetDataset(dataset_name)
 
@@ -328,27 +314,27 @@ if __name__ == "__main__":
     
     if save_checkpoint == "Y":
         sys.exit()
-    
-    TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
 
-    if device.type == 'cuda':
-        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
-    else:
-        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
-    
-    TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
-    TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-    print(f"Loaded model for run {i} from checkpoint.")
-
-    TM_after_g.save_fc_inputs("Train")
-    TM_after_g.save_fc_inputs("Val")
-
-    print(f"Saved FC inputs for run {i}.")
-    
     results = []
-    
-    for candidate in range(20):
+
+    for candidate in range(total_candidates):
+        TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
+
+        if device.type == 'cuda':
+            checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
+        else:
+            checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
+        
+        TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
+        TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        print(f"Loaded model for run {i} from checkpoint.")
+
+        TM_after_g.save_fc_inputs("Train")
+        TM_after_g.save_fc_inputs("Val")
+
+        print(f"Saved FC inputs for run {i}, candidate {candidate}.")
+          
         time0 = time.time()
         # if method == "RAB":
         #     Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
@@ -373,8 +359,7 @@ if __name__ == "__main__":
             'epoch': TM_after_g.num_epochs,
             'model_state_dict': TM_after_g.model.state_dict(),
             'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
-            'scheduler_state_dict': TM_after_g.scheduler.state_dict(),
-            'loss': TM_after_g.loss.item()
+            'scheduler_state_dict': TM_after_g.scheduler.state_dict()
         }, checkpoint_dir)
         
         train_loss, train_acc = TM_after_g.evaluate("Train")
@@ -397,11 +382,35 @@ if __name__ == "__main__":
             "Test_acc": float(test_acc),
             "Solve_Time": float(time1 - time0),
         })
-        print(f"[Run {run_id} cand {candidate}] val_acc={val_acc:.4f} test_acc={test_acc:.4f} time={time1 - time0:.1f}s")
+        print(f"[Run {i} cand {candidate}] val_acc={val_acc:.4f} test_acc={test_acc:.4f} time={time1 - time0:.1f}s")
+    
+    
 
-    summary_path = os.path.join(out_dir, "Stats/Summary.json")
-    with open(summary_path, "w") as f:
-        json.dump(results, f, indent=2)
+    csv_path = "Stats/Summary.csv"
+    write_header = not os.path.exists(csv_path)
+
+    with open(csv_path, "a", newline="") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=[
+                "Candidate",
+                "Checkpoint",
+                "Train_loss",
+                "Train_acc",
+                "Val_loss",
+                "Val_acc",
+                "Test_loss",
+                "Test_acc",
+                "Solve_Time",
+            ],
+        )
+
+        if write_header:
+            writer.writeheader()
+
+        for row in results:
+            writer.writerow(row)
+
 
     results_sorted = sorted(
         results,
@@ -409,9 +418,9 @@ if __name__ == "__main__":
         reverse=True
     )
 
-    top5_paths = [r["Checkpoint"] for r in results_sorted[:5]]
-    for r in top5_paths:
-        print(r["Candidate"], r["Val_acc"], r["Checkpoint"])
+    top_k_paths = [r["Checkpoint"] for r in results_sorted[:top_k]]
+    # for r in top5_paths: error
+    #     print(r["Candidate"], r["Val_acc"], r["Checkpoint"])
 
 
     models = load_models(top_k_paths, dataset_name, device, ols)

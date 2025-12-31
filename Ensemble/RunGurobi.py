@@ -18,7 +18,7 @@ import numpy as np
 from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG
 
 
-timeLimit = 10800
+timeLimit = 300
 
 
 
