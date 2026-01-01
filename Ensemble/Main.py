@@ -257,7 +257,7 @@ if __name__ == "__main__":
     initEpoch = 300
     G_epoch = 0
     optimize = "Adam"
-    misclassification_count = 1
+    misclassification_count = 10
     top_k = 10
     total_candidates = 20
 
@@ -339,8 +339,10 @@ if __name__ == "__main__":
         # if method == "RAB":
         #     Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
         # elif method == "RAF":
-
-        Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
+        if candidate % 2 == 0:
+            Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
+        else:
+            Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
         time1 = time.time()
         
         if Gurobi_output is None:
