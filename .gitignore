@@ -1,6 +1,9 @@
 .DS_Store
 Old_CNN/data/
 __pycache__/
+**/checkpoints/
+**/checkpoints_inputs/
+**/data/
 CNN_RetrainAfterGurobi/data/
 CNN_RetrainAfterGurobi/checkpoints/
 CNN_RetrainAfterGurobi/checkpoints_inputs/
