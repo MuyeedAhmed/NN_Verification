@@ -40,19 +40,19 @@ class TrainModel:
         
         if start_experiment == True:
             with open(self.log_file, "w") as f:
-                f.write("Run,Phase,Epoch,Train_loss,Train_acc\n")
+                f.write("Run,Phase,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
 
-    def train(self, early_stopping_patience=10, min_delta=1e-5):
+    def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=50):
         self.model.train()
         loss = -1
         best_val_loss = float('inf')
         best_train_loss = float('inf')
         epochs_no_improve = 0
+        best_epoch = -1
 
         for epoch in range(self.num_epochs+self.resume_epochs):
-            running_loss = 0.0
-            correct = 0
-            total = 0
+            running_loss, correct, total = 0.0, 0, 0
+
             for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
             # for i, (inputs, labels) in enumerate(self.train_loader):
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
@@ -69,24 +69,43 @@ class TrainModel:
                 total += labels.size(0)
                 correct += predicted.eq(labels_for_loss).sum().item()
 
-            self.scheduler.step()
+            if self.scheduler is not None:
+                self.scheduler.step()
             avg_train_loss = running_loss / len(self.train_loader)
             train_accuracy = 100. * correct / total
             
             print(f'Epoch [{epoch+1}/{self.num_epochs}], '
                 f'Train Loss: {avg_train_loss:.4f}, Train Acc: {train_accuracy:.2f}%')
-
-            with open(self.log_file, "a") as f:
-                f.write(f"{self.run_id},{self.phase},{epoch+1},{avg_train_loss},{train_accuracy}\n")
+            
                         
+            if epoch + 1 <= warmup_epochs:
+                with open(self.log_file, "a") as f:
+                    f.write(f"{self.run_id},{self.phase},{epoch+1},{avg_train_loss},{train_accuracy},-,-\n")
+                continue
+            
+            val_loss, val_acc = self.evaluate("Val")
+            with open(self.log_file, "a") as f:
+                f.write(f"{self.run_id},{self.phase},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc}\n")
 
-            if best_train_loss - avg_train_loss > min_delta:
-                best_train_loss = avg_train_loss
+            # if best_train_loss - avg_train_loss > min_delta:
+            #     best_train_loss = avg_train_loss
+            #     epochs_no_improve = 0
+            # else:
+            #     epochs_no_improve += 1
+            # if epochs_no_improve >= early_stopping_patience:
+            #     print(f"Early stopping triggered after {epoch+1} epochs based on training loss.")
+            #     break
+
+            if best_val_loss - val_loss > min_delta:
+                best_val_loss = val_loss
                 epochs_no_improve = 0
+                best_state_dict = copy.deepcopy(self.model.state_dict())
+                best_epoch = epoch + 1
             else:
                 epochs_no_improve += 1
+
             if epochs_no_improve >= early_stopping_patience:
-                print(f"Early stopping triggered after {epoch+1} epochs based on training loss.")
+                print(f"Early stopping at epoch {epoch+1}. Best was epoch {best_epoch} (val_loss={best_val_loss:.4f}).")
                 break
 
             if epoch == self.num_epochs:
@@ -94,6 +113,11 @@ class TrainModel:
                     self.save_model(loss, save_suffix="")
                     test_accuracy = self.test()
                 self.phase = "ResumeTrain"
+
+        if best_state_dict is not None:
+            self.model.load_state_dict(best_state_dict)
+            print(f"Restored best model from epoch {best_epoch}.")
+
         if self.phase == "Train":
             self.save_model(loss, save_suffix="")
         elif self.phase == "GurobiEdit":
@@ -124,7 +148,7 @@ class TrainModel:
         accuracy = 100. * correct / total
         print(f'Test Accuracy: {accuracy:.2f}%')
         with open(self.log_file, "a") as f:
-            f.write(f"{self.run_id},{self.phase}_Test,-1,{avg_loss},{accuracy}\n")
+            f.write(f"{self.run_id},{self.phase}_Test,-1,{avg_loss},{accuracy},-,-\n")
         return accuracy
 
     def save_model(self, loss, save_suffix=""):

@@ -291,7 +291,7 @@ if __name__ == "__main__":
     val_size = int(len(train_dataset) * 0.2)
     total_size = train_size + val_size
 
-    i = 1
+    i = 2
     model_t, model_g = GetModel(dataset_name, device=device, output_layer_size=ols)
 
     rng = np.random.default_rng(seed=i*42)
