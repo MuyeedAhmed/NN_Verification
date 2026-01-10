@@ -151,28 +151,29 @@ def GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, 
         labels_gt = labels_full[idx]
         pred_checkpoint = pred_full[idx]
 
-    W1 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_fc_hidden_weight.pt", map_location=torch.device('cpu')).numpy()
-    b1 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_fc_hidden_bias.pt", map_location=torch.device('cpu')).numpy()
-    W2 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
-    b2 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()
+    # W1 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_fc_hidden_weight.pt", map_location=torch.device('cpu')).numpy()
+    # b1 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_fc_hidden_bias.pt", map_location=torch.device('cpu')).numpy()
+    W = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
+    b = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()
 
-    Z1 = np.maximum(0, X @ W1.T + b1)
-    Z2_target = Z1 @ W2.T + b2
+    # Z1 = np.maximum(0, X @ W1.T + b1)
+    # Z2_target = Z1 @ W.T + b
+    Z2_target = X @ W.T + b
     
     pred_target = np.argmax(Z2_target, axis=1)
-    # print(f"W2 dtype: {W2.dtype}, b2 dtype: {b2.dtype}")
+    # print(f"W dtype: {W.dtype}, b dtype: {b.dtype}")
     print("Size of X:", X.shape)
-    print("Size of W2:", W2.shape)
-    print("Size of b2:", b2.shape)
+    print("Size of W:", W.shape)
+    print("Size of b:", b.shape)
     print("Mismatch: ", sum(pred_checkpoint != pred_target))
 
     n_samples = len(X)
-    l1_size = W2.shape[1]
-    l2_size = W2.shape[0]
+    l1_size = W.shape[1]
+    l2_size = W.shape[0]
 
     gurobi_model = gp.Model()
     
-    W2_offset = gurobi_model.addVars(*W2.shape, lb=-GRB.INFINITY, ub=GRB.INFINITY, name="W2_offset")
+    W2_offset = gurobi_model.addVars(*W.shape, lb=-GRB.INFINITY, ub=GRB.INFINITY, name="W2_offset")
     b2_offset = gurobi_model.addVars(l2_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name="b2_offset")
 
     Z2_list = []
@@ -180,15 +181,16 @@ def GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, 
     for s in range(n_samples):
         label_max = int(np.argmax(Z2_target[s]))
         label_min = int(np.argmin(Z2_target[s]))
-        A1_fixed = Z1[s]
+        A1_fixed = X[s]
 
         Z2 = gurobi_model.addVars(l2_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z2_{s}")
         for j in range(l2_size):
             expr = gp.LinExpr()
             for i in range(l1_size):
-                expr += (W2[j, i] + W2_offset[j, i]) * A1_fixed[i]
-            expr += b2[j] + b2_offset[j]
+                expr += (W[j, i] + W2_offset[j, i]) * A1_fixed[i]
+            expr += b[j] + b2_offset[j]
             gurobi_model.addConstr(Z2[j] == expr)
+        
         if labels_gt[s] == label_max:
             violations = gurobi_model.addVars(l2_size, vtype=GRB.BINARY, name=f"violations_{s}")
             for k in range(l2_size):
@@ -208,11 +210,11 @@ def GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, 
     
     gurobi_model.addConstr(gp.quicksum(misclassified_flags[s] for s in range(n_samples)) == misclassification_count, name="exactly_one_misclassified")
 
-    abs_W2 = gurobi_model.addVars(*W2.shape, lb=0, name="abs_W2")
+    abs_W2 = gurobi_model.addVars(*W.shape, lb=0, name="abs_W2")
     abs_b2 = gurobi_model.addVars(l2_size, lb=0, name="abs_b2")
 
-    for i in range(W2.shape[0]):
-        for j in range(W2.shape[1]):
+    for i in range(W.shape[0]):
+        for j in range(W.shape[1]):
             gurobi_model.addConstr(abs_W2[i, j] >= W2_offset[i, j])
             gurobi_model.addConstr(abs_W2[i, j] >= -W2_offset[i, j])
     for i in range(l2_size):
@@ -220,7 +222,7 @@ def GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, 
         gurobi_model.addConstr(abs_b2[i] >= -b2_offset[i])
     
     objective = (
-        gp.quicksum(abs_W2[i, j] for i in range(W2.shape[0]) for j in range(W2.shape[1])) +
+        gp.quicksum(abs_W2[i, j] for i in range(W.shape[0]) for j in range(W.shape[1])) +
         gp.quicksum(abs_b2[i] for i in range(l2_size))
     )
     gurobi_model.setObjective(objective, GRB.MINIMIZE)
@@ -229,19 +231,15 @@ def GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, 
     gurobi_model.optimize()
 
     if gurobi_model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL] and gurobi_model.SolCount > 0:
-        W2_off = np.array([[W2_offset[i, j].X for j in range(W2.shape[1])] for i in range(W2.shape[0])])
+        W2_off = np.array([[W2_offset[i, j].X for j in range(W.shape[1])] for i in range(W.shape[0])])
         b2_off = np.array([b2_offset[i].X for i in range(l2_size)])
 
-        W2_new = (W2 + W2_off)
-        b2_new = (b2 + b2_off)
-        
-        def softmax(x):
-            x = x - np.max(x, axis=1, keepdims=True)
-            e_x = np.exp(x)
-            return e_x / np.sum(e_x, axis=1, keepdims=True)
+        W2_new = (W + W2_off)
+        b2_new = (b + b2_off)
 
-        A1 = np.maximum(0, X @ W1.T + b1)
-        Z2_pred_gurobi = A1 @ W2_new.T + b2_new
+        # A1 = np.maximum(0, X @ W1.T + b1)
+        # Z2_pred_gurobi = A1 @ W2_new.T + b2_new
+        Z2_pred_gurobi = X @ W2_new.T + b2_new
         predictions_gurobi = np.argmax(Z2_pred_gurobi, axis=1)
         misclassified_mask = predictions_gurobi != pred_checkpoint
         misclassified = np.sum(misclassified_mask)
@@ -257,13 +255,14 @@ def GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, 
         X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
         labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
         pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
-        Z1_val = np.maximum(0, X_val @ W1.T + b1)
-        Z2_val_pred = Z1_val @ W2_new.T + b2_new
+        # Z1_val = np.maximum(0, X_val @ W1.T + b1)
+        # Z2_val_pred = Z1_val @ W2_new.T + b2_new
+        Z2_val_pred = X_val @ W2_new.T + b2_new
         predictions_val = np.argmax(Z2_val_pred, axis=1)
         
         accuracy_val = np.sum(predictions_val == labels_val) / len(labels_val) * 100
-        A1_full = np.maximum(0, X_full @ W1.T + b1)
-        Z2_pred_gurobi_full = A1_full @ W2_new.T + b2_new
+        # A1_full = np.maximum(0, X_full @ W1.T + b1)
+        Z2_pred_gurobi_full = X_full @ W2_new.T + b2_new
         predictions_gurobi_full = np.argmax(Z2_pred_gurobi_full, axis=1)
         misclassified_mask_full = predictions_gurobi_full != pred_full
         misclassified_full = np.sum(misclassified_mask_full)
@@ -284,7 +283,7 @@ def GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, 
     else:
         print("No solution found.")
         return None
-        
+             
 
 def GurobiFlip_Any(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=1, candidate=0):
     X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
