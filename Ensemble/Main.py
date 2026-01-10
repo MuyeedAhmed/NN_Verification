@@ -354,11 +354,16 @@ if __name__ == "__main__":
         time0 = time.time()
         # if method == "RAB":
         #     Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
+
+
         # elif method == "RAF":
-        if candidate % 2 == 0:
-            Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
-        else:
-            Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
+        # if candidate % 2 == 0:
+        #     Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
+        # else:
+        #     Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
+
+        Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
+
         time1 = time.time()
         
         if Gurobi_output is None:
