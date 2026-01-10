@@ -15,7 +15,7 @@ import numpy as np
 
 
 class TrainModel:
-    def __init__(self, method, dataset_name, model, train_loader, val_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', phase = "Train", run_id=0, start_experiment=False):
+    def __init__(self, method, dataset_name, model, train_loader, val_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0, start_experiment=False):
         self.method = method
         self.run_id = run_id
         self.dataset_name = dataset_name
@@ -29,12 +29,16 @@ class TrainModel:
         self.learning_rate = learning_rate
         self.phase = phase
         if optimizer_type == "SGD":
-            self.optimizer = optim.SGD(self.model.parameters(), lr=self.learning_rate, momentum=0.9)
+            self.optimizer = optim.SGD(self.model.parameters(), lr=self.learning_rate, momentum=0.9, weight_decay=5e-4)
         elif optimizer_type == "Adam":
             self.optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=5e-4)
         else:
             raise ValueError("Unsupported optimizer type. Use 'SGD' or 'Adam'.")
-        self.scheduler = CosineAnnealingLR(self.optimizer, T_max=self.num_epochs)
+        if scheduler_type == "CosineAnnealingLR":
+            self.scheduler = CosineAnnealingLR(self.optimizer, T_max=self.num_epochs)
+        elif scheduler_type == "MultiStepLR":
+            self.scheduler = optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[int(0.5*self.num_epochs), int(0.75*self.num_epochs)], gamma=0.1)
+       
         self.criterion = nn.CrossEntropyLoss()
         self.log_file = f"Stats/{self.method}_CrossVal_All/{self.dataset_name}_log.csv"
         
@@ -155,8 +159,8 @@ class TrainModel:
         checkpoint_dir = f"./checkpoints/{self.dataset_name}"
         os.makedirs(checkpoint_dir, exist_ok=True)
         
-        torch.save(self.model.fc_hidden.weight.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_fc_hidden_weight{save_suffix}.pt")
-        torch.save(self.model.fc_hidden.bias.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_fc_hidden_bias{save_suffix}.pt")
+        # torch.save(self.model.fc_hidden.weight.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_fc_hidden_weight{save_suffix}.pt")
+        # torch.save(self.model.fc_hidden.bias.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_fc_hidden_bias{save_suffix}.pt")
         torch.save(self.model.classifier.weight.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_classifier_weight{save_suffix}.pt")
         torch.save(self.model.classifier.bias.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_classifier_bias{save_suffix}.pt")
         torch.save({
@@ -188,7 +192,8 @@ class TrainModel:
             for inputs, labels in loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 fc_input, _ = self.model(inputs, extract_fc_input=True)
-                logits = self.model.classifier(torch.relu(self.model.fc_hidden(fc_input)))
+                logits = self.model.classifier(self.model.fc_hidden(fc_input))
+                # logits = self.model.classifier(torch.relu(self.model.fc_hidden(fc_input)))
                 preds = torch.argmax(logits, dim=1)
                 X_fc_input.append(fc_input.cpu())
                 Y_true.append(labels.cpu())

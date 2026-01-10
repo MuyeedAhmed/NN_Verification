@@ -16,20 +16,24 @@ import numpy as np
 from TrainModel import TrainModel
 
 
-from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net, VGG_office31, VGG_var_layers
+from CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net, VGG_office31, VGG_var_layers
 
 
 def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, extra_conv_layers=0):
     if dataset_name == "MNIST":
         model_t = NIN_MNIST(num_classes=10, output_layer_size=output_layer_size).to(device)
         model_g = NIN_MNIST(num_classes=10, output_layer_size=output_layer_size).to(device)
+    # elif dataset_name == "CIFAR10":
+    #     if extra_conv_layers > 0:
+    #         model_t = VGG_var_layers(num_classes=10, output_layer_size=output_layer_size, extra_conv_layers=extra_conv_layers).to(device)
+    #         model_g = VGG_var_layers(num_classes=10, output_layer_size=output_layer_size, extra_conv_layers=extra_conv_layers).to(device)
+    #     else:
+    #         model_t = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
+    #         model_g = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
     elif dataset_name == "CIFAR10":
-        if extra_conv_layers > 0:
-            model_t = VGG_var_layers(num_classes=10, output_layer_size=output_layer_size, extra_conv_layers=extra_conv_layers).to(device)
-            model_g = VGG_var_layers(num_classes=10, output_layer_size=output_layer_size, extra_conv_layers=extra_conv_layers).to(device)
-        else:
-            model_t = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
-            model_g = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
+        model_t = ResNet18_CIFAR(num_classes=num_classes).to(device)
+        model_g = ResNet18_CIFAR(num_classes=num_classes).to(device)
+
     elif dataset_name == "FashionMNIST":
         model_t = NIN_MNIST(num_classes=10).to(device)
         model_g = NIN_MNIST(num_classes=10).to(device)
@@ -256,7 +260,7 @@ if __name__ == "__main__":
     print(f'Using device: {device}')
     initEpoch = 300
     G_epoch = 0
-    optimize = "Adam"
+    
     misclassification_count = 10
     top_k = 10
     total_candidates = 20
@@ -283,7 +287,19 @@ if __name__ == "__main__":
     elif method == "RAF":
         n_samples_gurobi = 1000
         
-
+    
+    if dataset_name == "CIFAR10":
+        BatchSize = 128
+        optimize = "SGD"
+        learningRate = 0.1
+        scheduler_type = "MultiStepLR"
+    else:
+        BatchSize = 64
+        optimize = "Adam"
+        learningRate = 0.01
+        scheduler_type = "CosineAnnealingLR"
+    
+    
     train_dataset, test_dataset = GetDataset(dataset_name)
 
     full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
@@ -303,13 +319,13 @@ if __name__ == "__main__":
     train_subset = Subset(train_dataset, new_train_indices)
     val_subset = Subset(train_dataset, new_val_indices)
 
-    train_loader = DataLoader(train_subset, batch_size=64, shuffle=True)
-    val_loader = DataLoader(val_subset, batch_size=64, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
-    learningRate = 0.01
+    train_loader = DataLoader(train_subset, batch_size=BatchSize, shuffle=True)
+    val_loader = DataLoader(val_subset, batch_size=BatchSize, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
+    
 
     if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
-        TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="Train", run_id=i, start_experiment=True)
+        TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
         TM.run()
     
     if save_checkpoint == "Y":
@@ -318,7 +334,7 @@ if __name__ == "__main__":
     results = []
 
     for candidate in range(total_candidates):
-        TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=64, learning_rate=learningRate, optimizer_type=optimize, phase="GurobiEdit", run_id=i)
+        TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
 
         if device.type == 'cuda':
             checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
