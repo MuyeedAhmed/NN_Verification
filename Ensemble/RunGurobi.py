@@ -16,7 +16,7 @@ import numpy as np
 timeLimit = 600
 
 class MILP:
-    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, candidate=0):
+    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, candidate=0, loaded_inputs=None):
         self.dataset_name = dataset_name
         self.store_file_name = store_file_name
         self.run_id = run_id
@@ -24,16 +24,17 @@ class MILP:
         self.tol = tol
         self.misclassification_count = misclassification_count
         self.candidate = candidate
+        self.X_full, self.labels_full, self.pred_full, self.X_val, self.labels_val, self.pred_val = None, None, None, None, None, None
 
+        if loaded_inputs is not None:
+            self.X_full, self.labels_full, self.pred_full, self.X_val, self.labels_val, self.pred_val = loaded_inputs['X_full'], loaded_inputs['labels_full'], loaded_inputs['pred_full'], loaded_inputs['X_val'], loaded_inputs['labels_val'], loaded_inputs['pred_val']
+        
         self.gurobi_model = gp.Model()
+
     
     
-    def LoadInputs(self, X_full=None, labels_full=None, pred_full=None, X_val=None, labels_val=None, pred_val=None):
-        if X_full is not None:
-            self.X_full = X_full
-            self.labels_full = labels_full
-            self.pred_full = pred_full
-        else:
+    def LoadInputs(self):
+        if self.X_full is None:
             self.X_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_train.pt").numpy()
             self.labels_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_train.pt").numpy()
             self.pred_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_train.pt").numpy()
@@ -105,14 +106,15 @@ class MILP:
 
             print(f"Total misclassified samples: {misclassified}")
             
-            X_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_val.pt").numpy()
-            labels_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_val.pt").numpy()
-            pred_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_val.pt").numpy()
+            if self.X_val is None:
+                self.X_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_val.pt").numpy()
+                self.labels_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_val.pt").numpy()
+                # self.pred_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_val.pt").numpy()
             
-            Z_val_pred = X_val @ W_new.T + b_new
+            Z_val_pred = self.X_val @ W_new.T + b_new
             predictions_val = np.argmax(Z_val_pred, axis=1)
             
-            accuracy_val = np.sum(predictions_val == labels_val) / len(labels_val) * 100
+            accuracy_val = np.sum(predictions_val == self.labels_val) / len(self.labels_val) * 100
             Z_pred_gurobi_full = self.X_full @ W_new.T + b_new
             predictions_gurobi_full = np.argmax(Z_pred_gurobi_full, axis=1)
             misclassified_mask_full = predictions_gurobi_full != self.pred_full
