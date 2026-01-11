@@ -340,16 +340,16 @@ if __name__ == "__main__":
         time0 = time.time()
 
         if candidate % 4 == 1:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=0)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
         elif candidate % 4 == 2:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=0)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
         elif candidate % 4 == 3:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=0)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
         else:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=0)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=candidate)
             Gurobi_output = milp_instance.Optimize(Method="LowerConf")
 
         time1 = time.time()
