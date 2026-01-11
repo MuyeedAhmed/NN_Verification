@@ -261,7 +261,7 @@ if __name__ == "__main__":
     initEpoch = 300
     G_epoch = 0
     
-    misclassification_count = 10
+    misclassification_count = 1
     top_k = 10
     total_candidates = 20
 
@@ -269,23 +269,9 @@ if __name__ == "__main__":
     dataset_name = sys.argv[2] if len(sys.argv) > 2 else "MNIST"
     save_checkpoint = sys.argv[3] if len(sys.argv) > 3 else "N"
     if save_checkpoint == "N":
-        from RunGurobi import GurobiBorder, GurobiFlip_Any, GurobiFlip_Correct
-        
-    # if dataset_name == "Food101":
-    #     initEpoch = 400
-    #     G_epoch = 200
-    #     # optimize = "SGD"
-    if dataset_name == "MNIST":
-        ols = 16
-    elif dataset_name == "CIFAR10":
-        ols = 128
-    elif dataset_name == "Food101":
-        ols = 256
+        from RunGurobi import MILP
 
-    if method == "RAB":
-        n_samples_gurobi = -1
-    elif method == "RAF":
-        n_samples_gurobi = 1000
+    n_samples_gurobi = 1000
         
     
     if dataset_name == "CIFAR10":
@@ -308,7 +294,7 @@ if __name__ == "__main__":
     total_size = train_size + val_size
 
     i = 2
-    model_t, model_g = GetModel(dataset_name, device=device, output_layer_size=ols)
+    model_t, model_g = GetModel(dataset_name, device=device)
 
     rng = np.random.default_rng(seed=i*42)
     all_indices = rng.permutation(total_size)
@@ -333,36 +319,38 @@ if __name__ == "__main__":
 
     results = []
 
-    for candidate in range(total_candidates):
-        TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
+    TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
 
-        if device.type == 'cuda':
-            checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
-        else:
-            checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
-        
-        TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
-        TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-        print(f"Loaded model for run {i} from checkpoint.")
+    if device.type == 'cuda':
+        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
+    else:
+        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
+    
+    TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
+    TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+    print(f"Loaded model for run {i} from checkpoint.")
 
-        TM_after_g.save_fc_inputs("Train")
-        TM_after_g.save_fc_inputs("Val")
+    TM_after_g.save_fc_inputs("Train")
+    TM_after_g.save_fc_inputs("Val")
 
-        print(f"Saved FC inputs for run {i}, candidate {candidate}.")
+    print(f"Saved FC inputs for run {i}.")
           
+    for candidate in range(total_candidates):
         time0 = time.time()
-        # if method == "RAB":
-        #     Gurobi_output = GurobiBorder(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi)
 
-
-        # elif method == "RAF":
-        # if candidate % 2 == 0:
-        #     Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
-        # else:
-        #     Gurobi_output = GurobiFlip_Any(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
-
-        Gurobi_output = GurobiFlip_Correct(dataset_name, TM_after_g.log_file, i, n=n_samples_gurobi, misclassification_count=misclassification_count, candidate=candidate)
+        if candidate % 4 == 1:
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=0)
+            Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
+        elif candidate % 4 == 2:
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=0)
+            Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
+        elif candidate % 4 == 3:
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=0)
+            Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
+        else:
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=0)
+            Gurobi_output = milp_instance.Optimize(Method="LowerConf")
 
         time1 = time.time()
         
@@ -371,7 +359,7 @@ if __name__ == "__main__":
             continue
 
         W2_new, b2_new = Gurobi_output
-        TM_after_g.delete_fc_inputs()
+        # TM_after_g.delete_fc_inputs()
         new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
         new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
         with torch.no_grad():
@@ -407,26 +395,14 @@ if __name__ == "__main__":
         })
         print(f"[Run {i} cand {candidate}] val_acc={val_acc:.4f} test_acc={test_acc:.4f} time={time1 - time0:.1f}s")
     
+    TM_after_g.delete_fc_inputs()
     
 
     csv_path = "Stats/Summary.csv"
     write_header = not os.path.exists(csv_path)
 
     with open(csv_path, "a", newline="") as f:
-        writer = csv.DictWriter(
-            f,
-            fieldnames=[
-                "Candidate",
-                "Checkpoint",
-                "Train_loss",
-                "Train_acc",
-                "Val_loss",
-                "Val_acc",
-                "Test_loss",
-                "Test_acc",
-                "Solve_Time",
-            ],
-        )
+        writer = csv.DictWriter(f, fieldnames=["Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
 
         if write_header:
             writer.writeheader()
