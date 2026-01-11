@@ -13,411 +13,206 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-
-
-from CNNetworks import NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG
-
-
 timeLimit = 300
 
+class MILP:
+    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, candidate=0):
+        self.dataset_name = dataset_name
+        self.store_file_name = store_file_name
+        self.run_id = run_id
+        self.n = n
+        self.tol = tol
+        self.misclassification_count = misclassification_count
+        self.candidate = candidate
 
-
-def GurobiBorder(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5):
-    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
-    X_full_size = X_full.shape[0]
-    if n == -1:
-        X = X_full
-        labels_gt = labels_full
-        pred_checkpoint = pred_full
-    else:
-        X = X_full[0:n]
-        labels_gt = labels_full[0:n]
-        pred_checkpoint = pred_full[0:n]
-
-    W1 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_fc_hidden_weight.pt", map_location=torch.device('cpu')).numpy()
-    b1 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_fc_hidden_bias.pt", map_location=torch.device('cpu')).numpy()
-    W2 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
-    b2 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()
-
-    Z1 = np.maximum(0, X @ W1.T + b1)
-    Z2_target = Z1 @ W2.T + b2
+        self.gurobi_model = gp.Model()
     
-    pred_target = np.argmax(Z2_target, axis=1)
-    print("Mismatch: ", sum(pred_checkpoint != pred_target))
-
-    n_samples = len(X)
-    l1_size = W2.shape[1]
-    l2_size = W2.shape[0]
-
-    gurobi_model = gp.Model()
-    W2_offset = gurobi_model.addVars(*W2.shape, lb=-20, ub=20, name="W2_offset")
-    b2_offset = gurobi_model.addVars(l2_size, lb=-20, ub=20, name="b2_offset")
-
-    Z2_list = []
-    max_min_diff = []
-
-    for s in range(n_samples):
-        label_max = int(np.argmax(Z2_target[s]))
-        label_min = int(np.argmin(Z2_target[s]))
-        A1_fixed = Z1[s]
-
-        Z2 = gurobi_model.addVars(l2_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z2_{s}")
-        for j in range(l2_size):
-            expr = gp.LinExpr()
-            for i in range(l1_size):
-                expr += (W2[j, i] + W2_offset[j, i]) * A1_fixed[i]
-            expr += b2[j] + b2_offset[j]
-            gurobi_model.addConstr(Z2[j] == expr)
-
-        for k in range(l2_size):
-            if k != label_max:
-                gurobi_model.addConstr(Z2[label_max] >= Z2[k] + tol, f"Z2_max_{s}_{k}")
-
-        Z2_list.append(Z2)
-        max_min_diff.append(Z2[label_max] - Z2[label_min])
-
-    objective = gp.quicksum(max_min_diff)
-    gurobi_model.setObjective(objective, GRB.MINIMIZE)
-    gurobi_model.setParam('TimeLimit', timeLimit)
-    gurobi_model.optimize()
-
-    if gurobi_model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL] and gurobi_model.SolCount > 0:
-        W2_off = np.array([[W2_offset[i, j].X for j in range(W2.shape[1])] for i in range(W2.shape[0])])
-        b2_off = np.array([b2_offset[i].X for i in range(l2_size)])
-
-        W2_new = (W2 + W2_off)
-        b2_new = (b2 + b2_off)
-        def softmax(x):
-            x = x - np.max(x, axis=1, keepdims=True)
-            e_x = np.exp(x)
-            return e_x / np.sum(e_x, axis=1, keepdims=True)
-
-        A1 = np.maximum(0, X @ W1.T + b1)
-        Z2_pred_gurobi = A1 @ W2_new.T + b2_new
-        predictions_gurobi = np.argmax(Z2_pred_gurobi, axis=1)
-        misclassified_mask = predictions_gurobi != pred_checkpoint
-        misclassified = np.sum(misclassified_mask)
-        accuracy_gurobi = np.sum(predictions_gurobi == labels_gt) / len(labels_gt) * 100
-        
-        if misclassified > 0:
-            with open(f"Stats/RAB_CrossVal_All/{dataset_name}_gurobi_log_tol.csv", "a") as f:
-                f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
-            GurobiBorder(dataset_name, store_file_name, run_id, n=n, tol=tol+5e-6)
-
-        print(f"Total misclassified samples: {misclassified}")
-        with open(f"Stats/RAB_CrossVal_All/{dataset_name}_gurobi_log.csv", "a") as f:
-            f.write(f"-----\nRun ID: {run_id}\n\n")
-            f.write("-------Weight/Bias Offsets-------\n")
-            f.write(f"W2 offsets: {np.sum(np.abs(W2_off))}\n")
-            f.write(f"b2 offsets: {np.sum(np.abs(b2_off))}\n")
-            f.write(f"Objective value: {gurobi_model.ObjVal}\n")
-            f.write("------------------------------------\n\n")
-            f.write(f"Misclassified: {misclassified}\n")
-        
-        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
-        Z1_val = np.maximum(0, X_val @ W1.T + b1)
-        Z2_val_pred = Z1_val @ W2_new.T + b2_new
-        predictions_val = np.argmax(Z2_val_pred, axis=1)
-        accuracy_val = np.sum(predictions_val == labels_val) / len(labels_val) * 100
-        
-        with open(store_file_name, "a") as f:
-            f.write(f"{run_id},GurobiComplete_Train,-1,-1,{accuracy_gurobi}\n")
-            f.write(f"{run_id},GurobiComplete_Val,-1,-1,{accuracy_val}\n")
-
-        
-        return [W2_new, b2_new]
-    else:
-        print("No solution found.")
-        return None
-
-
-def GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=1, candidate=0):
-    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
-    X_full_size = X_full.shape[0]
-    if n == -1:
-        X = X_full
-        labels_gt = labels_full
-        pred_checkpoint = pred_full
-    else:
-        np.random.seed(candidate*42)
-        idx = np.random.choice(X_full_size, size=n, replace=False)
-        X = X_full[idx]
-        labels_gt = labels_full[idx]
-        pred_checkpoint = pred_full[idx]
-
-    W = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
-    b = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()
-
-    Z_target = X @ W.T + b
     
-    pred_target = np.argmax(Z_target, axis=1)
-
-    print("Size of X:", X.shape)
-    print("Size of W:", W.shape)
-    print("Size of b:", b.shape)
-    print("Mismatch: ", sum(pred_checkpoint != pred_target))
-
-    n_samples = len(X)
-    l1_size = W.shape[1]
-    layer_size = W.shape[0]
-
-    gurobi_model = gp.Model()
-    
-    W_offset = gurobi_model.addVars(*W.shape, lb=-GRB.INFINITY, ub=GRB.INFINITY, name="W_offset")
-    b_offset = gurobi_model.addVars(layer_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name="b_offset")
-
-    misclassified_flags = gurobi_model.addVars(n_samples, vtype=GRB.BINARY, name="misclassified_flags")
-    for s in range(n_samples):
-        label_max = int(np.argmax(Z_target[s]))
-        label_min = int(np.argmin(Z_target[s]))
-        A1_fixed = X[s]
-
-        Z = gurobi_model.addVars(layer_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z_{s}")
-        for j in range(layer_size):
-            expr = gp.LinExpr()
-            for i in range(l1_size):
-                expr += (W[j, i] + W_offset[j, i]) * A1_fixed[i]
-            expr += b[j] + b_offset[j]
-            gurobi_model.addConstr(Z[j] == expr)
-        
-        if labels_gt[s] == label_max:
-            violations = gurobi_model.addVars(layer_size, vtype=GRB.BINARY, name=f"violations_{s}")
-            for k in range(layer_size):
-                if k != label_max:
-                    gurobi_model.addConstr((violations[k] == 1) >> (Z[label_max] <= Z[k] - tol), name=f"violation_1flip_{s}_{k}")
-                    gurobi_model.addConstr((violations[k] == 0) >> (Z[label_max] >= Z[k] + tol), name=f"violation_0flip_{s}_{k}")
-                else:
-                    gurobi_model.addConstr(violations[k] == 0, name=f"violation_0_{s}_{k}")
-
-            gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) >= misclassified_flags[s])
-            gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) <= (layer_size - 1) * misclassified_flags[s])
+    def LoadInputs(self):
+        self.X_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_train.pt").numpy()
+        self.labels_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_train.pt").numpy()
+        self.pred_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_train.pt").numpy()
+        X_full_size = self.X_full.shape[0]
+        if self.n == -1:
+            self.X = self.X_full
+            self.labels_gt = self.labels_full
+            self.pred_checkpoint = self.pred_full
         else:
+            np.random.seed(self.candidate*42)
+            idx = np.random.choice(X_full_size, size=self.n, replace=False)
+            self.X = self.X_full[idx]
+            self.labels_gt = self.labels_full[idx]
+            self.pred_checkpoint = self.pred_full[idx]
+
+        self.W = torch.load(f"checkpoints/{self.dataset_name}/Run{self.run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
+        self.b = torch.load(f"checkpoints/{self.dataset_name}/Run{self.run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()
+
+        self.Z_target = self.X @ self.W.T + self.b
+    
+    def PrintShapes(self):
+        pred_target = np.argmax(self.Z_target, axis=1)
+
+        print("Size of X:", self.X.shape)
+        print("Size of W:", self.W.shape)
+        print("Size of b:", self.b.shape)
+        print("Mismatch: ", sum(self.pred_checkpoint != pred_target))
+
+    
+    
+    def Optimize(self, Method = "MisCls_Correct"):
+        self.LoadInputs()
+        self.PrintShapes()
+        
+        self.W_offset = self.gurobi_model.addVars(*self.W.shape, lb=-GRB.INFINITY, ub=GRB.INFINITY, name="W_offset")
+        self.b_offset = self.gurobi_model.addVars(self.W.shape[0], lb=-GRB.INFINITY, ub=GRB.INFINITY, name="b_offset")
+        
+        if Method == "MisCls_Correct":
+            self.AddConstraints_MisCls(samples="Correct")
+            milp_log_file = f"Stats/{self.dataset_name}_MisCls_Correct_MILP_log.csv"
+        elif Method == "MisCls_Incorrect":
+            self.AddConstraints_MisCls(samples="Incorrect")
+            milp_log_file = f"Stats/{self.dataset_name}_MisCls_Incorrect_MILP_log.csv"
+        elif Method == "MisCls_Any":
+            self.AddConstraints_MisCls(samples="Any")
+            milp_log_file = f"Stats/{self.dataset_name}_MisCls_Any_MILP_log.csv"
+        elif Method == "LowerConf":
+            self.AddConstraints_LowerConf()
+            milp_log_file = f"Stats/{self.dataset_name}_LowerConf_MILP_log.csv"
+
+
+        self.gurobi_model.setParam('TimeLimit', timeLimit)
+        self.gurobi_model.optimize()
+
+        if self.gurobi_model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL] and self.gurobi_model.SolCount > 0:
+            W_off = np.array([[self.W_offset[i, j].X for j in range(self.W.shape[1])] for i in range(self.W.shape[0])])
+            b_off = np.array([self.b_offset[i].X for i in range(self.W.shape[0])])
+
+            W_new = (self.W + W_off)
+            b_new = (self.b + b_off)
+            
+            Z2_pred_gurobi = self.X @ W_new.T + b_new
+            predictions_gurobi = np.argmax(Z2_pred_gurobi, axis=1)
+            misclassified_mask = predictions_gurobi != self.pred_checkpoint
+            misclassified = np.sum(misclassified_mask)
+            accuracy_gurobi = np.sum(predictions_gurobi == self.labels_gt) / len(self.labels_gt) * 100
+            
+            if misclassified != self.misclassification_count:
+                with open(f"Stats/RAF_CrossVal_All/{self.dataset_name}_gurobi_log_tol.csv", "a") as f:
+                    f.write(f"Tol:{self.tol}\nMisclassified: {misclassified}\n")
+                # GurobiFlip_Correct(self.dataset_name, self.store_file_name, self.run_id, n=self.n, tol=self.tol+5e-6, misclassification_count=self.misclassification_count)
+
+            print(f"Total misclassified samples: {misclassified}")
+            
+            X_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_val.pt").numpy()
+            labels_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_val.pt").numpy()
+            pred_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_val.pt").numpy()
+            
+            Z_val_pred = X_val @ W_new.T + b_new
+            predictions_val = np.argmax(Z_val_pred, axis=1)
+            
+            accuracy_val = np.sum(predictions_val == labels_val) / len(labels_val) * 100
+            Z_pred_gurobi_full = self.X_full @ W_new.T + b_new
+            predictions_gurobi_full = np.argmax(Z_pred_gurobi_full, axis=1)
+            misclassified_mask_full = predictions_gurobi_full != self.pred_full
+            misclassified_full = np.sum(misclassified_mask_full)
+            accuracy_gurobi_full = np.sum(predictions_gurobi_full == self.labels_full)  / len(self.labels_full) * 100
+            with open(self.store_file_name, "a") as f:
+                f.write(f"{self.run_id},GurobiComplete_Train,-1,-1,{accuracy_gurobi}\n")
+                f.write(f"{self.run_id},GurobiComplete_Val,-1,-1,{accuracy_val}\n")
+
+            if os.path.exists(milp_log_file) == False:
+                with open(milp_log_file, "w") as f:
+                    f.write("RunID,Candidate,W_offset_sum,b_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,GlobalMisclassified\n")
+
+            with open(milp_log_file, "a") as f:
+                f.write(f"{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{misclassified_full}\n")
+            
+            return [W_new, b_new]
+        else:
+            print("No solution found.")
+            return None
+
+
+
+    def AddConstraints_MisCls(self, samples = "Correct"):
+        n_samples = len(self.X)
+        l1_size = self.W.shape[1]
+        layer_size = self.W.shape[0]
+    
+        misclassified_flags = self.gurobi_model.addVars(n_samples, vtype=GRB.BINARY, name="misclassified_flags")
+        for s in range(n_samples):
+            label_max = int(np.argmax(self.Z_target[s]))
+            label_min = int(np.argmin(self.Z_target[s]))
+            A1_fixed = self.X[s]
+            Z = self.gurobi_model.addVars(layer_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z_{s}")
+            for j in range(layer_size):
+                expr = gp.LinExpr()
+                for i in range(l1_size):
+                    expr += (self.W[j, i] + self.W_offset[j, i]) * A1_fixed[i]
+                expr += self.b[j] + self.b_offset[j]
+                self.gurobi_model.addConstr(Z[j] == expr)
+            
+            # For correct or incorrect flips
+            isCorrect = (self.labels_gt[s] == label_max)
+            if samples == "Any" or ((samples == "Correct") == isCorrect):
+                violations = self.gurobi_model.addVars(layer_size, vtype=GRB.BINARY, name=f"violations_{s}")
+                for k in range(layer_size):
+                    if k != label_max:
+                        self.gurobi_model.addConstr((violations[k] == 1) >> (Z[label_max] <= Z[k] - self.tol), name=f"violation_1flip_{s}_{k}")
+                        self.gurobi_model.addConstr((violations[k] == 0) >> (Z[label_max] >= Z[k] + self.tol), name=f"violation_0flip_{s}_{k}")
+                    else:
+                        self.gurobi_model.addConstr(violations[k] == 0, name=f"violation_0_{s}_{k}")
+
+                self.gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) >= misclassified_flags[s])
+                self.gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) <= (layer_size - 1) * misclassified_flags[s])
+            else:
+                for k in range(layer_size):
+                    if k != label_max:
+                        self.gurobi_model.addConstr(Z[label_max] >= Z[k] + self.tol, name=f"violation_0flip_{s}_{k}")
+                self.gurobi_model.addConstr(misclassified_flags[s] == 0, name=f"misclassified_flag_{s}")
+        
+        self.gurobi_model.addConstr(gp.quicksum(misclassified_flags[s] for s in range(n_samples)) == self.misclassification_count, name="exactly_one_misclassified")
+
+        abs_W = self.gurobi_model.addVars(*self.W.shape, lb=0, name="abs_W")
+        abs_b = self.gurobi_model.addVars(layer_size, lb=0, name="abs_b")
+
+        for i in range(self.W.shape[0]):
+            for j in range(self.W.shape[1]):
+                self.gurobi_model.addConstr(abs_W[i, j] >= self.W_offset[i, j])
+                self.gurobi_model.addConstr(abs_W[i, j] >= -self.W_offset[i, j])
+        for i in range(layer_size):
+            self.gurobi_model.addConstr(abs_b[i] >= self.b_offset[i])
+            self.gurobi_model.addConstr(abs_b[i] >= -self.b_offset[i])
+        
+        objective = (
+            gp.quicksum(abs_W[i, j] for i in range(self.W.shape[0]) for j in range(self.W.shape[1])) +
+            gp.quicksum(abs_b[i] for i in range(layer_size))
+        )
+        self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
+        self.gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
+        
+    def AddConstraints_LowerConf(self):
+        n_samples = len(self.X)
+        l1_size = self.W.shape[1]
+        layer_size = self.W.shape[0]
+    
+        max_min_diff = []
+        for s in range(n_samples):
+            label_max = int(np.argmax(self.Z_target[s]))
+            label_min = int(np.argmin(self.Z_target[s]))
+            A1_fixed = self.X[s]
+            Z = self.gurobi_model.addVars(layer_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z_{s}")
+            for j in range(layer_size):
+                expr = gp.LinExpr()
+                for i in range(l1_size):
+                    expr += (self.W[j, i] + self.W_offset[j, i]) * A1_fixed[i]
+                expr += self.b[j] + self.b_offset[j]
+                self.gurobi_model.addConstr(Z[j] == expr)
             for k in range(layer_size):
                 if k != label_max:
-                    gurobi_model.addConstr(Z[label_max] >= Z[k] + tol, name=f"violation_0flip_{s}_{k}")
-            gurobi_model.addConstr(misclassified_flags[s] == 0, name=f"misclassified_flag_{s}")
-    
-    gurobi_model.addConstr(gp.quicksum(misclassified_flags[s] for s in range(n_samples)) == misclassification_count, name="exactly_one_misclassified")
+                    self.gurobi_model.addConstr(Z[label_max] >= Z[k] + self.tol, f"Z2_max_{s}_{k}")
 
-    abs_W = gurobi_model.addVars(*W.shape, lb=0, name="abs_W")
-    abs_b = gurobi_model.addVars(layer_size, lb=0, name="abs_b")
+            max_min_diff.append(Z[label_max] - Z[label_min])
+        objective = gp.quicksum(max_min_diff)
+        self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
 
-    for i in range(W.shape[0]):
-        for j in range(W.shape[1]):
-            gurobi_model.addConstr(abs_W[i, j] >= W_offset[i, j])
-            gurobi_model.addConstr(abs_W[i, j] >= -W_offset[i, j])
-    for i in range(layer_size):
-        gurobi_model.addConstr(abs_b[i] >= b_offset[i])
-        gurobi_model.addConstr(abs_b[i] >= -b_offset[i])
-    
-    objective = (
-        gp.quicksum(abs_W[i, j] for i in range(W.shape[0]) for j in range(W.shape[1])) +
-        gp.quicksum(abs_b[i] for i in range(layer_size))
-    )
-    gurobi_model.setObjective(objective, GRB.MINIMIZE)
-    gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
-    gurobi_model.setParam('TimeLimit', timeLimit)
-    gurobi_model.optimize()
-
-    if gurobi_model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL] and gurobi_model.SolCount > 0:
-        W_off = np.array([[W_offset[i, j].X for j in range(W.shape[1])] for i in range(W.shape[0])])
-        b_off = np.array([b_offset[i].X for i in range(layer_size)])
-
-        W_new = (W + W_off)
-        b_new = (b + b_off)
-        
-        Z2_pred_gurobi = X @ W_new.T + b_new
-        predictions_gurobi = np.argmax(Z2_pred_gurobi, axis=1)
-        misclassified_mask = predictions_gurobi != pred_checkpoint
-        misclassified = np.sum(misclassified_mask)
-        accuracy_gurobi = np.sum(predictions_gurobi == labels_gt) / len(labels_gt) * 100
-        
-        if misclassified != misclassification_count:
-            with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log_tol.csv", "a") as f:
-                f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
-            GurobiFlip_Correct(dataset_name, store_file_name, run_id, n=n, tol=tol+5e-6, misclassification_count=misclassification_count)
-
-        print(f"Total misclassified samples: {misclassified}")
-        
-        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
-        
-        Z_val_pred = X_val @ W_new.T + b_new
-        predictions_val = np.argmax(Z_val_pred, axis=1)
-        
-        accuracy_val = np.sum(predictions_val == labels_val) / len(labels_val) * 100
-        Z_pred_gurobi_full = X_full @ W_new.T + b_new
-        predictions_gurobi_full = np.argmax(Z_pred_gurobi_full, axis=1)
-        misclassified_mask_full = predictions_gurobi_full != pred_full
-        misclassified_full = np.sum(misclassified_mask_full)
-        accuracy_gurobi_full = np.sum(predictions_gurobi_full == labels_full)  / len(labels_full) * 100
-
-        with open(store_file_name, "a") as f:
-            f.write(f"{run_id},GurobiComplete_Train,-1,-1,{accuracy_gurobi}\n")
-            f.write(f"{run_id},GurobiComplete_Val,-1,-1,{accuracy_val}\n")
-
-        if os.path.exists(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv") == False:
-            with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv", "w") as f:
-                f.write("RunID,Candidate,W_offset_sum,b_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,GlobalMisclassified\n")
-
-        with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv", "a") as f:
-            f.write(f"{run_id},{candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{gurobi_model.ObjVal},{n},{misclassified},{accuracy_gurobi_full},{misclassified_full}\n")
-         
-        return [W_new, b_new]
-    else:
-        print("No solution found.")
-        return None
-                 
-
-def GurobiFlip_Any(dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=1, candidate=0):
-    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
-    X_full_size = X_full.shape[0]
-    if n == -1:
-        X = X_full
-        labels_gt = labels_full
-        pred_checkpoint = pred_full
-    else:
-        np.random.seed(candidate*42)
-        idx = np.random.choice(X_full_size, size=n, replace=False)
-        X = X_full[idx]
-        labels_gt = labels_full[idx]
-        pred_checkpoint = pred_full[idx]
-
-    W1 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_fc_hidden_weight.pt", map_location=torch.device('cpu')).numpy()
-    b1 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_fc_hidden_bias.pt", map_location=torch.device('cpu')).numpy()
-    W2 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
-    b2 = torch.load(f"checkpoints/{dataset_name}/Run{run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()
-
-    Z1 = np.maximum(0, X @ W1.T + b1)
-    Z2_target = Z1 @ W2.T + b2
-    
-    pred_target = np.argmax(Z2_target, axis=1)
-    # print(f"W2 dtype: {W2.dtype}, b2 dtype: {b2.dtype}")
-    print("Size of X:", X.shape)
-    print("Size of W2:", W2.shape)
-    print("Size of b2:", b2.shape)
-    print("Mismatch: ", sum(pred_checkpoint != pred_target))
-
-    n_samples = len(X)
-    l1_size = W2.shape[1]
-    l2_size = W2.shape[0]
-
-    gurobi_model = gp.Model()
-    # W2_offset = gurobi_model.addVars(*W2.shape, lb=-20, ub=20, name="W2_offset")
-    # b2_offset = gurobi_model.addVars(l2_size, lb=-20, ub=20, name="b2_offset")
-    W2_offset = gurobi_model.addVars(*W2.shape, lb=-GRB.INFINITY, ub=GRB.INFINITY, name="W2_offset")
-    b2_offset = gurobi_model.addVars(l2_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name="b2_offset")
-
-    Z2_list = []
-    misclassified_flags = gurobi_model.addVars(n_samples, vtype=GRB.BINARY, name="misclassified_flags")
-    for s in range(n_samples):
-        label_max = int(np.argmax(Z2_target[s]))
-        label_min = int(np.argmin(Z2_target[s]))
-        A1_fixed = Z1[s]
-
-        Z2 = gurobi_model.addVars(l2_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z2_{s}")
-        for j in range(l2_size):
-            expr = gp.LinExpr()
-            for i in range(l1_size):
-                expr += (W2[j, i] + W2_offset[j, i]) * A1_fixed[i]
-            expr += b2[j] + b2_offset[j]
-            gurobi_model.addConstr(Z2[j] == expr)
-        violations = gurobi_model.addVars(l2_size, vtype=GRB.BINARY, name=f"violations_{s}")
-        for k in range(l2_size):
-            if k != label_max:
-                gurobi_model.addConstr((violations[k] == 1) >> (Z2[label_max] <= Z2[k] - tol), name=f"violation_1flip_{s}_{k}")
-                gurobi_model.addConstr((violations[k] == 0) >> (Z2[label_max] >= Z2[k] + tol), name=f"violation_0flip_{s}_{k}")
-            else:
-                gurobi_model.addConstr(violations[k] == 0, name=f"violation_0_{s}_{k}")
-
-        gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(l2_size)) >= misclassified_flags[s])
-        gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(l2_size)) <= (l2_size - 1) * misclassified_flags[s])
-    
-    gurobi_model.addConstr(gp.quicksum(misclassified_flags[s] for s in range(n_samples)) == misclassification_count, name="exactly_one_misclassified")
-
-    abs_W2 = gurobi_model.addVars(*W2.shape, lb=0, name="abs_W2")
-    abs_b2 = gurobi_model.addVars(l2_size, lb=0, name="abs_b2")
-
-    for i in range(W2.shape[0]):
-        for j in range(W2.shape[1]):
-            gurobi_model.addConstr(abs_W2[i, j] >= W2_offset[i, j])
-            gurobi_model.addConstr(abs_W2[i, j] >= -W2_offset[i, j])
-    for i in range(l2_size):
-        gurobi_model.addConstr(abs_b2[i] >= b2_offset[i])
-        gurobi_model.addConstr(abs_b2[i] >= -b2_offset[i])
-    
-    objective = (
-        gp.quicksum(abs_W2[i, j] for i in range(W2.shape[0]) for j in range(W2.shape[1])) +
-        gp.quicksum(abs_b2[i] for i in range(l2_size))
-    )
-    gurobi_model.setObjective(objective, GRB.MINIMIZE)
-    gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
-    gurobi_model.setParam('TimeLimit', timeLimit)
-    gurobi_model.optimize()
-
-    if gurobi_model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL] and gurobi_model.SolCount > 0:
-        W2_off = np.array([[W2_offset[i, j].X for j in range(W2.shape[1])] for i in range(W2.shape[0])])
-        b2_off = np.array([b2_offset[i].X for i in range(l2_size)])
-
-        W2_new = (W2 + W2_off)
-        b2_new = (b2 + b2_off)
-        
-        def softmax(x):
-            x = x - np.max(x, axis=1, keepdims=True)
-            e_x = np.exp(x)
-            return e_x / np.sum(e_x, axis=1, keepdims=True)
-
-        A1 = np.maximum(0, X @ W1.T + b1)
-        Z2_pred_gurobi = A1 @ W2_new.T + b2_new
-        predictions_gurobi = np.argmax(Z2_pred_gurobi, axis=1)
-        misclassified_mask = predictions_gurobi != pred_checkpoint
-        misclassified = np.sum(misclassified_mask)
-        accuracy_gurobi = np.sum(predictions_gurobi == labels_gt) / len(labels_gt) * 100
-        
-        if misclassified != misclassification_count:
-            with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log_tol.csv", "a") as f:
-                f.write(f"Tol:{tol}\nMisclassified: {misclassified}\n")
-            GurobiFlip_Any(dataset_name, store_file_name, run_id, n=n, tol=tol+5e-6, misclassification_count=misclassification_count)
-
-        print(f"Total misclassified samples: {misclassified}")
-        
-        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
-        Z1_val = np.maximum(0, X_val @ W1.T + b1)
-        Z2_val_pred = Z1_val @ W2_new.T + b2_new
-        predictions_val = np.argmax(Z2_val_pred, axis=1)
-        
-        accuracy_val = np.sum(predictions_val == labels_val) / len(labels_val) * 100
-        A1_full = np.maximum(0, X_full @ W1.T + b1)
-        Z2_pred_gurobi_full = A1_full @ W2_new.T + b2_new
-        predictions_gurobi_full = np.argmax(Z2_pred_gurobi_full, axis=1)
-        misclassified_mask_full = predictions_gurobi_full != pred_full
-        misclassified_full = np.sum(misclassified_mask_full)
-        accuracy_gurobi_full = np.sum(predictions_gurobi_full == labels_full)  / len(labels_full) * 100
-
-        with open(store_file_name, "a") as f:
-            f.write(f"{run_id},GurobiComplete_Train,-1,-1,{accuracy_gurobi}\n")
-            f.write(f"{run_id},GurobiComplete_Val,-1,-1,{accuracy_val}\n")
-
-        if os.path.exists(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv") == False:
-            with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv", "w") as f:
-                f.write("RunID,Candidate,W2_offset_sum,b2_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,GlobalMisclassified\n")
-
-        with open(f"Stats/RAF_CrossVal_All/{dataset_name}_gurobi_log.csv", "a") as f:
-            f.write(f"{run_id},{candidate},{np.sum(np.abs(W2_off))},{np.sum(np.abs(b2_off))},{gurobi_model.ObjVal},{n},{misclassified},{accuracy_gurobi_full},{misclassified_full}\n")
-        
-        return [W2_new, b2_new]
-    else:
-        print("No solution found.")
-        return None
-        
