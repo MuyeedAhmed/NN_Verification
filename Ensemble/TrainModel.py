@@ -47,7 +47,6 @@ class TrainModel:
                 f.write("Run,Phase,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
 
     def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=50):
-        self.model.train()
         loss = -1
         best_val_loss = float('inf')
         best_train_loss = float('inf')
@@ -55,6 +54,7 @@ class TrainModel:
         best_epoch = -1
 
         for epoch in range(self.num_epochs+self.resume_epochs):
+            self.model.train()
             running_loss, correct, total = 0.0, 0, 0
 
             for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
