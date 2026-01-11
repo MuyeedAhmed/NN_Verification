@@ -13,7 +13,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-timeLimit = 300
+timeLimit = 600
 
 class MILP:
     def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, candidate=0):
