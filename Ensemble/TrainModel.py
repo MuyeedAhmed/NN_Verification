@@ -46,12 +46,13 @@ class TrainModel:
             with open(self.log_file, "w") as f:
                 f.write("Run,Phase,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
 
-    def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=50):
+    def train(self, early_stopping_patience=15, min_delta=1e-5, warmup_epochs=25):
         loss = -1
         best_val_loss = float('inf')
         best_train_loss = float('inf')
         epochs_no_improve = 0
         best_epoch = -1
+        acceptable_val_acc = 85.0
 
         for epoch in range(self.num_epochs+self.resume_epochs):
             self.model.train()
@@ -108,7 +109,7 @@ class TrainModel:
             else:
                 epochs_no_improve += 1
 
-            if epochs_no_improve >= early_stopping_patience:
+            if epochs_no_improve >= early_stopping_patience and val_acc >= acceptable_val_acc:
                 print(f"Early stopping at epoch {epoch+1}. Best was epoch {best_epoch} (val_loss={best_val_loss:.4f}).")
                 break
 
