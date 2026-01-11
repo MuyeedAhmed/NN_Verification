@@ -28,10 +28,15 @@ class MILP:
         self.gurobi_model = gp.Model()
     
     
-    def LoadInputs(self):
-        self.X_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_train.pt").numpy()
-        self.labels_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_train.pt").numpy()
-        self.pred_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_train.pt").numpy()
+    def LoadInputs(self, X_full=None, labels_full=None, pred_full=None, X_val=None, labels_val=None, pred_val=None):
+        if X_full is not None:
+            self.X_full = X_full
+            self.labels_full = labels_full
+            self.pred_full = pred_full
+        else:
+            self.X_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_train.pt").numpy()
+            self.labels_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_train.pt").numpy()
+            self.pred_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_train.pt").numpy()
         X_full_size = self.X_full.shape[0]
         if self.n == -1:
             self.X = self.X_full
@@ -60,6 +65,7 @@ class MILP:
     
     
     def Optimize(self, Method = "MisCls_Correct"):
+        milp_log_file = f"Stats/{self.dataset_name}_log.csv"
         self.LoadInputs()
         self.PrintShapes()
         
@@ -68,16 +74,12 @@ class MILP:
         
         if Method == "MisCls_Correct":
             self.AddConstraints_MisCls(samples="Correct")
-            milp_log_file = f"Stats/{self.dataset_name}_MisCls_Correct_MILP_log.csv"
         elif Method == "MisCls_Incorrect":
             self.AddConstraints_MisCls(samples="Incorrect")
-            milp_log_file = f"Stats/{self.dataset_name}_MisCls_Incorrect_MILP_log.csv"
         elif Method == "MisCls_Any":
             self.AddConstraints_MisCls(samples="Any")
-            milp_log_file = f"Stats/{self.dataset_name}_MisCls_Any_MILP_log.csv"
         elif Method == "LowerConf":
             self.AddConstraints_LowerConf()
-            milp_log_file = f"Stats/{self.dataset_name}_LowerConf_MILP_log.csv"
 
 
         self.gurobi_model.setParam('TimeLimit', timeLimit)
@@ -97,7 +99,7 @@ class MILP:
             accuracy_gurobi = np.sum(predictions_gurobi == self.labels_gt) / len(self.labels_gt) * 100
             
             if misclassified != self.misclassification_count:
-                with open(f"Stats/RAF_CrossVal_All/{self.dataset_name}_gurobi_log_tol.csv", "a") as f:
+                with open(f"Stats/Error_{self.dataset_name}_gurobi_log_tol.csv", "a") as f:
                     f.write(f"Tol:{self.tol}\nMisclassified: {misclassified}\n")
                 # GurobiFlip_Correct(self.dataset_name, self.store_file_name, self.run_id, n=self.n, tol=self.tol+5e-6, misclassification_count=self.misclassification_count)
 
@@ -122,10 +124,10 @@ class MILP:
 
             if os.path.exists(milp_log_file) == False:
                 with open(milp_log_file, "w") as f:
-                    f.write("RunID,Candidate,W_offset_sum,b_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,GlobalMisclassified\n")
+                    f.write("Method,RunID,Candidate,W_offset_sum,b_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,Accuracy_Val,GlobalMisclassified\n")
 
             with open(milp_log_file, "a") as f:
-                f.write(f"{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{misclassified_full}\n")
+                f.write(f"{self.method},{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{accuracy_val},{misclassified_full}\n")
             
             return [W_new, b_new]
         else:
