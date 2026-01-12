@@ -8,6 +8,8 @@ from torch.utils.data import random_split, DataLoader, Subset
 import random
 import numpy as np
 
+from CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net, VGG_office31, VGG_var_layers
+
 def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, extra_conv_layers=0):
     if dataset_name == "MNIST":
         model_t = NIN_MNIST(num_classes=10, output_layer_size=output_layer_size).to(device)
