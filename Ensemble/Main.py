@@ -335,21 +335,39 @@ if __name__ == "__main__":
     TM_after_g.save_fc_inputs("Val")
 
     print(f"Saved FC inputs for run {i}.")
+
+    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
+    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
+    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
+    X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
+    labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
+    pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
+
+    loaded_inputs_gurobi = {
+        "X_full": X_full,
+        "labels_full": labels_full,
+        "pred_full": pred_full,
+        "X_val": X_val,
+        "labels_val": labels_val,
+        "pred_val": pred_val,
+    }
+
+    print("Loaded inputs for Gurobi optimization.")
           
     for candidate in range(total_candidates):
         time0 = time.time()
 
         if candidate % 4 == 1:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
         elif candidate % 4 == 2:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
         elif candidate % 4 == 3:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
         else:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=candidate)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=candidate, loaded_inputs=loaded_inputs_gurobi)
             Gurobi_output = milp_instance.Optimize(Method="LowerConf")
 
         time1 = time.time()

@@ -16,7 +16,7 @@ import numpy as np
 timeLimit = 600
 
 class MILP:
-    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, candidate=0):
+    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, candidate=0, loaded_inputs=None):
         self.dataset_name = dataset_name
         self.store_file_name = store_file_name
         self.run_id = run_id
@@ -24,14 +24,20 @@ class MILP:
         self.tol = tol
         self.misclassification_count = misclassification_count
         self.candidate = candidate
+        self.X_full, self.labels_full, self.pred_full, self.X_val, self.labels_val, self.pred_val = None, None, None, None, None, None
 
+        if loaded_inputs is not None:
+            self.X_full, self.labels_full, self.pred_full, self.X_val, self.labels_val, self.pred_val = loaded_inputs['X_full'], loaded_inputs['labels_full'], loaded_inputs['pred_full'], loaded_inputs['X_val'], loaded_inputs['labels_val'], loaded_inputs['pred_val']
+        
         self.gurobi_model = gp.Model()
+
     
     
     def LoadInputs(self):
-        self.X_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_train.pt").numpy()
-        self.labels_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_train.pt").numpy()
-        self.pred_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_train.pt").numpy()
+        if self.X_full is None:
+            self.X_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_train.pt").numpy()
+            self.labels_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_train.pt").numpy()
+            self.pred_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_train.pt").numpy()
         X_full_size = self.X_full.shape[0]
         if self.n == -1:
             self.X = self.X_full
@@ -60,33 +66,32 @@ class MILP:
     
     
     def Optimize(self, Method = "MisCls_Correct"):
+        milp_log_file = f"Stats/{self.dataset_name}_log.csv"
         self.LoadInputs()
         self.PrintShapes()
         
         self.W_offset = self.gurobi_model.addVars(*self.W.shape, lb=-GRB.INFINITY, ub=GRB.INFINITY, name="W_offset")
         self.b_offset = self.gurobi_model.addVars(self.W.shape[0], lb=-GRB.INFINITY, ub=GRB.INFINITY, name="b_offset")
         
+        # time0 = time.time()
+
         if Method == "MisCls_Correct":
             self.AddConstraints_MisCls(samples="Correct")
-            milp_log_file = f"Stats/{self.dataset_name}_MisCls_Correct_MILP_log.csv"
         elif Method == "MisCls_Incorrect":
             self.AddConstraints_MisCls(samples="Incorrect")
-            milp_log_file = f"Stats/{self.dataset_name}_MisCls_Incorrect_MILP_log.csv"
         elif Method == "MisCls_Any":
             self.AddConstraints_MisCls(samples="Any")
-            milp_log_file = f"Stats/{self.dataset_name}_MisCls_Any_MILP_log.csv"
         elif Method == "LowerConf":
             self.AddConstraints_LowerConf()
-            milp_log_file = f"Stats/{self.dataset_name}_LowerConf_MILP_log.csv"
 
 
         self.gurobi_model.setParam('TimeLimit', timeLimit)
         self.gurobi_model.optimize()
 
         if self.gurobi_model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL] and self.gurobi_model.SolCount > 0:
+            # time1 = time.time()
             W_off = np.array([[self.W_offset[i, j].X for j in range(self.W.shape[1])] for i in range(self.W.shape[0])])
             b_off = np.array([self.b_offset[i].X for i in range(self.W.shape[0])])
-
             W_new = (self.W + W_off)
             b_new = (self.b + b_off)
             
@@ -97,20 +102,21 @@ class MILP:
             accuracy_gurobi = np.sum(predictions_gurobi == self.labels_gt) / len(self.labels_gt) * 100
             
             if misclassified != self.misclassification_count:
-                with open(f"Stats/RAF_CrossVal_All/{self.dataset_name}_gurobi_log_tol.csv", "a") as f:
+                with open(f"Stats/Error_{self.dataset_name}_gurobi_log_tol.csv", "a") as f:
                     f.write(f"Tol:{self.tol}\nMisclassified: {misclassified}\n")
                 # GurobiFlip_Correct(self.dataset_name, self.store_file_name, self.run_id, n=self.n, tol=self.tol+5e-6, misclassification_count=self.misclassification_count)
 
             print(f"Total misclassified samples: {misclassified}")
             
-            X_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_val.pt").numpy()
-            labels_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_val.pt").numpy()
-            pred_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_val.pt").numpy()
+            if self.X_val is None:
+                self.X_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_val.pt").numpy()
+                self.labels_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_val.pt").numpy()
+                # self.pred_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_val.pt").numpy()
             
-            Z_val_pred = X_val @ W_new.T + b_new
+            Z_val_pred = self.X_val @ W_new.T + b_new
             predictions_val = np.argmax(Z_val_pred, axis=1)
             
-            accuracy_val = np.sum(predictions_val == labels_val) / len(labels_val) * 100
+            accuracy_val = np.sum(predictions_val == self.labels_val) / len(self.labels_val) * 100
             Z_pred_gurobi_full = self.X_full @ W_new.T + b_new
             predictions_gurobi_full = np.argmax(Z_pred_gurobi_full, axis=1)
             misclassified_mask_full = predictions_gurobi_full != self.pred_full
@@ -122,11 +128,18 @@ class MILP:
 
             if os.path.exists(milp_log_file) == False:
                 with open(milp_log_file, "w") as f:
-                    f.write("RunID,Candidate,W_offset_sum,b_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,GlobalMisclassified\n")
+                    f.write("Method,RunID,Candidate,W_offset_sum,b_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,Accuracy_Val,GlobalMisclassified\n")
 
             with open(milp_log_file, "a") as f:
-                f.write(f"{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{misclassified_full}\n")
+                f.write(f"{Method},{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{accuracy_val},{misclassified_full}\n")
+            # time2 = time.time()
             
+            # with open("TimeLogs.txt", "a") as f:
+            #     f.write("Time: GurobiOptimize_{}_{}\t{:.2f}\n".format(Method, self.candidate, time1 - time0))
+            #     f.write("Time: GurobiEval_{}_{}\t{:.2f}\n".format(Method, self.candidate, time2 - time1))
+            # print(f"Gurobi Optimization Time: {time1 - time0:.3f} seconds")
+            # print(f"Gurobi Evaluation Time: {time2 - time1:.3f} seconds")
+
             return [W_new, b_new]
         else:
             print("No solution found.")
