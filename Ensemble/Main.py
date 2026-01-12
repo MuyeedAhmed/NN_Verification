@@ -221,11 +221,11 @@ def ensemble_test_accuracy(models, test_loader, device):
     return correct / total
 
 
-def load_models(checkpoint_paths, dataset_name, device, ols):
+def load_models(checkpoint_paths, dataset_name, device):
     models = []
 
     for path in checkpoint_paths:
-        model, _ = GetModel(dataset_name, device=device, output_layer_size=ols)
+        model, _ = GetModel(dataset_name, device=device)
         ckpt = torch.load(path, map_location=device)
         model.load_state_dict(ckpt["model_state_dict"])
         model.eval()
@@ -440,7 +440,7 @@ if __name__ == "__main__":
     #     print(r["Candidate"], r["Val_acc"], r["Checkpoint"])
 
 
-    models = load_models(top_k_paths, dataset_name, device, ols)
+    models = load_models(top_k_paths, dataset_name, device)
 
     ensemble_acc = ensemble_test_accuracy(
         models=models,
