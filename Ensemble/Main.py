@@ -168,17 +168,6 @@ class RelabelSubset(torch.utils.data.Dataset):
         new_label = self.class_map[class_name]
         return image, new_label
 
-class WrapOneHotEncoding(torch.utils.data.Dataset):
-    def __init__(self, dataset):
-        self.dataset = dataset
-
-    def __getitem__(self, index):
-        image, label = self.dataset[index]
-        label = label.argmax().item()
-        return image, label
-
-    def __len__(self):
-        return len(self.dataset)
 
 def get_loaders_from_folder(root_dir, image_size=(224, 224), val_split=0.2, seed=42):
     transform = transforms.Compose([
