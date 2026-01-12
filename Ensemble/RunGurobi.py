@@ -73,6 +73,8 @@ class MILP:
         self.W_offset = self.gurobi_model.addVars(*self.W.shape, lb=-GRB.INFINITY, ub=GRB.INFINITY, name="W_offset")
         self.b_offset = self.gurobi_model.addVars(self.W.shape[0], lb=-GRB.INFINITY, ub=GRB.INFINITY, name="b_offset")
         
+        # time0 = time.time()
+
         if Method == "MisCls_Correct":
             self.AddConstraints_MisCls(samples="Correct")
         elif Method == "MisCls_Incorrect":
@@ -87,9 +89,9 @@ class MILP:
         self.gurobi_model.optimize()
 
         if self.gurobi_model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL] and self.gurobi_model.SolCount > 0:
+            # time1 = time.time()
             W_off = np.array([[self.W_offset[i, j].X for j in range(self.W.shape[1])] for i in range(self.W.shape[0])])
             b_off = np.array([self.b_offset[i].X for i in range(self.W.shape[0])])
-
             W_new = (self.W + W_off)
             b_new = (self.b + b_off)
             
@@ -129,8 +131,15 @@ class MILP:
                     f.write("Method,RunID,Candidate,W_offset_sum,b_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,Accuracy_Val,GlobalMisclassified\n")
 
             with open(milp_log_file, "a") as f:
-                f.write(f"{self.method},{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{accuracy_val},{misclassified_full}\n")
+                f.write(f"{Method},{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{accuracy_val},{misclassified_full}\n")
+            # time2 = time.time()
             
+            # with open("TimeLogs.txt", "a") as f:
+            #     f.write("Time: GurobiOptimize_{}_{}\t{:.2f}\n".format(Method, self.candidate, time1 - time0))
+            #     f.write("Time: GurobiEval_{}_{}\t{:.2f}\n".format(Method, self.candidate, time2 - time1))
+            # print(f"Gurobi Optimization Time: {time1 - time0:.3f} seconds")
+            # print(f"Gurobi Evaluation Time: {time2 - time1:.3f} seconds")
+
             return [W_new, b_new]
         else:
             print("No solution found.")
