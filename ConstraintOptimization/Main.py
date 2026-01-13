@@ -131,6 +131,10 @@ if __name__ == "__main__":
         "labels_val": labels_val,
         "pred_val": pred_val,
     }
+    print("Training and Validation Accuracy before Gurobi optimization:", TM_after_g.evaluate("Train"), TM_after_g.evaluate("Val"))
+    print("Training and Validation Accuracy of loaded inputs:", 
+          (np.mean(loaded_inputs_gurobi["pred_full"] == loaded_inputs_gurobi["labels_full"]),
+           np.mean(loaded_inputs_gurobi["pred_val"] == loaded_inputs_gurobi["labels_val"])))
 
     print("Loaded inputs for Gurobi optimization.")
 
@@ -180,7 +184,6 @@ if __name__ == "__main__":
     with open(TM_after_g.log_file, "a") as f:
         f.write(f"{i},{method},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
         f.write(f"{i},{method},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
-        f.write(f"{i},{method},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
 
         # results.append({
         #     "Candidate": candidate,
