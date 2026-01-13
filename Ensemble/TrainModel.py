@@ -52,7 +52,7 @@ class TrainModel:
         best_train_loss = float('inf')
         epochs_no_improve = 0
         best_epoch = -1
-        acceptable_val_acc = 85.0
+        acceptable_val_acc = 90.0
 
         for epoch in range(self.num_epochs+self.resume_epochs):
             self.model.train()
