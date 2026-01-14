@@ -48,10 +48,8 @@ class ResNetCIFAR_OriginalHead(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.flatten = nn.Flatten()
 
-        # --- Original ResNet head is just one Linear ---
-        self.fc = nn.Linear(512, num_classes)
+        self.fc = nn.Linear(256, num_classes)
 
-        # --- Aliases for TrainModel.py (do NOT change functionality) ---
         self.fc_hidden = nn.Identity()
         self.classifier = self.fc
 
@@ -70,7 +68,7 @@ class ResNetCIFAR_OriginalHead(nn.Module):
         out = self.layer3(out)
         out = self.layer4(out)
         out = self.avgpool(out)
-        out = self.flatten(out)   # [N, 512]
+        out = self.flatten(out)   # [N, 256]
         return out
 
     def forward(self, x, extract_fc_input=False):
