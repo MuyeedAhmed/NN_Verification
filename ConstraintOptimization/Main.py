@@ -18,6 +18,23 @@ from Utils.GetModelsDatasets import GetDataset, GetModel
 
 from Utils.CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net, VGG_office31, VGG_var_layers
 
+@torch.no_grad()
+def evaluate_loader(model, loader, device):
+    model.eval()
+    correct = 0
+    total = 0
+    loss_sum = 0.0
+    for x, y in loader:
+        x = x.to(device)
+        y = y.to(device)
+        logits = model(x)
+        loss = F.cross_entropy(logits, y, reduction="sum")
+        loss_sum += loss.item()
+        preds = logits.argmax(dim=1)
+        correct += (preds == y).sum().item()
+        total += y.numel()
+    return loss_sum / total, correct / total
+
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -62,9 +79,9 @@ if __name__ == "__main__":
     
     train_dataset, test_dataset = GetDataset(dataset_name)
     
-    full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
-    train_size = len(train_dataset)
-    val_size = len(test_dataset)
+    # full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
+    train_size = int(len(train_dataset) * 0.8)
+    val_size = int(len(train_dataset) * 0.2)
     total_size = train_size + val_size
     total_run = 5
 
@@ -78,12 +95,12 @@ if __name__ == "__main__":
     new_train_indices = all_indices[:train_size]
     new_val_indices = all_indices[train_size:]
 
-    train_subset = Subset(full_dataset, new_train_indices)
-    val_subset = Subset(full_dataset, new_val_indices)
+    train_subset = Subset(train_dataset, new_train_indices)
+    val_subset = Subset(train_dataset, new_val_indices)
 
     train_loader = DataLoader(train_subset, batch_size=BatchSize, shuffle=True)
     val_loader = DataLoader(val_subset, batch_size=BatchSize, shuffle=False)
-    # test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
     
 
     if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
@@ -97,7 +114,7 @@ if __name__ == "__main__":
         print(f"Checkpoint for run {i} already exists. Skipping Gurobi edit.")
         #loop ## continue
     
-    # results = []
+    results = []
 
     TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
 
@@ -179,24 +196,29 @@ if __name__ == "__main__":
     
     train_loss, train_acc = TM_after_g.evaluate("Train")
     val_loss, val_acc = TM_after_g.evaluate("Val")
+    test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
 
 
     with open(TM_after_g.log_file, "a") as f:
         f.write(f"{i},{method},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
         f.write(f"{i},{method},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
-
-        # results.append({
-        #     "Candidate": candidate,
-        #     "Checkpoint": checkpoint_dir,
-        #     "Train_loss": float(train_loss),
-        #     "Train_acc": float(train_acc),
-        #     "Val_loss": float(val_loss),
-        #     "Val_acc": float(val_acc),
-        #     "Test_loss": float(test_loss),
-        #     "Test_acc": float(test_acc),
-        #     "Solve_Time": float(time1 - time0),
-        # })
-        # print(f"[Run {i} cand {method}] val_acc={val_acc:.4f} test_acc={test_acc:.4f} time={time1 - time0:.1f}s")
+        f.write(f"{i},{method},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
+    results.append({
+        "Dataset": dataset_name,
+        "Candidate": candidate,
+        "Checkpoint": checkpoint_dir,
+        "Method": method,
+        "RAF_Type": raf_type,
+        "Misclassification_Count": int(misclassification_count),
+        "Train_loss": float(train_loss),
+        "Train_acc": float(train_acc),
+        "Val_loss": float(val_loss),
+        "Val_acc": float(val_acc),
+        "Test_loss": float(test_loss),
+        "Test_acc": float(test_acc),
+        "Solve_Time": float(time1 - time0),
+    })
+    print(f"[Run {i} cand {method}] val_acc={val_acc:.4f} test_acc={test_acc:.4f} time={time1 - time0:.1f}s")
     
     if method == "RAF":
         TM_after_g.run()
@@ -206,15 +228,15 @@ if __name__ == "__main__":
     # TM_after_g.delete_fc_inputs()
     
 
-    # csv_path = "Stats/Summary.csv"
-    # write_header = not os.path.exists(csv_path)
+    csv_path = "Stats/Summary.csv"
+    write_header = not os.path.exists(csv_path)
 
-    # with open(csv_path, "a", newline="") as f:
-    #     writer = csv.DictWriter(f, fieldnames=["Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
+    with open(csv_path, "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["Dataset","Candidate","Checkpoint","Method","RAF_Type","Misclassification_Count","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
 
-    #     if write_header:
-    #         writer.writeheader()
+        if write_header:
+            writer.writeheader()
 
-    #     for row in results:
-    #         writer.writerow(row)
+        for row in results:
+            writer.writerow(row)
 

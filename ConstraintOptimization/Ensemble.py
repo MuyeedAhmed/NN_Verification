@@ -92,7 +92,6 @@ if __name__ == "__main__":
     os.makedirs(f"Stats/{method}", exist_ok=True)
 
     n_samples_gurobi = 1000
-        
     
     if dataset_name == "CIFAR10":
         BatchSize = 128
@@ -108,7 +107,6 @@ if __name__ == "__main__":
     
     train_dataset, test_dataset = GetDataset(dataset_name)
 
-    full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
     train_size = int(len(train_dataset) * 0.8)
     val_size = int(len(train_dataset) * 0.2)
     total_size = train_size + val_size
@@ -235,7 +233,6 @@ if __name__ == "__main__":
     
     TM_after_g.delete_fc_inputs()
     
-
     csv_path = "Stats/Summary.csv"
     write_header = not os.path.exists(csv_path)
 
@@ -248,7 +245,6 @@ if __name__ == "__main__":
         for row in results:
             writer.writerow(row)
 
-
     results_sorted = sorted(
         results,
         key=lambda r: r["Val_acc"],
@@ -256,9 +252,6 @@ if __name__ == "__main__":
     )
 
     top_k_paths = [r["Checkpoint"] for r in results_sorted[:top_k]]
-    # for r in top5_paths: error
-    #     print(r["Candidate"], r["Val_acc"], r["Checkpoint"])
-
 
     models = load_models(top_k_paths, dataset_name, device)
 
