@@ -30,9 +30,6 @@ def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, ex
     elif dataset_name == "SVHN":
         model_t = VGG(num_classes=10).to(device)
         model_g = VGG(num_classes=10).to(device)
-    elif dataset_name == "PathMNIST":
-        model_t = VGG(num_classes=9).to(device)
-        model_g = VGG(num_classes=9).to(device)
     elif dataset_name == "Food101":
             model_t = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
             model_g = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
