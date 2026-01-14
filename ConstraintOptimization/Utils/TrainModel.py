@@ -46,7 +46,7 @@ class TrainModel:
             with open(self.log_file, "w") as f:
                 f.write("Run,Phase,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
 
-    def train(self, early_stopping_patience=15, min_delta=1e-5, warmup_epochs=25):
+    def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=25):
         loss = -1
         best_val_loss = float('inf')
         best_train_loss = float('inf')
@@ -222,7 +222,10 @@ class TrainModel:
 
     def run(self):
         start_time = time.time()
-        self.train(early_stopping_patience=10)
+        if self.phase == "Train":
+            self.train()
+        elif self.phase == "GurobiEdit" or self.phase == "ResumeTrain":
+            self.train(warmup_epochs=0)
         accuracy = self.test()
     
     def evaluate(self, dataset_type):
