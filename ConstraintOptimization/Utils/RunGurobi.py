@@ -13,7 +13,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-timeLimit = 3600
+timeLimit = 10800 # 3 hours
 
 class MILP:
     def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, candidate=0, loaded_inputs=None):
@@ -30,9 +30,8 @@ class MILP:
             self.X_full, self.labels_full, self.pred_full, self.X_val, self.labels_val, self.pred_val = loaded_inputs['X_full'], loaded_inputs['labels_full'], loaded_inputs['pred_full'], loaded_inputs['X_val'], loaded_inputs['labels_val'], loaded_inputs['pred_val']
         
         self.gurobi_model = gp.Model()
+        self.gurobi_model.setParam('TimeLimit', timeLimit)
 
-    
-    
     def LoadInputs(self):
         if self.X_full is None:
             self.X_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_train.pt").numpy()
@@ -66,7 +65,7 @@ class MILP:
     
     
     def Optimize(self, Method = "MisCls_Correct"):
-        milp_log_file = f"Stats/{self.dataset_name}_log.csv"
+        milp_log_file = f"Stats/MILP_log.csv"
         self.LoadInputs()
         self.PrintShapes()
         
@@ -85,7 +84,6 @@ class MILP:
             self.AddConstraints_LowerConf()
 
 
-        self.gurobi_model.setParam('TimeLimit', timeLimit)
         self.gurobi_model.optimize()
 
         if self.gurobi_model.status in [GRB.TIME_LIMIT, GRB.OPTIMAL] and self.gurobi_model.SolCount > 0:
@@ -128,10 +126,10 @@ class MILP:
 
             if os.path.exists(milp_log_file) == False:
                 with open(milp_log_file, "w") as f:
-                    f.write("Method,RunID,Candidate,W_offset_sum,b_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,Accuracy_Val,GlobalMisclassified\n")
+                    f.write("Dataset,Method,RunID,Candidate,W_offset_sum,b_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,Accuracy_Val,GlobalMisclassified\n")
 
             with open(milp_log_file, "a") as f:
-                f.write(f"{Method},{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{accuracy_val},{misclassified_full}\n")
+                f.write(f"{self.dataset_name},{Method},{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{accuracy_val},{misclassified_full}\n")
             # time2 = time.time()
             
             # with open("TimeLogs.txt", "a") as f:
