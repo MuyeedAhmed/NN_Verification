@@ -43,7 +43,7 @@ class ResNetCIFAR_OriginalHead(nn.Module):
         self.layer1 = self._make_layer(block, 64,  num_blocks[0], stride=1)
         self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
+        self.layer4 = self._make_layer(block, 256, num_blocks[3], stride=2)
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.flatten = nn.Flatten()
@@ -68,7 +68,7 @@ class ResNetCIFAR_OriginalHead(nn.Module):
         out = self.layer3(out)
         out = self.layer4(out)
         out = self.avgpool(out)
-        out = self.flatten(out)   # [N, 256]
+        out = self.flatten(out)
         return out
 
     def forward(self, x, extract_fc_input=False):
