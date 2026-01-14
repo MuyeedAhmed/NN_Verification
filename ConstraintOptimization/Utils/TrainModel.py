@@ -46,13 +46,13 @@ class TrainModel:
             with open(self.log_file, "w") as f:
                 f.write("Run,Phase,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
 
-    def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=25):
+    def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=0):
         loss = -1
         best_val_loss = float('inf')
         best_train_loss = float('inf')
         epochs_no_improve = 0
         best_epoch = -1
-        acceptable_val_acc = 90.0
+        acceptable_val_acc = 0.0
 
         for epoch in range(self.num_epochs+self.resume_epochs):
             self.model.train()
@@ -192,8 +192,10 @@ class TrainModel:
             for inputs, labels in loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 fc_input, _ = self.model(inputs, extract_fc_input=True)
-                logits = self.model.classifier(self.model.fc_hidden(fc_input))
-                # logits = self.model.classifier(torch.relu(self.model.fc_hidden(fc_input)))
+                logits = self.model.classifier(fc_input)
+                # fc_input, _ = self.model(inputs, extract_fc_input=True)
+                # logits = self.model.classifier(self.model.fc_hidden(fc_input))
+                # # logits = self.model.classifier(torch.relu(self.model.fc_hidden(fc_input)))
                 preds = torch.argmax(logits, dim=1)
                 X_fc_input.append(fc_input.cpu())
                 Y_true.append(labels.cpu())

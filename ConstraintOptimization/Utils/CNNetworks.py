@@ -190,6 +190,43 @@ class VGG(nn.Module):
             nn.MaxPool2d(2),  # 8x8
 
             nn.Conv2d(128, 256, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(256),
+            nn.AdaptiveAvgPool2d((1, 1))      # -> [B, 256, 1, 1]
+        )
+
+        self.flatten = nn.Flatten()
+        self.fc_hidden = nn.Linear(256, output_layer_size)
+        self.relu = nn.ReLU()
+        self.classifier = nn.Linear(output_layer_size, num_classes)
+
+    def _classifier_input(self, x):
+        x = self.features(x)
+        x = self.flatten(x)          # [B, 256]
+        x = self.fc_hidden(x)        # [B, output_layer_size]
+        x = self.relu(x)             # this is the *input to classifier*
+        return x
+
+    def forward(self, x, extract_fc_input=False):
+        h = self._classifier_input(x)
+
+        if extract_fc_input:
+            return h.clone().detach(), None
+
+        logits = self.classifier(h)  # logits = W*h + b
+        return logits
+
+class VGG_old(nn.Module):
+    def __init__(self, num_classes=10, output_layer_size=16):
+        super().__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
+            nn.Conv2d(64, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
+            nn.MaxPool2d(2),  # 16x16
+
+            nn.Conv2d(64, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
+            nn.Conv2d(128, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
+            nn.MaxPool2d(2),  # 8x8
+
+            nn.Conv2d(128, 256, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(256),
             nn.AdaptiveAvgPool2d((1, 1))
         )
 

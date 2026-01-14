@@ -16,7 +16,7 @@ import numpy as np
 from Utils.TrainModel import TrainModel
 from Utils.GetModelsDatasets import GetDataset, GetModel
 
-from Utils.CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net, VGG_office31, VGG_var_layers
+# from Utils.CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_EMNIST, VGG, CNN_USPS, Food101Net, VGG_office31, VGG_var_layers
 
 @torch.no_grad()
 def evaluate_loader(model, loader, device):
