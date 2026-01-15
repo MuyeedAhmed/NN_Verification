@@ -106,7 +106,7 @@ class MILP:
 
             print(f"Total misclassified samples: {misclassified}")
             
-            if self.candidate == -1:
+            if self.candidate >= 0:
                 return [W_new, b_new]
 
             if self.X_val is None:

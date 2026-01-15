@@ -218,9 +218,14 @@ if __name__ == "__main__":
     if method == "RAF":
         TM_after_g.run()
     
-    S3_Train_loss, S3_Train_acc = TM_after_g.evaluate("Train")
-    S3_Val_loss, S3_Val_acc = TM_after_g.evaluate("Val")
-    S3_Test_loss, S3_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+        S3_Train_loss, S3_Train_acc = TM_after_g.evaluate("Train")
+        S3_Val_loss, S3_Val_acc = TM_after_g.evaluate("Val")
+        S3_Test_loss, S3_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+
+    else:
+        S3_Train_loss, S3_Train_acc = -1, -1
+        S3_Val_loss, S3_Val_acc = -1, -1
+        S3_Test_loss, S3_Test_acc = -1, -1
 
     results.append({
         "Dataset": dataset_name,
