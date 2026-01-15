@@ -188,7 +188,23 @@ if __name__ == "__main__":
         }
 
     print("Loaded inputs for Gurobi optimization.")
-          
+    
+    S1_Train_loss, S1_Train_acc = TM_after_g.evaluate("Train")
+    S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
+    S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+    
+    results.append({
+        "Candidate": -1,
+        "Checkpoint": checkpoint_dir,
+        "Train_loss": float(S1_Train_loss),
+        "Train_acc": float(S1_Train_acc),
+        "Val_loss": float(S1_Val_loss),
+        "Val_acc": float(S1_Val_acc),
+        "Test_loss": float(S1_Test_loss),
+        "Test_acc": float(S1_Test_acc),
+        "Solve_Time": -1.0,
+    })
+
     for candidate in range(total_candidates):
         time0 = time.time()
 
@@ -230,10 +246,10 @@ if __name__ == "__main__":
         val_loss, val_acc = TM_after_g.evaluate("Val")
         test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
 
-        with open(TM_after_g.log_file, "a") as f:
-            f.write(f"{i},{candidate},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
-            f.write(f"{i},{candidate},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
-            f.write(f"{i},{candidate},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
+        # with open(TM_after_g.log_file, "a") as f:
+        #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
+        #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
+        #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
 
         results.append({
             "Candidate": candidate,
