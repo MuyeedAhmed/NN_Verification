@@ -1,0 +1,2 @@
+Dataset,Run,Candidate,Checkpoint,Method,RAF_Type,Misclassification_Count,S1_Train_loss,S1_Train_acc,S1_Val_loss,S1_Val_acc,S1_Test_loss,S1_Test_acc,S2_Train_loss,S2_Train_acc,S2_Val_loss,S2_Val_acc,S2_Test_loss,S2_Test_acc,S3_Train_loss,S3_Train_acc,S3_Val_loss,S3_Val_acc,S3_Test_loss,S3_Test_acc,Solve_Time
+CIFAR10,2,0,,RAB,Any,0,,,,,,,,,,,,,,,,,,,10800

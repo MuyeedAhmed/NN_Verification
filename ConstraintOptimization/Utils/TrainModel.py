@@ -40,11 +40,11 @@ class TrainModel:
             self.scheduler = optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[int(0.5*self.num_epochs), int(0.75*self.num_epochs)], gamma=0.1)
        
         self.criterion = nn.CrossEntropyLoss()
-        self.log_file = f"Stats/{self.method}/{self.dataset_name}_log.csv"
+        self.log_file = f"Stats/{self.dataset_name}_nn_run_log.csv"
         
         if start_experiment == True:
             with open(self.log_file, "w") as f:
-                f.write("Run,Phase,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
+                f.write("Run,Phase,Method,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
 
     def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=0):
         loss = -1
@@ -85,12 +85,12 @@ class TrainModel:
                         
             if epoch + 1 <= warmup_epochs:
                 with open(self.log_file, "a") as f:
-                    f.write(f"{self.run_id},{self.phase},{epoch+1},{avg_train_loss},{train_accuracy},-,-\n")
+                    f.write(f"{self.run_id},{self.phase},{self.method},{epoch+1},{avg_train_loss},{train_accuracy},-,-\n")
                 continue
             
             val_loss, val_acc = self.evaluate("Val")
             with open(self.log_file, "a") as f:
-                f.write(f"{self.run_id},{self.phase},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc}\n")
+                f.write(f"{self.run_id},{self.phase},{self.method},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc}\n")
 
             # if best_train_loss - avg_train_loss > min_delta:
             #     best_train_loss = avg_train_loss
@@ -153,7 +153,7 @@ class TrainModel:
         accuracy = 100. * correct / total
         print(f'Test Accuracy: {accuracy:.2f}%')
         with open(self.log_file, "a") as f:
-            f.write(f"{self.run_id},{self.phase}_Test,-1,{avg_loss},{accuracy},-,-\n")
+            f.write(f"{self.run_id},{self.phase}_Test,{self.method},-1,{avg_loss},{accuracy},-,-\n")
         return accuracy
 
     def save_model(self, loss, save_suffix=""):
