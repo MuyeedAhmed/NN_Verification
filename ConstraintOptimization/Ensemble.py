@@ -263,7 +263,7 @@ if __name__ == "__main__":
         
         TM_after_g.run()
 
-        old_path = f"./checkpoints/{self.dataset_name}/Run{self.run_id}_full_checkpoint_GE_RAF.pth"
+        old_path = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_RAF.pth"
         gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{candidate}.pth"
         
         os.rename(old_path, gurobi_checkpoint_dir)
