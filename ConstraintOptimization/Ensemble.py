@@ -156,21 +156,36 @@ if __name__ == "__main__":
 
     print(f"Saved FC inputs for run {i}.")
 
-    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
-    X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-    labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-    pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
+    convertVal = True
+    if convertVal:
+        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
+        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
+        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
 
-    loaded_inputs_gurobi = {
-        "X_full": X_full,
-        "labels_full": labels_full,
-        "pred_full": pred_full,
-        "X_val": X_val,
-        "labels_val": labels_val,
-        "pred_val": pred_val,
-    }
+        loaded_inputs_gurobi = {
+            "X_full": X_val,
+            "labels_full": labels_val,
+            "pred_full": pred_val,
+            "X_val": X_val,
+            "labels_val": labels_val,
+            "pred_val": pred_val,
+        }
+    else:
+        X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
+        labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
+        pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
+        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
+        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
+        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
+
+        loaded_inputs_gurobi = {
+            "X_full": X_full,
+            "labels_full": labels_full,
+            "pred_full": pred_full,
+            "X_val": X_val,
+            "labels_val": labels_val,
+            "pred_val": pred_val,
+        }
 
     print("Loaded inputs for Gurobi optimization.")
           

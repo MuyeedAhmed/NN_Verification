@@ -13,10 +13,9 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 
-timeLimit = 10800 # 3 hours
 
 class MILP:
-    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, candidate=0, loaded_inputs=None):
+    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, timeLimit=10800, loaded_inputs=None, candidate=-1):
         self.dataset_name = dataset_name
         self.store_file_name = store_file_name
         self.run_id = run_id
@@ -27,7 +26,8 @@ class MILP:
         self.X_full, self.labels_full, self.pred_full, self.X_val, self.labels_val, self.pred_val = None, None, None, None, None, None
 
         if loaded_inputs is not None:
-            self.X_full, self.labels_full, self.pred_full, self.X_val, self.labels_val, self.pred_val = loaded_inputs['X_full'], loaded_inputs['labels_full'], loaded_inputs['pred_full'], loaded_inputs['X_val'], loaded_inputs['labels_val'], loaded_inputs['pred_val']
+            self.X_full, self.labels_full, self.pred_full = loaded_inputs['X_full'], loaded_inputs['labels_full'], loaded_inputs['pred_full'] 
+            self.X_val, self.labels_val, self.pred_val = loaded_inputs['X_val'], loaded_inputs['labels_val'], loaded_inputs['pred_val']
         
         self.gurobi_model = gp.Model()
         self.gurobi_model.setParam('TimeLimit', timeLimit)
@@ -101,11 +101,14 @@ class MILP:
             
             if misclassified != self.misclassification_count:
                 with open(f"Stats/Error_{self.dataset_name}_gurobi_log_tol.csv", "a") as f:
-                    f.write(f"Tol:{self.tol}\nMisclassified: {misclassified}\n")
+                    f.write(f"Tol:{self.tol}\nMisclassified: {misclassified}\nMetohd: {Method}\nMisclassification Count: {self.misclassification_count}\nRunID: {self.run_id}\nCandidate: {self.candidate}\n\n")
                 # GurobiFlip_Correct(self.dataset_name, self.store_file_name, self.run_id, n=self.n, tol=self.tol+5e-6, misclassification_count=self.misclassification_count)
 
             print(f"Total misclassified samples: {misclassified}")
             
+            if candidate == -1:
+                return [W_new, b_new]
+
             if self.X_val is None:
                 self.X_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_val.pt").numpy()
                 self.labels_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_val.pt").numpy()
@@ -130,14 +133,7 @@ class MILP:
 
             with open(milp_log_file, "a") as f:
                 f.write(f"{self.dataset_name},{Method},{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{accuracy_val},{misclassified_full}\n")
-            # time2 = time.time()
             
-            # with open("TimeLogs.txt", "a") as f:
-            #     f.write("Time: GurobiOptimize_{}_{}\t{:.2f}\n".format(Method, self.candidate, time1 - time0))
-            #     f.write("Time: GurobiEval_{}_{}\t{:.2f}\n".format(Method, self.candidate, time2 - time1))
-            # print(f"Gurobi Optimization Time: {time1 - time0:.3f} seconds")
-            # print(f"Gurobi Evaluation Time: {time2 - time1:.3f} seconds")
-
             return [W_new, b_new]
         else:
             print("No solution found.")
