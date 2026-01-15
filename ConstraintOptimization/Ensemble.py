@@ -127,8 +127,10 @@ if __name__ == "__main__":
     val_loader = DataLoader(val_subset, batch_size=BatchSize, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
     
+    checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
+    gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{raf_type}_{misclassification_count}.pth"
 
-    if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
+    if os.path.exists(checkpoint_dir) == False:
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
         TM.run()
     
@@ -140,9 +142,9 @@ if __name__ == "__main__":
     TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
 
     if device.type == 'cuda':
-        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
+        checkpoint = torch.load(checkpoint_dir)
     else:
-        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
+        checkpoint = torch.load(checkpoint_dir, map_location=torch.device('cpu'))
     
     TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
     TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -201,13 +203,13 @@ if __name__ == "__main__":
         with torch.no_grad():
             TM_after_g.model.classifier.weight.copy_(new_W)
             TM_after_g.model.classifier.bias.copy_(new_b)
-        checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{candidate}.pth"
+
         torch.save({
             'epoch': TM_after_g.num_epochs,
             'model_state_dict': TM_after_g.model.state_dict(),
             'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
             'scheduler_state_dict': TM_after_g.scheduler.state_dict()
-        }, checkpoint_dir)
+        }, gurobi_checkpoint_dir)
         
         train_loss, train_acc = TM_after_g.evaluate("Train")
         val_loss, val_acc = TM_after_g.evaluate("Val")
@@ -220,7 +222,7 @@ if __name__ == "__main__":
 
         results.append({
             "Candidate": candidate,
-            "Checkpoint": checkpoint_dir,
+            "Checkpoint": gurobi_checkpoint_dir,
             "Train_loss": float(train_loss),
             "Train_acc": float(train_acc),
             "Val_loss": float(val_loss),

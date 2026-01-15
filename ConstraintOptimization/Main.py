@@ -164,7 +164,7 @@ if __name__ == "__main__":
     with open(TM_after_g.log_file, "a") as f:
         f.write(f"{method}_{raf_type}_{misclassification_count},,,,,,,\n")
     time0 = time.time()
-    
+
     milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi)
     if method == "RAB":
         Gurobi_output = milp_instance.Optimize(Method="LowerConf")
@@ -225,7 +225,6 @@ if __name__ == "__main__":
     results.append({
         "Dataset": dataset_name,
         "Run": i,
-        "Candidate": candidate,
         "Checkpoint": gurobi_checkpoint_dir,
         "Method": method,
         "RAF_Type": raf_type,
@@ -257,7 +256,7 @@ if __name__ == "__main__":
     write_header = not os.path.exists(csv_path)
 
     with open(csv_path, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Dataset","Run","Candidate","Checkpoint","Method","RAF_Type","Misclassification_Count",
+        writer = csv.DictWriter(f, fieldnames=["Dataset","Run","Checkpoint","Method","RAF_Type","Misclassification_Count",
                                     "S1_Train_loss","S1_Train_acc","S1_Val_loss","S1_Val_acc","S1_Test_loss","S1_Test_acc",
                                     "S2_Train_loss","S2_Train_acc","S2_Val_loss","S2_Val_acc","S2_Test_loss","S2_Test_acc",
                                     "S3_Train_loss","S3_Train_acc","S3_Val_loss","S3_Val_acc","S3_Test_loss","S3_Test_acc",
