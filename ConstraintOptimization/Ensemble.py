@@ -16,7 +16,6 @@ import numpy as np
 from Utils.TrainModel import TrainModel
 from Utils.GetModelsDatasets import GetDataset, GetModel
 
-from Utils.CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net, VGG_office31, VGG_var_layers
 
 @torch.no_grad()
 def ensemble_test_accuracy(models, test_loader, device):
@@ -128,7 +127,6 @@ if __name__ == "__main__":
     test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
     
     checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
-    gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{raf_type}_{misclassification_count}.pth"
 
     if os.path.exists(checkpoint_dir) == False:
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
@@ -156,24 +154,55 @@ if __name__ == "__main__":
 
     print(f"Saved FC inputs for run {i}.")
 
-    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
-    X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-    labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-    pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
+    convertVal = True
+    if convertVal:
+        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
+        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
+        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
 
-    loaded_inputs_gurobi = {
-        "X_full": X_full,
-        "labels_full": labels_full,
-        "pred_full": pred_full,
-        "X_val": X_val,
-        "labels_val": labels_val,
-        "pred_val": pred_val,
-    }
+        loaded_inputs_gurobi = {
+            "X_full": X_val,
+            "labels_full": labels_val,
+            "pred_full": pred_val,
+            "X_val": X_val,
+            "labels_val": labels_val,
+            "pred_val": pred_val,
+        }
+    else:
+        X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
+        labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
+        pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
+        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
+        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
+        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
+
+        loaded_inputs_gurobi = {
+            "X_full": X_full,
+            "labels_full": labels_full,
+            "pred_full": pred_full,
+            "X_val": X_val,
+            "labels_val": labels_val,
+            "pred_val": pred_val,
+        }
 
     print("Loaded inputs for Gurobi optimization.")
-          
+    
+    S1_Train_loss, S1_Train_acc = TM_after_g.evaluate("Train")
+    S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
+    S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+    
+    results.append({
+        "Candidate": -1,
+        "Checkpoint": checkpoint_dir,
+        "Train_loss": float(S1_Train_loss),
+        "Train_acc": float(S1_Train_acc),
+        "Val_loss": float(S1_Val_loss),
+        "Val_acc": float(S1_Val_acc),
+        "Test_loss": float(S1_Test_loss),
+        "Test_acc": float(S1_Test_acc),
+        "Solve_Time": -1.0,
+    })
+
     for candidate in range(total_candidates):
         time0 = time.time()
 
@@ -204,6 +233,7 @@ if __name__ == "__main__":
             TM_after_g.model.classifier.weight.copy_(new_W)
             TM_after_g.model.classifier.bias.copy_(new_b)
 
+        gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{candidate}.pth"
         torch.save({
             'epoch': TM_after_g.num_epochs,
             'model_state_dict': TM_after_g.model.state_dict(),
@@ -215,10 +245,10 @@ if __name__ == "__main__":
         val_loss, val_acc = TM_after_g.evaluate("Val")
         test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
 
-        with open(TM_after_g.log_file, "a") as f:
-            f.write(f"{i},{candidate},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
-            f.write(f"{i},{candidate},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
-            f.write(f"{i},{candidate},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
+        # with open(TM_after_g.log_file, "a") as f:
+        #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
+        #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
+        #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
 
         results.append({
             "Candidate": candidate,
