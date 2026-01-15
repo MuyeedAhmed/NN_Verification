@@ -60,6 +60,7 @@ if __name__ == "__main__":
         n_samples_gurobi = -1
         G_epoch = 0
         misclassification_count = 0
+        raf_type = ""
         if dataset_name == "EMNIST":
             n_samples_gurobi = 5000
     elif method == "RAF":
@@ -103,8 +104,10 @@ if __name__ == "__main__":
     val_loader = DataLoader(val_subset, batch_size=BatchSize, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
     
+    checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
+    gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{raf_type}_{misclassification_count}.pth"
 
-    if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
+    if os.path.exists(checkpoint_dir) == False:
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
         TM.run()
     
@@ -120,9 +123,9 @@ if __name__ == "__main__":
     TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
 
     if device.type == 'cuda':
-        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
+        checkpoint = torch.load(checkpoint_dir)
     else:
-        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
+        checkpoint = torch.load(checkpoint_dir, map_location=torch.device('cpu'))
     
     TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
     TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -194,13 +197,12 @@ if __name__ == "__main__":
         TM_after_g.model.classifier.bias.copy_(new_b)
         
         
-    checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}.pth"
     torch.save({
         'epoch': TM_after_g.num_epochs,
         'model_state_dict': TM_after_g.model.state_dict(),
         'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
         'scheduler_state_dict': TM_after_g.scheduler.state_dict()
-    }, checkpoint_dir)
+    }, gurobi_checkpoint_dir)
     
     train_loss, train_acc = TM_after_g.evaluate("Train")
     val_loss, val_acc = TM_after_g.evaluate("Val")
@@ -208,9 +210,9 @@ if __name__ == "__main__":
 
 
     with open(TM_after_g.log_file, "a") as f:
-        f.write(f"{i},{method},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
-        f.write(f"{i},{method},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
-        f.write(f"{i},{method},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
+        f.write(f"{i},{method},{raf_type},{misclassification_count},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
+        f.write(f"{i},{method},{raf_type},{misclassification_count},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
+        f.write(f"{i},{method},{raf_type},{misclassification_count},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
     
     
     if method == "RAF":
@@ -224,7 +226,7 @@ if __name__ == "__main__":
         "Dataset": dataset_name,
         "Run": i,
         "Candidate": candidate,
-        "Checkpoint": checkpoint_dir,
+        "Checkpoint": gurobi_checkpoint_dir,
         "Method": method,
         "RAF_Type": raf_type,
         "Misclassification_Count": int(misclassification_count),
