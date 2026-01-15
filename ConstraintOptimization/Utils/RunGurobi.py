@@ -65,7 +65,7 @@ class MILP:
     
     
     def Optimize(self, Method = "MisCls_Correct"):
-        milp_log_file = f"Stats/MILP_log.csv"
+        milp_log_file = f"Stats/MILP_log.csv" if self.candidate == -1 else f"Stats_Ensemble/MILP_log.csv"
         self.LoadInputs()
         self.PrintShapes()
         
@@ -100,7 +100,7 @@ class MILP:
             accuracy_gurobi = np.sum(predictions_gurobi == self.labels_gt) / len(self.labels_gt) * 100
             
             if misclassified != self.misclassification_count:
-                with open(f"Stats/Error_{self.dataset_name}_gurobi_log_tol.csv", "a") as f:
+                with open(f"Error_{self.dataset_name}_gurobi_log_tol.csv", "a") as f:
                     f.write(f"Tol:{self.tol}\nMisclassified: {misclassified}\nMetohd: {Method}\nMisclassification Count: {self.misclassification_count}\nRunID: {self.run_id}\nCandidate: {self.candidate}\n\n")
                 # GurobiFlip_Correct(self.dataset_name, self.store_file_name, self.run_id, n=self.n, tol=self.tol+5e-6, misclassification_count=self.misclassification_count)
 

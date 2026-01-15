@@ -88,7 +88,7 @@ if __name__ == "__main__":
     if save_checkpoint == "N":
         from Utils.RunGurobi import MILP
 
-    os.makedirs(f"Stats/{method}", exist_ok=True)
+    os.makedirs(f"Stats_Ensemble/", exist_ok=True)
 
     n_samples_gurobi = 1000
     
@@ -130,6 +130,7 @@ if __name__ == "__main__":
 
     if os.path.exists(checkpoint_dir) == False:
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
+        TM.log_file = f"Stats_Ensemble/{dataset_name}_nn_run_log.csv"
         TM.run()
     
     if save_checkpoint == "Y":
@@ -138,7 +139,8 @@ if __name__ == "__main__":
     results = []
 
     TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
-
+    TM_after_g.log_file = f"Stats_Ensemble/{dataset_name}_nn_run_log.csv"
+    
     if device.type == 'cuda':
         checkpoint = torch.load(checkpoint_dir)
     else:
@@ -202,21 +204,21 @@ if __name__ == "__main__":
         "Test_acc": float(S1_Test_acc),
         "Solve_Time": -1.0,
     })
-
+    timeLimit = 600.0  # 10 minutes
     for candidate in range(total_candidates):
         time0 = time.time()
 
         if candidate % 4 == 1:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
         elif candidate % 4 == 2:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
         elif candidate % 4 == 3:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
         else:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=candidate, loaded_inputs=loaded_inputs_gurobi)
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
             Gurobi_output = milp_instance.Optimize(Method="LowerConf")
 
         time1 = time.time()
@@ -265,7 +267,7 @@ if __name__ == "__main__":
     
     TM_after_g.delete_fc_inputs()
     
-    csv_path = "Stats/Summary.csv"
+    csv_path = "Stats_Ensemble/Summary.csv"
     write_header = not os.path.exists(csv_path)
 
     with open(csv_path, "a", newline="") as f:
