@@ -16,7 +16,24 @@ import numpy as np
 from Utils.TrainModel import TrainModel
 from Utils.GetModelsDatasets import GetDataset, GetModel
 
-from Utils.CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net, VGG_office31, VGG_var_layers
+# from Utils.CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_EMNIST, VGG, CNN_USPS, Food101Net, VGG_office31, VGG_var_layers
+
+@torch.no_grad()
+def evaluate_loader(model, loader, device):
+    model.eval()
+    correct = 0
+    total = 0
+    loss_sum = 0.0
+    for x, y in loader:
+        x = x.to(device)
+        y = y.to(device)
+        logits = model(x)
+        loss = F.cross_entropy(logits, y, reduction="sum")
+        loss_sum += loss.item()
+        preds = logits.argmax(dim=1)
+        correct += (preds == y).sum().item()
+        total += y.numel()
+    return loss_sum / total, 100. * correct / total
 
 
 if __name__ == "__main__":
@@ -42,6 +59,8 @@ if __name__ == "__main__":
     if method == "RAB":
         n_samples_gurobi = -1
         G_epoch = 0
+        misclassification_count = 0
+        raf_type = ""
         if dataset_name == "EMNIST":
             n_samples_gurobi = 5000
     elif method == "RAF":
@@ -62,9 +81,9 @@ if __name__ == "__main__":
     
     train_dataset, test_dataset = GetDataset(dataset_name)
     
-    full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
-    train_size = len(train_dataset)
-    val_size = len(test_dataset)
+    # full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
+    train_size = int(len(train_dataset) * 0.8)
+    val_size = int(len(train_dataset) * 0.2)
     total_size = train_size + val_size
     total_run = 5
 
@@ -78,15 +97,17 @@ if __name__ == "__main__":
     new_train_indices = all_indices[:train_size]
     new_val_indices = all_indices[train_size:]
 
-    train_subset = Subset(full_dataset, new_train_indices)
-    val_subset = Subset(full_dataset, new_val_indices)
+    train_subset = Subset(train_dataset, new_train_indices)
+    val_subset = Subset(train_dataset, new_val_indices)
 
     train_loader = DataLoader(train_subset, batch_size=BatchSize, shuffle=True)
     val_loader = DataLoader(val_subset, batch_size=BatchSize, shuffle=False)
-    # test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
     
+    checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
+    gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{raf_type}_{misclassification_count}.pth"
 
-    if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth") == False:
+    if os.path.exists(checkpoint_dir) == False:
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
         TM.run()
     
@@ -97,14 +118,14 @@ if __name__ == "__main__":
         print(f"Checkpoint for run {i} already exists. Skipping Gurobi edit.")
         #loop ## continue
     
-    # results = []
+    results = []
 
     TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
 
     if device.type == 'cuda':
-        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth")
+        checkpoint = torch.load(checkpoint_dir)
     else:
-        checkpoint = torch.load(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth", map_location=torch.device('cpu'))
+        checkpoint = torch.load(checkpoint_dir, map_location=torch.device('cpu'))
     
     TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
     TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -131,12 +152,18 @@ if __name__ == "__main__":
         "labels_val": labels_val,
         "pred_val": pred_val,
     }
-    print("Training and Validation Accuracy before Gurobi optimization:", TM_after_g.evaluate("Train"), TM_after_g.evaluate("Val"))
+    S1_Train_loss, S1_Train_acc = TM_after_g.evaluate("Train")
+    S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
+    S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+    print("Training and Validation Accuracy before Gurobi optimization:", S1_Train_acc, S1_Val_acc)
     print("Training and Validation Accuracy of loaded inputs:", 
           (np.mean(loaded_inputs_gurobi["pred_full"] == loaded_inputs_gurobi["labels_full"]),
            np.mean(loaded_inputs_gurobi["pred_val"] == loaded_inputs_gurobi["labels_val"])))
 
     print("Loaded inputs for Gurobi optimization.")
+    with open(TM_after_g.log_file, "a") as f:
+        f.write(f"{method}_{raf_type}_{misclassification_count},,,,,,,\n")
+    time0 = time.time()
 
     milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi)
     if method == "RAB":
@@ -155,6 +182,7 @@ if __name__ == "__main__":
         print(f"Unknown method: {method}. Exiting.")
         sys.exit(1)
 
+    time1 = time.time()
 
     if Gurobi_output is None:
         print("Gurobi did not find a solution.")
@@ -169,52 +197,77 @@ if __name__ == "__main__":
         TM_after_g.model.classifier.bias.copy_(new_b)
         
         
-    checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}.pth"
     torch.save({
         'epoch': TM_after_g.num_epochs,
         'model_state_dict': TM_after_g.model.state_dict(),
         'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
         'scheduler_state_dict': TM_after_g.scheduler.state_dict()
-    }, checkpoint_dir)
+    }, gurobi_checkpoint_dir)
     
     train_loss, train_acc = TM_after_g.evaluate("Train")
     val_loss, val_acc = TM_after_g.evaluate("Val")
+    test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
 
 
     with open(TM_after_g.log_file, "a") as f:
-        f.write(f"{i},{method},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
-        f.write(f"{i},{method},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
-
-        # results.append({
-        #     "Candidate": candidate,
-        #     "Checkpoint": checkpoint_dir,
-        #     "Train_loss": float(train_loss),
-        #     "Train_acc": float(train_acc),
-        #     "Val_loss": float(val_loss),
-        #     "Val_acc": float(val_acc),
-        #     "Test_loss": float(test_loss),
-        #     "Test_acc": float(test_acc),
-        #     "Solve_Time": float(time1 - time0),
-        # })
-        # print(f"[Run {i} cand {method}] val_acc={val_acc:.4f} test_acc={test_acc:.4f} time={time1 - time0:.1f}s")
+        f.write(f"{i},{method},{raf_type},{misclassification_count},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
+        f.write(f"{i},{method},{raf_type},{misclassification_count},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
+        f.write(f"{i},{method},{raf_type},{misclassification_count},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
+    
     
     if method == "RAF":
         TM_after_g.run()
-
-    ''' End of the loop - Runs '''
-
-    # TM_after_g.delete_fc_inputs()
     
+        S3_Train_loss, S3_Train_acc = TM_after_g.evaluate("Train")
+        S3_Val_loss, S3_Val_acc = TM_after_g.evaluate("Val")
+        S3_Test_loss, S3_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
 
-    # csv_path = "Stats/Summary.csv"
-    # write_header = not os.path.exists(csv_path)
+    else:
+        S3_Train_loss, S3_Train_acc = -1, -1
+        S3_Val_loss, S3_Val_acc = -1, -1
+        S3_Test_loss, S3_Test_acc = -1, -1
 
-    # with open(csv_path, "a", newline="") as f:
-    #     writer = csv.DictWriter(f, fieldnames=["Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
+    results.append({
+        "Dataset": dataset_name,
+        "Run": i,
+        "Checkpoint": gurobi_checkpoint_dir,
+        "Method": method,
+        "RAF_Type": raf_type,
+        "Misclassification_Count": int(misclassification_count),
+        "S1_Train_loss": float(S1_Train_loss),
+        "S1_Train_acc": float(S1_Train_acc),
+        "S1_Val_loss": float(S1_Val_loss),
+        "S1_Val_acc": float(S1_Val_acc),
+        "S1_Test_loss": float(S1_Test_loss),
+        "S1_Test_acc": float(S1_Test_acc),
+        "S2_Train_loss": float(train_loss),
+        "S2_Train_acc": float(train_acc),
+        "S2_Val_loss": float(val_loss),
+        "S2_Val_acc": float(val_acc),
+        "S2_Test_loss": float(test_loss),
+        "S2_Test_acc": float(test_acc),
+        "S3_Train_loss": float(S3_Train_loss),
+        "S3_Train_acc": float(S3_Train_acc),
+        "S3_Val_loss": float(S3_Val_loss),
+        "S3_Val_acc": float(S3_Val_acc),
+        "S3_Test_loss": float(S3_Test_loss),
+        "S3_Test_acc": float(S3_Test_acc),
+        "Solve_Time": float(time1 - time0),
+    })
 
-    #     if write_header:
-    #         writer.writeheader()
+    ''' End of the loop - Runs '''    
 
-    #     for row in results:
-    #         writer.writerow(row)
+    csv_path = "Stats/Summary.csv"
+    write_header = not os.path.exists(csv_path)
+
+    with open(csv_path, "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["Dataset","Run","Checkpoint","Method","RAF_Type","Misclassification_Count",
+                                    "S1_Train_loss","S1_Train_acc","S1_Val_loss","S1_Val_acc","S1_Test_loss","S1_Test_acc",
+                                    "S2_Train_loss","S2_Train_acc","S2_Val_loss","S2_Val_acc","S2_Test_loss","S2_Test_acc",
+                                    "S3_Train_loss","S3_Train_acc","S3_Val_loss","S3_Val_acc","S3_Test_loss","S3_Test_acc",
+                                    "Solve_Time"])
+        if write_header:
+            writer.writeheader()
+        for row in results:
+            writer.writerow(row)
 

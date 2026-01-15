@@ -8,7 +8,7 @@ from torch.utils.data import random_split, DataLoader, Subset
 import random
 import numpy as np
 
-from Utils.CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_CIFAR10, NIN_SVHN, NIN_EMNIST, NIN, VGG, CNN_USPS, Food101Net, VGG_office31, VGG_var_layers
+from Utils.CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_EMNIST, VGG, CNN_USPS, VGG_office31, VGG_var_layers
 
 def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, extra_conv_layers=0):
     if dataset_name == "MNIST":
@@ -30,9 +30,6 @@ def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, ex
     elif dataset_name == "SVHN":
         model_t = VGG(num_classes=10).to(device)
         model_g = VGG(num_classes=10).to(device)
-    elif dataset_name == "PathMNIST":
-        model_t = VGG(num_classes=9).to(device)
-        model_g = VGG(num_classes=9).to(device)
     elif dataset_name == "Food101":
             model_t = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
             model_g = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)

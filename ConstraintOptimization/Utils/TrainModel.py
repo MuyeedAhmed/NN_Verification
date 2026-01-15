@@ -40,19 +40,19 @@ class TrainModel:
             self.scheduler = optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[int(0.5*self.num_epochs), int(0.75*self.num_epochs)], gamma=0.1)
        
         self.criterion = nn.CrossEntropyLoss()
-        self.log_file = f"Stats/{self.method}/{self.dataset_name}_log.csv"
+        self.log_file = f"Stats/{self.dataset_name}_nn_run_log.csv"
         
         if start_experiment == True:
             with open(self.log_file, "w") as f:
-                f.write("Run,Phase,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
+                f.write("Run,Phase,Method,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
 
-    def train(self, early_stopping_patience=15, min_delta=1e-5, warmup_epochs=25):
+    def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=0):
         loss = -1
         best_val_loss = float('inf')
         best_train_loss = float('inf')
         epochs_no_improve = 0
         best_epoch = -1
-        acceptable_val_acc = 90.0
+        acceptable_val_acc = 0.0
 
         for epoch in range(self.num_epochs+self.resume_epochs):
             self.model.train()
@@ -85,12 +85,12 @@ class TrainModel:
                         
             if epoch + 1 <= warmup_epochs:
                 with open(self.log_file, "a") as f:
-                    f.write(f"{self.run_id},{self.phase},{epoch+1},{avg_train_loss},{train_accuracy},-,-\n")
+                    f.write(f"{self.run_id},{self.phase},{self.method},{epoch+1},{avg_train_loss},{train_accuracy},-,-\n")
                 continue
             
             val_loss, val_acc = self.evaluate("Val")
             with open(self.log_file, "a") as f:
-                f.write(f"{self.run_id},{self.phase},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc}\n")
+                f.write(f"{self.run_id},{self.phase},{self.method},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc}\n")
 
             # if best_train_loss - avg_train_loss > min_delta:
             #     best_train_loss = avg_train_loss
@@ -153,7 +153,7 @@ class TrainModel:
         accuracy = 100. * correct / total
         print(f'Test Accuracy: {accuracy:.2f}%')
         with open(self.log_file, "a") as f:
-            f.write(f"{self.run_id},{self.phase}_Test,-1,{avg_loss},{accuracy},-,-\n")
+            f.write(f"{self.run_id},{self.phase}_Test,{self.method},-1,{avg_loss},{accuracy},-,-\n")
         return accuracy
 
     def save_model(self, loss, save_suffix=""):
@@ -192,8 +192,10 @@ class TrainModel:
             for inputs, labels in loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 fc_input, _ = self.model(inputs, extract_fc_input=True)
-                logits = self.model.classifier(self.model.fc_hidden(fc_input))
-                # logits = self.model.classifier(torch.relu(self.model.fc_hidden(fc_input)))
+                logits = self.model.classifier(fc_input)
+                # fc_input, _ = self.model(inputs, extract_fc_input=True)
+                # logits = self.model.classifier(self.model.fc_hidden(fc_input))
+                # # logits = self.model.classifier(torch.relu(self.model.fc_hidden(fc_input)))
                 preds = torch.argmax(logits, dim=1)
                 X_fc_input.append(fc_input.cpu())
                 Y_true.append(labels.cpu())
@@ -222,7 +224,10 @@ class TrainModel:
 
     def run(self):
         start_time = time.time()
-        self.train(early_stopping_patience=10)
+        if self.phase == "Train":
+            self.train()
+        elif self.phase == "GurobiEdit" or self.phase == "ResumeTrain":
+            self.train(warmup_epochs=0)
         accuracy = self.test()
     
     def evaluate(self, dataset_type):
