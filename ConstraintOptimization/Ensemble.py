@@ -78,7 +78,7 @@ if __name__ == "__main__":
     initEpoch = 300
     G_epoch = 0
     
-    misclassification_count = 1
+    misclassification_counts = [1, 5, 10, 20]
     top_k = 10
     total_candidates = 20
 
@@ -204,22 +204,31 @@ if __name__ == "__main__":
         "Test_acc": float(S1_Test_acc),
         "Solve_Time": -1.0,
     })
-    timeLimit = 600.0  # 10 minutes
+    csv_path = "Stats_Ensemble/Summary.csv"
+    write_header = not os.path.exists(csv_path)
+    with open(csv_path, "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
+        if write_header:
+            writer.writeheader()
+        for row in results:
+            writer.writerow(row)
+        
+    timeLimit = 600.0
     for candidate in range(total_candidates):
         time0 = time.time()
-
-        if candidate % 4 == 1:
+        misclassification_count = misclassification_counts[candidate % len(misclassification_counts)]
+        if candidate % 3 == 0:
             milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
-        elif candidate % 4 == 2:
+        elif candidate % 3 == 1:
             milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
-        elif candidate % 4 == 3:
+        elif candidate % 3 == 2:
             milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
-        else:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-            Gurobi_output = milp_instance.Optimize(Method="LowerConf")
+        # else:
+        #     milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
+        #     Gurobi_output = milp_instance.Optimize(Method="LowerConf")
 
         time1 = time.time()
         
@@ -235,22 +244,33 @@ if __name__ == "__main__":
             TM_after_g.model.classifier.weight.copy_(new_W)
             TM_after_g.model.classifier.bias.copy_(new_b)
 
-        gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{candidate}.pth"
-        torch.save({
-            'epoch': TM_after_g.num_epochs,
-            'model_state_dict': TM_after_g.model.state_dict(),
-            'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
-            'scheduler_state_dict': TM_after_g.scheduler.state_dict()
-        }, gurobi_checkpoint_dir)
+        # gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{candidate}.pth"
+        # torch.save({
+        #     'epoch': TM_after_g.num_epochs,
+        #     'model_state_dict': TM_after_g.model.state_dict(),
+        #     'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
+        #     'scheduler_state_dict': TM_after_g.scheduler.state_dict()
+        # }, gurobi_checkpoint_dir)
         
-        train_loss, train_acc = TM_after_g.evaluate("Train")
-        val_loss, val_acc = TM_after_g.evaluate("Val")
-        test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+        # train_loss, train_acc = TM_after_g.evaluate("Train")
+        # val_loss, val_acc = TM_after_g.evaluate("Val")
+        # test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
 
         # with open(TM_after_g.log_file, "a") as f:
         #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
         #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
         #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
+        
+        TM_after_g.run()
+
+        old_path = f"./checkpoints/{self.dataset_name}/Run{self.run_id}_full_checkpoint_GE_RAF.pth"
+        gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{candidate}.pth"
+        
+        os.rename(old_path, gurobi_checkpoint_dir)
+
+        train_loss, train_acc = TM_after_g.evaluate("Train")
+        val_loss, val_acc = TM_after_g.evaluate("Val")
+        test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
 
         results.append({
             "Candidate": candidate,
@@ -267,15 +287,8 @@ if __name__ == "__main__":
     
     TM_after_g.delete_fc_inputs()
     
-    csv_path = "Stats_Ensemble/Summary.csv"
-    write_header = not os.path.exists(csv_path)
-
     with open(csv_path, "a", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=["Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
-
-        if write_header:
-            writer.writeheader()
-
         for row in results:
             writer.writerow(row)
 
