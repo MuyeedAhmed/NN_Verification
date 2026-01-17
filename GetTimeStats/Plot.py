@@ -19,11 +19,12 @@ def plot_time_stats_NodeSize(file_name):
     plt.plot(rgb['Nodes'], rgb['Time'], marker='o', label='CIFAR10')
     plt.plot(grayscale['Nodes'], grayscale['Time'], marker='s', label='MNIST')
 
-    plt.xlabel('# Nodes', fontsize=16)
-    plt.ylabel('Average Time (seconds)', fontsize=16)
-    plt.legend(fontsize=16)
-    plt.xticks(fontsize=14)
-    plt.yticks(fontsize=14)
+    plt.title("(b)", fontsize=24)
+    plt.xlabel('# Nodes', fontsize=22)
+    plt.ylabel('Average Time (s)', fontsize=22)
+    plt.legend(fontsize=22)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
     plt.tight_layout()
     plt.savefig("Figures/TimeStats_NodeSize.pdf", format='pdf', bbox_inches='tight')
 
@@ -43,11 +44,12 @@ def plot_time_stats_Classes(file_name):
     if grayscale.shape[0]>0:
         plt.plot(grayscale['Classes'], grayscale['Time'], marker='s', label='')
 
-    plt.xlabel('# Classes', fontsize=16)
-    plt.ylabel('Average Time (seconds)', fontsize=16)
-    plt.legend(fontsize=16)
-    plt.xticks(fontsize=14)
-    plt.yticks(fontsize=14)
+    plt.title("(c)", fontsize=24)
+    plt.xlabel('# Classes', fontsize=22)
+    plt.ylabel('Average Time (s)', fontsize=22)
+    plt.legend(fontsize=22)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
     plt.tight_layout()
     plt.savefig("Figures/TimeStats_Classes.pdf", format='pdf', bbox_inches='tight')
 
@@ -74,26 +76,26 @@ def plot_time_stats_SampleSize(file_name, method):
     #     fontsize=18,
     #     va='top', ha='center'
     # )
-    plt.xlabel('# Samples', fontsize=16)
-    plt.ylabel('Average Time (seconds)', fontsize=16)
-    plt.legend(fontsize=16)
+    plt.xlabel('# Samples', fontsize=22)
+    plt.ylabel('Average Time (s)', fontsize=22)
+    plt.legend(fontsize=22)
     if method == "RAB":
         plt.xticks(
             ticks=[2000, 4000, 6000, 8000, 10000],
             labels=["2k", "4k", "6k", "8k", "10k"],
-            fontsize=14
+            fontsize=20
         )
     else:
         plt.xticks(
-            ticks=[2000, 4000, 6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000],
-            labels=["2k", "4k", "6k", "8k", "10k", "12k", "14k", "16k", "18k", "20k"],
-            fontsize=14
+            ticks=[4000,8000, 12000, 16000, 20000],
+            labels=["4k", "8k", "12k", "16k", "20k"],
+            fontsize=20
         )
-    plt.yticks(fontsize=14)
+    plt.yticks(fontsize=20)
     if method == "RAB":
-        plt.title("(a) STC", fontsize=18)
+        plt.title("(a) TAGD", fontsize=24)
     else:
-        plt.title("(b) CmC", fontsize=18)
+        plt.title("(b) CMC", fontsize=24)
     plt.tight_layout()
     plt.savefig(f"Figures/{file_name.split('/')[1].split('.')[0]}_{method}.pdf", format='pdf', bbox_inches='tight')
 
@@ -103,6 +105,8 @@ def plot_time_stats_SampleSize(file_name, method):
 def TimeVSample_1st_Best(file_name1, file_name2, method):
     df1 = pd.read_csv(file_name1)
     df2 = pd.read_csv(file_name2)
+    df1 = df1[df1['Dataset']=="CIFAR10"]
+    df2 = df2[(df2['Dataset']=="CIFAR10") | (df2['Dataset']=="CIFAR10_F")]
     df1['Time'] = df1['Time'].astype(float)
     df2['Time'] = df2['Time'].astype(float)
 
@@ -115,15 +119,16 @@ def TimeVSample_1st_Best(file_name1, file_name2, method):
     plt.plot(df2['Sample_Size'], df2['Time'], marker='o', label='Best Solution')
     plt.plot(df1['Sample_Size'], df1['Time'], marker='o', label='1st Solution')
 
-    plt.xlabel('# Samples', fontsize=16)
-    plt.ylabel('Average Time (seconds)', fontsize=16)
-    plt.legend(fontsize=16)
+    plt.title("(d)", fontsize=24)
+    plt.xlabel('# Samples', fontsize=22)
+    plt.ylabel('Average Time (s)', fontsize=22)
+    plt.legend(fontsize=22)
     plt.xticks(
-        ticks=[2000, 4000, 6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000],
-        labels=["2k", "4k", "6k", "8k", "10k", "12k", "14k", "16k", "18k", "20k"],
-        fontsize=14
+        ticks=[4000, 8000, 12000, 16000, 20000],
+        labels=["4k", "8k", "12k", "16k", "20k"],
+        fontsize=20
     )
-    plt.yticks(fontsize=14)
+    plt.yticks(fontsize=20)
     # plt.title("(b) CmC", fontsize=18)
 
     plt.tight_layout()
@@ -146,13 +151,14 @@ def plot_time_stats_LayerSize(file_name):
     plt.plot(rgb['ExtraLayers'], rgb['Time'], marker='o', label='CIFAR10')
     # plt.plot(grayscale['ExtraLayers'], grayscale['Time'], marker='s', label='Grayscale')
 
-    plt.xlabel('# Layers', fontsize=16)
-    plt.ylabel('Average Time (seconds)', fontsize=16)
-    plt.legend(fontsize=16)
+    plt.title("(a)", fontsize=24)
+    plt.xlabel('# Layers', fontsize=22)
+    plt.ylabel('Average Time (s)', fontsize=22)
+    plt.legend(fontsize=22)
     # plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.yticks(np.arange(0, 100, 10), fontsize=14)
-    plt.xticks(fontsize=14)
+    plt.yticks(np.arange(0, 100, 20), fontsize=20)
+    plt.xticks(fontsize=20)
     plt.savefig("Figures/TimeStats_LayerSize.pdf", format='pdf', bbox_inches='tight')
     # plt.show()
 
@@ -160,7 +166,7 @@ def plot_GlobalMisclassified(file_name):
     df = pd.read_csv(file_name)
     # df = df.sort_values(by="n")
 
-    plt.figure(figsize=(8,4))
+    plt.figure(figsize=(7,3.5))
 
     for run_id, group in df.groupby("RunID"):
         plt.plot(
@@ -170,15 +176,15 @@ def plot_GlobalMisclassified(file_name):
             label=f"Run {run_id}"
         )
 
-    plt.xlabel("Subset Sizes", fontsize=16)
-    plt.ylabel("Total Misclassified Samples", fontsize=16)
-    plt.legend(fontsize=16)
+    plt.xlabel("Subset Sizes", fontsize=20)
+    plt.ylabel("Total Misclassified\nSamples", fontsize=20)
+    plt.legend(fontsize=18)
     plt.xticks(
         ticks=[2000, 4000, 6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000],
         labels=["2k", "4k", "6k", "8k", "10k", "12k", "14k", "16k", "18k", "20k"],
-        fontsize=14
+        fontsize=18
     )
-    plt.yticks(fontsize=14)
+    plt.yticks(fontsize=18)
     plt.tight_layout()
     plt.savefig("Figures/GlobalFlips.pdf", format='pdf', bbox_inches='tight')
 
@@ -238,20 +244,33 @@ def polyFit(file_name, method):
 
 
 if __name__ == "__main__":
-    # plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
-    # plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAB.csv", "RAB")
+    plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAB.csv", "RAB")
     # plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_20k.csv", "RAF")
 
     # # plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAF.csv", "RAF")
-    # plot_time_stats_LayerSize("Stats/TimeStats_LayerSize.csv")
 
 
     # # plot_time_stats_SampleSize("Stats/TimeStats_S_Louise.csv", "RAF")
-    # TimeVSample_1st_Best("Stats/TimeStats_S_Thelma_20k_1s.csv", "Stats/TimeStats_S_Thelma_20k.csv", "RAF") ## Remove MNIST From stats
+    
     # # plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_Small.csv", "RAF")
 
+
+    # polyFit("Stats/TimeStats_S_Thelma_20k_1s.csv", "RAF")
+    # polyFit("Stats/TimeStats_S_Thelma_20k.csv", "RAF")
+
+
+    # ## Layer Size vs Time Plot (a)
+    # plot_time_stats_LayerSize("Stats/TimeStats_LayerSize.csv")
+
+    # ## Node Size vs Time Plot (b)
+    # plot_time_stats_NodeSize("Stats/TimeStats_NodeSize.csv")
+
+    # ## Classes vs Time Plot (c)
+    # plot_time_stats_Classes("Stats/TimeStats_Classes.csv")
+
+    # ## Compare 1st and Best solution times (d)
+    # TimeVSample_1st_Best("Stats/TimeStats_S_Thelma_20k_1s.csv", "Stats/TimeStats_S_Thelma_20k.csv", "RAF") ## Remove MNIST From stats
+    
+    ## Global Misclassified Plot
     # plot_GlobalMisclassified("Stats/GlobalFlips.csv")
 
-    # plot_time_stats_Classes("Stats/TimeStats_Classes.csv")
-    polyFit("Stats/TimeStats_S_Thelma_20k_1s.csv", "RAF")
-    polyFit("Stats/TimeStats_S_Thelma_20k.csv", "RAF")
