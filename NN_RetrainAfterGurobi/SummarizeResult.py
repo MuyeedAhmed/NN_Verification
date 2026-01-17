@@ -71,8 +71,8 @@ def GetTables(summary, method):
         RAG_train_acc = row[1][f"RA{method} Train Acc"]*100
         RAG_test_acc = row[1][f"RA{method} Test Acc"]*100
 
-        # STC Loss and Acc
-        # print(f"{row[1]['Dataset']} & {Init_train_acc:.2f} & {Init_train_loss:.2f} & {G_train_acc:.2f} &  {G_train_loss:.2f} \\\\")
+        # TAGD table
+        print(f"{row[1]['Dataset']} & {Init_train_acc:.2f} & {Init_train_loss:.2f} & {G_train_acc:.2f} &  {G_train_loss:.2f} & {Init_test_acc:.2f} & {G_test_acc:.2f} & {(G_test_acc-Init_test_acc)} \\\\")
         # STC Test Acc
         # print(f"{row[1]['Dataset']} & {Init_test_acc:.2f} & {G_test_acc:.2f} & {(G_test_acc-Init_test_acc)} \\\\")
 
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     df = pd.read_csv("Stats/Summary.csv")
     summary = Summarize(df)
     # print(summary)
-    # GetTables(summary, "B0")
+    GetTables(summary, "B0")
     GetTables(summary, "F_A1")
     # GetTables(summary, "F_A10")
     # GetTables(summary, "F_C1")
