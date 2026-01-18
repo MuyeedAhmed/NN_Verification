@@ -8,15 +8,15 @@ from torch.utils.data import random_split, DataLoader, Subset
 import random
 import numpy as np
 
-from Utils.CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_EMNIST, VGG, CNN_USPS, VGG_office31, VGG_var_layers
+from Utils.CNNetworks import ResNet18, NIN_MNIST, NIN_EMNIST, VGG, CNN_USPS, VGG_office31, VGG_var_layers
 
 def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, extra_conv_layers=0):
     if dataset_name == "MNIST":
         model_t = NIN_MNIST(num_classes=10, output_layer_size=output_layer_size).to(device)
         model_g = NIN_MNIST(num_classes=10, output_layer_size=output_layer_size).to(device)
     elif dataset_name == "CIFAR10":
-        model_t = ResNet18_CIFAR(num_classes=num_classes).to(device)
-        model_g = ResNet18_CIFAR(num_classes=num_classes).to(device)
+        model_t = ResNet18(num_classes=num_classes).to(device)
+        model_g = ResNet18(num_classes=num_classes).to(device)
 
     elif dataset_name == "FashionMNIST":
         model_t = NIN_MNIST(num_classes=10).to(device)

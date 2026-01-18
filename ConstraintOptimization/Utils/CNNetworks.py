@@ -32,7 +32,7 @@ class BasicBlock(nn.Module):
         out = out + self.shortcut(x)
         return F.relu(out)
 
-class ResNetCIFAR_OriginalHead(nn.Module):
+class ResNet_OriginalHead(nn.Module):
     def __init__(self, num_classes=10, block=BasicBlock, num_blocks=(2,2,2,2)):
         super().__init__()
         self.in_planes = 64
@@ -78,8 +78,8 @@ class ResNetCIFAR_OriginalHead(nn.Module):
         logits = self.fc(feats)
         return logits
 
-def ResNet18_CIFAR(num_classes=10):
-    return ResNetCIFAR_OriginalHead(num_classes=num_classes, num_blocks=(2,2,2,2))
+def ResNet18(num_classes=10):
+    return ResNet_OriginalHead(num_classes=num_classes, num_blocks=(2,2,2,2))
 
 
 
