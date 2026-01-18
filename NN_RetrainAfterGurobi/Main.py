@@ -259,7 +259,7 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
 
 if __name__ == "__main__":
     # Datasets = ["Adult", "higgs", "GiveMeSomeCredit", "bank-marketing", "santander", "kddcup98"]
-    Datasets = ["Adult"]
+    Datasets = ["Adult", "higgs", "GiveMeSomeCredit", "bank-marketing"]
     
     # Datasets = ["covertype", "KDDCup99"]
     # X_train, y_train, X_test, y_test, num_classes = LoadDataset(Datasets[0], run_id=0)
@@ -270,11 +270,11 @@ if __name__ == "__main__":
             # print(f"{dataset}, {len(X_train)+len(X_test)} samples, {num_classes} classes")
             TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=None, run_id=run, Method="Train")
 
-            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=-1, flipCount=0, tol=1e-5, run_id=run, Method="B")
-            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=1, tol=1e-5, run_id=run, Method="F_C")
-            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=10, tol=1e-5, run_id=run, Method="F_C")
-            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=1, tol=1e-5, run_id=run, Method="F_A")
-            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=10, tol=1e-5, run_id=run, Method="F_A")
+            # ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=-1, flipCount=0, tol=1e-5, run_id=run, Method="B")
+            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=20, tol=1e-5, run_id=run, Method="F_C")
+            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=30, tol=1e-5, run_id=run, Method="F_C")
+            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=20, tol=1e-5, run_id=run, Method="F_A")
+            ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=30, tol=1e-5, run_id=run, Method="F_A")
             
 
 
