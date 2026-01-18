@@ -214,7 +214,7 @@ if __name__ == "__main__":
             writer.writerow(row)
         
     timeLimit = 600.0
-    for candidate in range(total_candidates):
+    for candidate in range(1, total_candidates+1):
         time0 = time.time()
         misclassification_count = misclassification_counts[candidate % len(misclassification_counts)]
         if candidate % 3 == 0:

@@ -32,7 +32,7 @@ class BasicBlock(nn.Module):
         out = out + self.shortcut(x)
         return F.relu(out)
 
-class ResNetCIFAR_OriginalHead(nn.Module):
+class ResNet_OriginalHead(nn.Module):
     def __init__(self, num_classes=10, block=BasicBlock, num_blocks=(2,2,2,2)):
         super().__init__()
         self.in_planes = 64
@@ -78,8 +78,8 @@ class ResNetCIFAR_OriginalHead(nn.Module):
         logits = self.fc(feats)
         return logits
 
-def ResNet18_CIFAR(num_classes=10):
-    return ResNetCIFAR_OriginalHead(num_classes=num_classes, num_blocks=(2,2,2,2))
+def ResNet18(num_classes=10):
+    return ResNet_OriginalHead(num_classes=num_classes, num_blocks=(2,2,2,2))
 
 
 
@@ -106,45 +106,14 @@ class NIN_MNIST(nn.Module):
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
         x = x.view(x.size(0), -1)
-        if extract_fc_input:
-            return x.clone().detach(), None
-        x = self.fc_hidden(x)
-        x = self.relu(x)
-        x = self.classifier(x)
-        return x
-
-
-class CNN_USPS(nn.Module):
-    def __init__(self, num_classes=10):
-        super(CNN_USPS, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
-        self.relu1 = nn.ReLU()
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
-        self.relu2 = nn.ReLU()
-        self.pool1 = nn.MaxPool2d(2, 2)
+        h = self.fc_hidden(x)
+        h = self.relu(h)
         
-        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
-        self.relu3 = nn.ReLU()
-        self.pool2 = nn.MaxPool2d(2, 2)
-
-        self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(128 * 4 * 4, 128)
-        self.relu = nn.ReLU()
-        self.classifier = nn.Linear(128, num_classes)
-
-    def forward(self, x, extract_fc_input=False):
-        x = self.relu1(self.conv1(x))
-        x = self.pool1(self.relu2(self.conv2(x)))
-        x = self.pool2(self.relu3(self.conv3(x)))
-        x = self.flatten(x)
         if extract_fc_input:
-            return x.clone().detach(), None
-        x = self.fc_hidden(x)
-        x = self.relu(x)
-        x = self.classifier(x)
-        return x
+            return h.clone().detach(), None
 
-
+        logits = self.classifier(h)
+        return logits
 
 class NIN_EMNIST(nn.Module):
     def __init__(self, num_classes=10):
@@ -169,12 +138,47 @@ class NIN_EMNIST(nn.Module):
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
         x = x.view(x.size(0), -1)
+        h = self.fc_hidden(x)
+        h = self.relu(h)
+
         if extract_fc_input:
-            return x.clone().detach(), None
-        x = self.fc_hidden(x)
-        x = self.relu(x)
-        x = self.classifier(x)
-        return x
+            return h.clone().detach(), None
+
+        logits = self.classifier(h)
+        return logits
+
+class CNN_USPS(nn.Module):
+    def __init__(self, num_classes=10):
+        super(CNN_USPS, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
+        self.relu1 = nn.ReLU()
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.relu2 = nn.ReLU()
+        self.pool1 = nn.MaxPool2d(2, 2)
+        
+        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
+        self.relu3 = nn.ReLU()
+        self.pool2 = nn.MaxPool2d(2, 2)
+
+        self.flatten = nn.Flatten()
+        self.fc_hidden = nn.Linear(128 * 4 * 4, 128)
+        self.relu = nn.ReLU()
+        self.classifier = nn.Linear(128, num_classes)
+
+    def forward(self, x, extract_fc_input=False):
+        x = self.relu1(self.conv1(x))
+        x = self.pool1(self.relu2(self.conv2(x)))
+        x = self.pool2(self.relu3(self.conv3(x)))
+        x = self.flatten(x)
+
+        h = self.fc_hidden(x)
+        h = self.relu(h)
+
+        if extract_fc_input:
+            return h.clone().detach(), None
+
+        logits = self.classifier(h)
+        return logits
 
 
 class VGG(nn.Module):
@@ -183,48 +187,11 @@ class VGG(nn.Module):
         self.features = nn.Sequential(
             nn.Conv2d(3, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
             nn.Conv2d(64, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
-            nn.MaxPool2d(2),  # 16x16
+            nn.MaxPool2d(2),
 
             nn.Conv2d(64, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
             nn.Conv2d(128, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
-            nn.MaxPool2d(2),  # 8x8
-
-            nn.Conv2d(128, 256, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(256),
-            nn.AdaptiveAvgPool2d((1, 1))      # -> [B, 256, 1, 1]
-        )
-
-        self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(256, output_layer_size)
-        self.relu = nn.ReLU()
-        self.classifier = nn.Linear(output_layer_size, num_classes)
-
-    def _classifier_input(self, x):
-        x = self.features(x)
-        x = self.flatten(x)          # [B, 256]
-        x = self.fc_hidden(x)        # [B, output_layer_size]
-        x = self.relu(x)             # this is the *input to classifier*
-        return x
-
-    def forward(self, x, extract_fc_input=False):
-        h = self._classifier_input(x)
-
-        if extract_fc_input:
-            return h.clone().detach(), None
-
-        logits = self.classifier(h)  # logits = W*h + b
-        return logits
-
-class VGG_old(nn.Module):
-    def __init__(self, num_classes=10, output_layer_size=16):
-        super().__init__()
-        self.features = nn.Sequential(
-            nn.Conv2d(3, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
-            nn.Conv2d(64, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
-            nn.MaxPool2d(2),  # 16x16
-
-            nn.Conv2d(64, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
-            nn.Conv2d(128, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
-            nn.MaxPool2d(2),  # 8x8
+            nn.MaxPool2d(2),
 
             nn.Conv2d(128, 256, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(256),
             nn.AdaptiveAvgPool2d((1, 1))
@@ -234,56 +201,22 @@ class VGG_old(nn.Module):
         self.fc_hidden = nn.Linear(256, output_layer_size)
         self.relu = nn.ReLU()
         self.classifier = nn.Linear(output_layer_size, num_classes)
-    
-    def forward(self, x, extract_fc_input=False):
+
+    def _classifier_input(self, x):
         x = self.features(x)
         x = self.flatten(x)
-        if extract_fc_input:
-            return x.clone().detach(), None
         x = self.fc_hidden(x)
         x = self.relu(x)
-        x = self.classifier(x)
         return x
 
-class VGG_var_layers(nn.Module):
-    def __init__(self, num_classes=10, output_layer_size=16, extra_conv_layers=0):
-        super().__init__()
-        layers = [
-            nn.Conv2d(3, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
-            # nn.Conv2d(64, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
-            nn.MaxPool2d(2),  # 16x16
-
-            nn.Conv2d(64, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
-            # nn.Conv2d(128, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
-            nn.MaxPool2d(2),  # 8x8
-
-            nn.Conv2d(128, 256, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(256),
-        ]
-        for _ in range(extra_conv_layers):
-            layers += [
-                nn.Conv2d(256, 256, 3, padding=1),
-                nn.ReLU(),
-                nn.BatchNorm2d(256),
-            ]
-
-        layers.append(nn.AdaptiveAvgPool2d((1, 1)))
-
-        self.features = nn.Sequential(*layers)
-
-        self.flatten = nn.Flatten()
-        self.fc_hidden = nn.Linear(256, output_layer_size)
-        self.relu = nn.ReLU()
-        self.classifier = nn.Linear(output_layer_size, num_classes)
-    
     def forward(self, x, extract_fc_input=False):
-        x = self.features(x)
-        x = self.flatten(x)
+        h = self._classifier_input(x)
+
         if extract_fc_input:
-            return x.clone().detach(), None
-        x = self.fc_hidden(x)
-        x = self.relu(x)
-        x = self.classifier(x)
-        return x
+            return h.clone().detach(), None
+
+        logits = self.classifier(h)
+        return logits
 
 
 class VGG_office31(nn.Module):
@@ -312,9 +245,12 @@ class VGG_office31(nn.Module):
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
         x = self.flatten(x)
+        
+        h = self.fc_hidden(x)
+        h = self.relu(h)
+
         if extract_fc_input:
-            return x.clone().detach(), None
-        x = self.fc_hidden(x)
-        x = self.relu(x)
-        x = self.classifier(x)
-        return x
+            return h.clone().detach(), None
+
+        logits = self.classifier(h)
+        return logits

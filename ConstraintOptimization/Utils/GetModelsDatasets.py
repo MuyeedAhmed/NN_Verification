@@ -8,15 +8,15 @@ from torch.utils.data import random_split, DataLoader, Subset
 import random
 import numpy as np
 
-from Utils.CNNetworks import ResNet18_CIFAR, NIN_MNIST, NIN_EMNIST, VGG, CNN_USPS, VGG_office31, VGG_var_layers
+from Utils.CNNetworks import ResNet18, NIN_MNIST, NIN_EMNIST, VGG, CNN_USPS, VGG_office31
 
-def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, extra_conv_layers=0):
+def GetModel(dataset_name, num_classes=10, device=None, extra_conv_layers=0):
     if dataset_name == "MNIST":
-        model_t = NIN_MNIST(num_classes=10, output_layer_size=output_layer_size).to(device)
-        model_g = NIN_MNIST(num_classes=10, output_layer_size=output_layer_size).to(device)
+        model_t = NIN_MNIST(num_classes=10).to(device)
+        model_g = NIN_MNIST(num_classes=10).to(device)
     elif dataset_name == "CIFAR10":
-        model_t = ResNet18_CIFAR(num_classes=num_classes).to(device)
-        model_g = ResNet18_CIFAR(num_classes=num_classes).to(device)
+        model_t = ResNet18(num_classes=num_classes).to(device)
+        model_g = ResNet18(num_classes=num_classes).to(device)
 
     elif dataset_name == "FashionMNIST":
         model_t = NIN_MNIST(num_classes=10).to(device)
@@ -31,8 +31,8 @@ def GetModel(dataset_name, num_classes=10, device=None, output_layer_size=16, ex
         model_t = VGG(num_classes=10).to(device)
         model_g = VGG(num_classes=10).to(device)
     elif dataset_name == "Food101":
-            model_t = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
-            model_g = VGG(num_classes=num_classes, output_layer_size=output_layer_size).to(device)
+            model_t = VGG(num_classes=10).to(device)
+            model_g = VGG(num_classes=10).to(device)
     elif dataset_name == "USPS":
         model_t = CNN_USPS(num_classes=10).to(device)
         model_g = CNN_USPS(num_classes=10).to(device)
