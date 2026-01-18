@@ -106,12 +106,14 @@ class NIN_MNIST(nn.Module):
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
         x = x.view(x.size(0), -1)
+        h = self.fc_hidden(x)
+        h = self.relu(h)
+        
         if extract_fc_input:
-            return x.clone().detach(), None
-        x = self.fc_hidden(x)
-        x = self.relu(x)
-        x = self.classifier(x)
-        return x
+            return h.clone().detach(), None
+
+        logits = self.classifier(h)
+        return logits
 
 class NIN_EMNIST(nn.Module):
     def __init__(self, num_classes=10):
@@ -136,12 +138,14 @@ class NIN_EMNIST(nn.Module):
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
         x = x.view(x.size(0), -1)
+        h = self.fc_hidden(x)
+        h = self.relu(h)
+
         if extract_fc_input:
-            return x.clone().detach(), None
-        x = self.fc_hidden(x)
-        x = self.relu(x)
-        x = self.classifier(x)
-        return x
+            return h.clone().detach(), None
+
+        logits = self.classifier(h)
+        return logits
 
 class CNN_USPS(nn.Module):
     def __init__(self, num_classes=10):
@@ -166,12 +170,15 @@ class CNN_USPS(nn.Module):
         x = self.pool1(self.relu2(self.conv2(x)))
         x = self.pool2(self.relu3(self.conv3(x)))
         x = self.flatten(x)
+
+        h = self.fc_hidden(x)
+        h = self.relu(h)
+
         if extract_fc_input:
-            return x.clone().detach(), None
-        x = self.fc_hidden(x)
-        x = self.relu(x)
-        x = self.classifier(x)
-        return x
+            return h.clone().detach(), None
+
+        logits = self.classifier(h)
+        return logits
 
 
 class VGG(nn.Module):
@@ -238,9 +245,12 @@ class VGG_office31(nn.Module):
     def forward(self, x, extract_fc_input=False):
         x = self.features(x)
         x = self.flatten(x)
+        
+        h = self.fc_hidden(x)
+        h = self.relu(h)
+
         if extract_fc_input:
-            return x.clone().detach(), None
-        x = self.fc_hidden(x)
-        x = self.relu(x)
-        x = self.classifier(x)
-        return x
+            return h.clone().detach(), None
+
+        logits = self.classifier(h)
+        return logits
