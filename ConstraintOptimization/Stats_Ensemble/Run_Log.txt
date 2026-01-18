@@ -1,0 +1,2490 @@
+Using device: cuda
+Loaded model for run 2 from checkpoint.
+Saved FC inputs for run 2.
+Loaded inputs for Gurobi optimization.
+Set parameter Username
+Set parameter LicenseID to value 2677321
+Academic license - for non-commercial use only - expires 2026-06-11
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18744 rows, 25280 columns and 2229166 nonzeros
+Model fingerprint: 0x1df7f0ed
+Model has 16452 simple general constraints
+  16452 INDICATOR
+Variable types: 15140 continuous, 10140 integer (10140 binary)
+Coefficient statistics:
+  Matrix range     [2e-07, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 22903 rows and 22904 columns
+Presolve time: 3.59s
+Presolved: 41647 rows, 48184 columns, 2287942 nonzeros
+Presolved model has 16452 SOS constraint(s)
+Variable types: 30818 continuous, 17366 integer (17366 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.11s
+
+Barrier performed 0 iterations in 4.17 seconds (5.06 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.04s
+
+Solved with dual simplex
+
+Root relaxation: objective 0.000000e+00, 2981 iterations, 0.49 seconds (1.21 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0    9          -    0.00000      -     -    4s
+H    0     0                      47.2478683    0.00000   100%     -   10s
+     0     0    0.00000    0    9   47.24787    0.00000   100%     -   16s
+     0     2    0.00000    0    9   47.24787    0.00000   100%     -   38s
+     1     4    0.00000    1    8   47.24787    0.00000   100%   0.0   55s
+     3     8    0.00000    2    7   47.24787    0.00000   100%  4279   76s
+     7    14    0.00000    3    6   47.24787    0.00000   100%  5360   91s
+    13    30    0.00000    4    5   47.24787    0.00000   100%  3988  112s
+    29    47   12.78981    6    3   47.24787    0.00000   100%  2439  122s
+    46    51    0.00000    6    3   47.24787    0.00000   100%  1775  128s
+*   49    51               9      13.6665910    0.00000   100%  1704  132s
+    68    43    0.00000    7    2   13.66659    0.00000   100%  1431  151s
+    80    38    0.00000    8    1   13.66659    0.00000   100%  1216  165s
+*   81    38               9      10.9867052    0.00000   100%  1201  168s
+    87    38     cutoff    7        10.98671    0.00000   100%  1118  188s
+    90    40    0.00000   11    1   10.98671    0.00000   100%  1081  207s
+    92    45    0.00000   13    1   10.98671    0.00000   100%  1058  224s
+    97    47    0.00000   18    1   10.98671    0.00000   100%  1003  253s
+    99    56    0.00000   20    1   10.98671    0.00000   100%   983  280s
+   108    75    0.00000   29    1   10.98671    0.00000   100%   901  320s
+   129    80    0.00000   49    1   10.98671    0.00000   100%   884  395s
+   136    66     cutoff   55        10.98671    0.00000   100%  1009  489s
+*  141    66              36      10.6069602    0.00000   100%  1116  492s
+   152    72     cutoff   56        10.60696    0.00000   100%  1521  570s
+   166    79    0.00000   66    1   10.60696    0.00000   100%  1758  600s
+
+Explored 173 nodes (294746 simplex iterations) in 600.18 seconds (1190.32 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 4: 10.607 10.9867 13.6666 47.2479 
+
+Time limit reached
+Best objective 1.060696023538e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 1
+Epoch [1/50], Train Loss: 0.0822, Train Acc: 97.38%
+Epoch [2/50], Train Loss: 0.0679, Train Acc: 97.82%
+Epoch [3/50], Train Loss: 0.0587, Train Acc: 98.03%
+Epoch [4/50], Train Loss: 0.0526, Train Acc: 98.30%
+Epoch [5/50], Train Loss: 0.0461, Train Acc: 98.55%
+Epoch [6/50], Train Loss: 0.0423, Train Acc: 98.62%
+Epoch [7/50], Train Loss: 0.0378, Train Acc: 98.82%
+Epoch [8/50], Train Loss: 0.0326, Train Acc: 98.95%
+Epoch [9/50], Train Loss: 0.0296, Train Acc: 99.07%
+Epoch [10/50], Train Loss: 0.0272, Train Acc: 99.13%
+Epoch [11/50], Train Loss: 0.0265, Train Acc: 99.16%
+Early stopping at epoch 11. Best was epoch 1 (val_loss=0.2260).
+Restored best model from epoch 1.
+Test Accuracy: 92.52%
+[Run 2 cand 0] val_acc=92.6100 test_acc=0.9263 time=649.3s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 24631 rows, 16870 columns and 2223802 nonzeros
+Model fingerprint: 0xbe612bdb
+Model has 1314 simple general constraints
+  1314 INDICATOR
+Variable types: 15140 continuous, 1730 integer (1730 binary)
+Coefficient statistics:
+  Matrix range     [4e-08, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve removed 7373 rows and 7372 columns
+Presolve time: 4.20s
+Presolved: 17258 rows, 9498 columns, 2207729 nonzeros
+Presolved model has 1314 SOS constraint(s)
+Variable types: 8111 continuous, 1387 integer (1387 binary)
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0      handle free variables                         12s
+    4728    3.5101404e-04   1.308726e+05   0.000000e+00     15s
+    6708    1.5196885e-03   1.066618e+06   0.000000e+00     20s
+    8668    3.2383151e-03   5.148933e+04   0.000000e+00     25s
+   11028    0.0000000e+00   0.000000e+00   0.000000e+00     29s
+
+Root relaxation: objective 0.000000e+00, 11028 iterations, 16.62 seconds (52.81 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   16          -    0.00000      -     -   28s
+     0     0    0.00000    0   16          -    0.00000      -     -   46s
+     0     2    0.00000    0   16          -    0.00000      -     -  108s
+     1     3    0.00000    1   15          -    0.00000      -   0.0  111s
+     2     5    0.00000    2   14          -    0.00000      -   0.0  116s
+     4     8    0.00000    3   13          -    0.00000      -   548  123s
+     7    13    0.00000    4   12          -    0.00000      -   752  130s
+    12    19    0.00000    5   12          -    0.00000      -   772  135s
+    40    50    0.00000    8   11          -    0.00000      -   951  147s
+    49    58   15.57516   10   26          -    0.00000      -  1048  156s
+    57    70    0.00000   10   11          -    0.00000      -  1073  164s
+    69    78   14.50288   12   29          -    0.00000      -  1110  173s
+    77    89    0.00000   12   11          -    0.00000      -  1066  182s
+*   84    89              11      21.6632312    0.00000   100%  1079  183s
+*   85    89              11      21.6538107    0.00000   100%  1066  183s
+    94    88    9.63303   14   15   21.65381    0.00000   100%  1045  194s
+   101   100    0.00000   14   10   21.65381    0.00000   100%  1007  202s
+   115   103    0.00000   15   10   21.65381    0.00000   100%   988  210s
+   120   110    5.89702   15   18   21.65381    0.00000   100%  1092  219s
+   133   112   10.05325   18   21   21.65381    0.00000   100%  1153  229s
+   137   126    0.00000   16   10   21.65381    0.00000   100%  1203  233s
+   159   137    0.00000   18   10   21.65381    0.00000   100%  1166  242s
+   174   137    4.36712   19   16   21.65381    0.00000   100%  1121  251s
+   178   147    0.00000   20    9   21.65381    0.00000   100%  1177  255s
+   192   151    5.50563   22   15   21.65381    0.00000   100%  1134  266s
+   200   160    0.00000   22    7   21.65381    0.00000   100%  1120  272s
+   215   168    1.65618   24   14   21.65381    0.00000   100%  1095  277s
+   225   178    0.00000   24    6   21.65381    0.00000   100%  1067  283s
+*  236   178              26      17.8170091    0.00000   100%  1038  285s
+   239   181    4.35421   26    8   17.81701    0.00000   100%  1039  294s
+   246   187    0.00000   26    6   17.81701    0.00000   100%  1022  301s
+*  254   187              29      17.7019192    0.00000   100%  1022  301s
+   256   213    0.38631   28    5   17.70192    0.00000   100%  1014  311s
+*  289   213              17      15.1321221    0.00000   100%   974  313s
+   290   217    0.00000   32    6   15.13212    0.00000   100%   971  325s
+   296   234    0.00000   33    6   15.13212    0.00000   100%   960  335s
+   319   239    4.36980   33    5   15.13212    0.00000   100%   920  348s
+*  331   239              18      13.3673263    0.00000   100%   934  350s
+   334   242    0.00000   34    6   13.36733    0.00000   100%   933  359s
+   341   264    0.00000   35    6   13.36733    0.00000   100%   951  367s
+   369   269    0.00000   36    6   13.36733    0.00000   100%   922  376s
+   376   293    0.00000   37    6   13.36733    0.00000   100%   915  382s
+   406   294   12.58066   40   14   13.36733    0.00000   100%   886  394s
+*  411   294              21      13.2382955    0.00000   100%   889  394s
+   413   324    0.00000   40    6   13.23830    0.00000   100%   888  402s
+   465   327   11.73825   44    9   13.23830    0.00000   100%   847  410s
+   473   329    0.00000   44    6   13.23830    0.00000   100%   840  419s
+   486   342    0.00000   45    6   13.23830    0.00000   100%   831  427s
+   527   359   11.17422   45    7   13.23830    0.00000   100%   798  435s
+   580   353   11.05685   46   10   13.23830    0.00000   100%   752  441s
+   626   329    0.00000   46    6   13.23830    0.00000   100%   716  452s
+   638   372    0.00000   47    6   13.23830    0.00000   100%   710  460s
+   688   381    0.00000   48    6   13.23830    0.00000   100%   677  472s
+   703   421    0.00000   49    6   13.23830    0.00000   100%   669  481s
+   751   440   10.62705   54   17   13.23830    0.00000   100%   647  492s
+   776   466    0.00000   54    5   13.23830    0.00000   100%   629  502s
+   804   481    0.00000   56    5   13.23830    0.00000   100%   613  514s
+   821   500    0.00000   57    5   13.23830    0.00000   100%   607  527s
+*  845   480             224      12.6365716    0.00000   100%   599  529s
+*  847   480             225      12.6281226    0.00000   100%   599  529s
+*  848   479             225      12.5573616    0.00000   100%   599  529s
+   872   481    0.00000   58    5   12.55736    0.00000   100%   599  545s
+   892   497    0.00000   59    5   12.55736    0.00000   100%   603  559s
+   928   541    6.87283   59    4   12.55736    0.00000   100%   600  571s
+   994   557    1.45304   66    4   12.55736    0.00000   100%   595  586s
+  1020   564    8.07143   72    6   12.55736    0.00000   100%   589  600s
+
+Explored 1035 nodes (617995 simplex iterations) in 600.19 seconds (1708.05 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 10: 12.5574 12.6281 12.6366 ... 21.6632
+
+Time limit reached
+Best objective 1.255736156966e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 5
+Epoch [1/50], Train Loss: 0.0697, Train Acc: 97.78%
+Epoch [2/50], Train Loss: 0.0620, Train Acc: 97.95%
+Epoch [3/50], Train Loss: 0.0530, Train Acc: 98.25%
+Epoch [4/50], Train Loss: 0.0456, Train Acc: 98.51%
+Epoch [5/50], Train Loss: 0.0400, Train Acc: 98.74%
+Epoch [6/50], Train Loss: 0.0377, Train Acc: 98.81%
+Epoch [7/50], Train Loss: 0.0321, Train Acc: 99.02%
+Epoch [8/50], Train Loss: 0.0304, Train Acc: 99.06%
+Epoch [9/50], Train Loss: 0.0266, Train Acc: 99.21%
+Epoch [10/50], Train Loss: 0.0282, Train Acc: 99.09%
+Epoch [11/50], Train Loss: 0.0229, Train Acc: 99.28%
+Early stopping at epoch 11. Best was epoch 1 (val_loss=0.2355).
+Restored best model from epoch 1.
+Test Accuracy: 92.61%
+[Run 2 cand 1] val_acc=92.8800 test_acc=0.9259 time=650.2s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18142 rows, 26140 columns and 2222030 nonzeros
+Model fingerprint: 0x066263e8
+Model has 18000 simple general constraints
+  18000 INDICATOR
+Variable types: 15140 continuous, 11000 integer (11000 binary)
+Coefficient statistics:
+  Matrix range     [3e-08, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [3e-04, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 25999 rows and 26000 columns
+Presolve time: 1.48s
+Presolved: 44141 rows, 52140 columns, 2288460 nonzeros
+Presolved model has 18000 SOS constraint(s)
+Variable types: 33140 continuous, 19000 integer (19000 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.00s
+
+Barrier statistics:
+ AA' NZ     : 0.000e+00
+ Factor NZ  : 1.000e+00
+ Factor Ops : 1.000e+00 (less than 1 second per iteration)
+ Threads    : 1
+
+Barrier performed 0 iterations in 1.82 seconds (2.15 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.00s
+
+Solved with primal simplex
+
+Root relaxation: objective 0.000000e+00, 0 iterations, 0.29 seconds (0.48 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+H    0     0                     147.7882263    0.00000   100%     -   10s
+     0     0    0.00000    0   90  147.78823    0.00000   100%     -   16s
+     0     2    0.00000    0   90  147.78823    0.00000   100%     -   31s
+    25    32    8.83963    5  135  147.78823    0.00000   100%   174   35s
+   101   112    9.46386   12  106  147.78823    0.00000   100%   271   40s
+   208   219    0.00000   21   69  147.78823    0.00000   100%   252   45s
+   309   330    0.00000   30   60  147.78823    0.00000   100%   224   50s
+   464   489    0.00000   44   46  147.78823    0.00000   100%   200   55s
+   591   625    0.00000   56   34  147.78823    0.00000   100%   203   60s
+   742   749    0.00000   70   27  147.78823    0.00000   100%   192   97s
+   748   759    0.00000   71   27  147.78823    0.00000   100%   191  102s
+H  752   759                     116.3823050    0.00000   100%   190  105s
+   811   828    0.00000   79   27  116.38231    0.00000   100%   193  110s
+   827   847    3.63926   79   47  116.38231    0.00000   100%   195  118s
+   852   866    0.00000   83   26  116.38231    0.00000   100%   198  121s
+   898   907    0.00000   88   26  116.38231    0.00000   100%   200  125s
+   961  1001    5.57566   96   63  116.38231    0.00000   100%   197  130s
+  1028  1055    0.00000  106   26  116.38231    0.00000   100%   194  136s
+  1082  1100    0.00000  110   26  116.38231    0.00000   100%   193  141s
+  1133  1149   11.40423  115   64  116.38231    0.00000   100%   189  146s
+* 1169  1008             107      25.7478200    0.00000   100%   188  152s
+  1187  1055    9.67476  122  422   25.74782    0.00000   100%   189  155s
+* 1228  1003             115      21.8038490    0.00000   100%   185  159s
+  1294  1062    0.00000  126   26   21.80385    0.00000   100%   177  162s
+  1395  1154    0.00000  135   26   21.80385    0.00000   100%   170  165s
+  1621  1327    5.56546  154   50   21.80385    0.00000   100%   153  171s
+  1843  1503    8.30066  170   60   21.80385    0.00000   100%   144  177s
+  1962  1577    6.05089  180   42   21.80385    0.00000   100%   140  181s
+  2056  1697    0.00000  187   26   21.80385    0.00000   100%   138  186s
+  2202  1782    7.05365  200   44   21.80385    0.00000   100%   132  190s
+  2313  1788    7.92304  210   37   21.80385    0.00000   100%   128  204s
+  2319  1794    0.00000  210   26   21.80385    0.00000   100%   128  275s
+  2325  1850    0.00000  211   26   21.80385    0.00000   100%   128  287s
+  2411  1909    7.92291  211   42   21.80385    0.00000   100%   126  326s
+  2504  1966    7.20509  212   35   21.80385    0.00000   100%   124  380s
+  2615  2067    5.81827  225   46   21.80385    0.00000   100%   120  493s
+  2716  2267    4.61143  226   41   21.80385    0.00000   100%   118  499s
+  2968  2432    9.08028  248   79   21.80385    0.00000   100%   111  505s
+  3181  2647    0.00000  263   26   21.80385    0.00000   100%   107  512s
+  3448  2869    0.00000  285   26   21.80385    0.00000   100%   103  518s
+  3724  3131    0.00000  302   26   21.80385    0.00000   100%  98.7  524s
+* 3823  3131             371      21.7981760    0.00000   100%  97.4  524s
+  3998  3388    7.06216  328   68   21.79818    0.00000   100%  95.7  531s
+
+Explored 4255 nodes (397951 simplex iterations) in 600.03 seconds (1515.06 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 5: 21.7982 21.8038 25.7478 ... 147.788
+
+Time limit reached
+Best objective 2.179817603737e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 10
+Epoch [1/50], Train Loss: 0.0629, Train Acc: 97.99%
+Epoch [2/50], Train Loss: 0.0552, Train Acc: 98.18%
+Epoch [3/50], Train Loss: 0.0467, Train Acc: 98.50%
+Epoch [4/50], Train Loss: 0.0420, Train Acc: 98.65%
+Epoch [5/50], Train Loss: 0.0378, Train Acc: 98.79%
+Epoch [6/50], Train Loss: 0.0314, Train Acc: 98.99%
+Epoch [7/50], Train Loss: 0.0309, Train Acc: 99.02%
+Epoch [8/50], Train Loss: 0.0273, Train Acc: 99.14%
+Epoch [9/50], Train Loss: 0.0268, Train Acc: 99.17%
+Epoch [10/50], Train Loss: 0.0246, Train Acc: 99.24%
+Epoch [11/50], Train Loss: 0.0240, Train Acc: 99.23%
+Early stopping at epoch 11. Best was epoch 1 (val_loss=0.2281).
+Restored best model from epoch 1.
+Test Accuracy: 92.75%
+[Run 2 cand 2] val_acc=93.1200 test_acc=0.9295 time=650.5s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18653 rows, 25410 columns and 2232328 nonzeros
+Model fingerprint: 0x9aea63e8
+Model has 16686 simple general constraints
+  16686 INDICATOR
+Variable types: 15140 continuous, 10270 integer (10270 binary)
+Coefficient statistics:
+  Matrix range     [2e-07, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 23371 rows and 23372 columns
+Presolve time: 2.11s
+Presolved: 42024 rows, 48782 columns, 2292261 nonzeros
+Presolved model has 16686 SOS constraint(s)
+Variable types: 31169 continuous, 17613 integer (17613 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.09s
+
+Barrier performed 0 iterations in 2.58 seconds (2.97 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.03s
+
+Solved with dual simplex
+
+Root relaxation: objective 0.000000e+00, 2921 iterations, 0.38 seconds (0.71 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0  180          -    0.00000      -     -    2s
+     0     0    0.00000    0  180          -    0.00000      -     -   14s
+     0     2    0.00000    0  180          -    0.00000      -     -   48s
+     1     4    0.00000    1  179          -    0.00000      -   0.0   69s
+     3     8    0.00000    2  178          -    0.00000      -  8989   78s
+     7    14    0.00000    3  177          -    0.00000      -  5709   93s
+    13    36    0.00000    4  176          -    0.00000      -  4023  105s
+    35    43   15.57041    7  289          -    0.00000      -  2013  116s
+    42    60    0.00000    6  174          -    0.00000      -  1834  127s
+    59    75   10.78984    8  189          -    0.00000      -  1825  137s
+    74    92    0.00000    8  172          -    0.00000      -  1571  146s
+    91   109    0.00000   10  170          -    0.00000      -  1394  155s
+   108   124   12.41646   12  185          -    0.00000      -  1275  165s
+   123   142    0.00000   12  168          -    0.00000      -  1173  176s
+   141   161   12.62730   14  206          -    0.00000      -  1145  184s
+   160   179    0.00000   14  166          -    0.00000      -  1052  193s
+   178   196   12.78702   16  149          -    0.00000      -  1073  206s
+   195   213    0.00000   16  164          -    0.00000      -  1068  223s
+   212   230    9.89125   20  117          -    0.00000      -  1063  243s
+   229   259    0.00000   18  162          -    0.00000      -  1001  257s
+   258   270   23.89559   29    6          -    0.00000      -   984  275s
+   269   287    0.00000   20  160          -    0.00000      -   976  291s
+   286   297   10.47275   31   35          -    0.00000      -   951  310s
+   296   308    0.00000   24  156          -    0.00000      -  1007  333s
+   307   318   14.43937   33   29          -    0.00000      -  1066  356s
+   317   327    0.00000   26  154          -    0.00000      -  1106  378s
+   326   335   14.92880   36   25          -    0.00000      -  1134  399s
+*  329   330              44      13.6432252    0.00000   100%  1139  400s
+   346   311    0.00000   28  152   13.64323    0.00000   100%  1163  427s
+   364   311    0.00000   29  151   13.64323    0.00000   100%  1163  455s
+   370   322   12.13219   10  189   13.64323    0.00000   100%  1240  479s
+   387   339    7.84630   12  193   13.64323    0.00000   100%  1187  494s
+   420   329    7.84630   27  165   13.64323    0.00000   100%  1098  524s
+   427   351    7.84630   28  165   13.64323    0.00000   100%  1086  552s
+   467   341    7.84630   48  138   13.64323    0.00000   100%  1046  577s
+   490   384    7.84630   49  137   13.64323    0.00000   100%  1010  597s
+   553   332    7.84630   69  116   13.64323    0.00000   100%   922  600s
+
+Cutting planes:
+  Cover: 3
+
+Explored 557 nodes (512643 simplex iterations) in 600.10 seconds (1340.82 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 1: 13.6432 
+
+Time limit reached
+Best objective 1.364322519532e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 20
+Epoch [1/50], Train Loss: 0.0552, Train Acc: 98.18%
+Epoch [2/50], Train Loss: 0.0472, Train Acc: 98.48%
+Epoch [3/50], Train Loss: 0.0396, Train Acc: 98.74%
+Epoch [4/50], Train Loss: 0.0368, Train Acc: 98.81%
+Epoch [5/50], Train Loss: 0.0329, Train Acc: 98.95%
+Epoch [6/50], Train Loss: 0.0304, Train Acc: 99.08%
+Epoch [7/50], Train Loss: 0.0260, Train Acc: 99.21%
+Epoch [8/50], Train Loss: 0.0270, Train Acc: 99.13%
+Epoch [9/50], Train Loss: 0.0265, Train Acc: 99.14%
+Epoch [10/50], Train Loss: 0.0239, Train Acc: 99.31%
+Epoch [11/50], Train Loss: 0.0225, Train Acc: 99.28%
+Epoch [12/50], Train Loss: 0.0232, Train Acc: 99.26%
+Early stopping at epoch 12. Best was epoch 2 (val_loss=0.2330).
+Restored best model from epoch 2.
+Test Accuracy: 92.37%
+[Run 2 cand 3] val_acc=92.8200 test_acc=0.9311 time=650.7s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 24596 rows, 16920 columns and 2219822 nonzeros
+Model fingerprint: 0xe2c88e7d
+Model has 1404 simple general constraints
+  1404 INDICATOR
+Variable types: 15140 continuous, 1780 integer (1780 binary)
+Coefficient statistics:
+  Matrix range     [1e-08, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve removed 7193 rows and 7192 columns
+Presolve time: 4.76s
+Presolved: 17403 rows, 9728 columns, 2204194 nonzeros
+Presolved model has 1404 SOS constraint(s)
+Variable types: 8246 continuous, 1482 integer (1482 binary)
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0      handle free variables                         13s
+    4380    2.1618141e-04   4.825471e+04   0.000000e+00     15s
+    6340    1.0487153e-03   9.892443e+04   0.000000e+00     20s
+Warning: Markowitz tolerance tightened to 0.03125
+    8200    2.3514586e-03   1.809536e+05   0.000000e+00     25s
+   10821    5.0671199e-03   3.105999e+04   0.000000e+00     30s
+   11641    0.0000000e+00   0.000000e+00   0.000000e+00     31s
+
+Root relaxation: objective 0.000000e+00, 11641 iterations, 18.49 seconds (57.84 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   16          -    0.00000      -     -   31s
+H    0     0                       8.3201677    0.00000   100%     -   33s
+     0     0    0.00000    0    7    8.32017    0.00000   100%     -   39s
+     0     0    0.00000    0    2    8.32017    0.00000   100%     -   63s
+     0     0    0.00000    0    2    8.32017    0.00000   100%     -   64s
+     0     2    0.00000    0    2    8.32017    0.00000   100%     -  105s
+     2     5    0.00000    2    1    8.32017    0.00000   100%   6.0  115s
+     4     4    0.00000    3    1    8.32017    0.00000   100%   498  121s
+*    5     4               3       8.0731855    0.00000   100%   398  123s
+     7     4    0.00000    4    1    8.07319    0.00000   100%   299  132s
+     9     3    0.00000    5    1    8.07319    0.00000   100%   533  140s
+*   17     2               8       1.3140069    0.00000   100%  1362  144s
+*   18     2               9       0.2675682    0.00000   100%  1298  145s
+    26     1    0.00000   12    1    0.26757    0.00000   100%  1007  150s
+    30     3    0.00000   14    1    0.26757    0.00000   100%   925  156s
+    32     6     cutoff   16         0.26757    0.00000   100%   892  160s
+    39     5     cutoff   18         0.26757    0.00000   100%   849  167s
+    44     8    0.00000   23    1    0.26757    0.00000   100%   823  176s
+    51     4     cutoff   25         0.26757    0.00000   100%   866  183s
+    59     8    0.00000   30    1    0.26757    0.00000   100%   812  191s
+    65     9     cutoff   35         0.26757    0.00000   100%   868  198s
+    74    10     cutoff   38         0.26757    0.00000   100%   817  206s
+    83    11     cutoff   45         0.26757    0.00000   100%   746  218s
+    90     9    0.00000   49    1    0.26757    0.00000   100%   755  232s
+    96    10     cutoff   51         0.26757    0.00000   100%   796  242s
+   105    10     cutoff   56         0.26757    0.00000   100%   739  253s
+   115     7     cutoff   61         0.26757    0.00000   100%   711  263s
+   120     3     cutoff   62         0.26757    0.00000   100%   698  271s
+   128     2     cutoff   57         0.26757    0.00000   100%   687  278s
+   133     3     cutoff   64         0.26757    0.00000   100%   692  284s
+   136     7    0.00000   68    1    0.26757    0.00000   100%   677  291s
+   142     4     cutoff   70         0.26757    0.00000   100%   712  302s
+   149     2     cutoff   75         0.26757    0.00000   100%   693  309s
+   155     2    0.00000   77    1    0.26757    0.00000   100%   678  315s
+   167     7    0.00000   83    1    0.26757    0.00000   100%   654  320s
+   174     3     cutoff   85         0.26757    0.00000   100%   637  331s
+   182     5    0.00000   91    1    0.26757    0.00000   100%   627  340s
+   184     4    0.00000   93    1    0.26757    0.00000   100%   620  350s
+   189     2     cutoff   95         0.26757    0.00000   100%   616  357s
+   193     3     cutoff   96         0.26757    0.00000   100%   613  364s
+   205    15    0.00000  105    1    0.26757    0.00000   100%   580  379s
+   212    20     cutoff  109         0.26757    0.00000   100%   565  393s
+*  225    20             108       0.1621870    0.00000   100%   535  395s
+   227    15     cutoff  119         0.16219    0.00000   100%   539  416s
+*  228    15             121       0.1267270    0.00000   100%   539  418s
+   236    16    0.00000  124    1    0.12673    0.00000   100%   534  431s
+   255     9     cutoff  130         0.12673    0.00000   100%   512  446s
+*  259     9             132       0.1157564    0.00000   100%   518  448s
+   266     8    0.00000  136    1    0.11576    0.00000   100%   514  461s
+   275    14    0.00000  140    1    0.11576    0.00000   100%   509  469s
+   289    11     cutoff  150         0.11576    0.00000   100%   486  485s
+   298    17     cutoff  152         0.11576    0.00000   100%   501  496s
+   312    21     cutoff  163         0.11576    0.00000   100%   491  509s
+   330    30     cutoff  174         0.11576    0.00000   100%   482  530s
+   351    41     cutoff  186         0.11576    0.00000   100%   515  559s
+   390    40    0.00000  214    1    0.11576    0.00000   100%   482  597s
+   405    38     cutoff  214         0.11576    0.00000   100%   478  600s
+
+Cutting planes:
+  Cover: 5
+  Clique: 9
+  MIR: 1
+  Relax-and-lift: 1
+
+Explored 409 nodes (206438 simplex iterations) in 600.08 seconds (1637.15 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 7: 0.115756 0.126727 0.162187 ... 8.32017
+
+Time limit reached
+Best objective 1.157563770231e-01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 1
+Epoch [1/50], Train Loss: 0.0415, Train Acc: 98.67%
+Epoch [2/50], Train Loss: 0.0380, Train Acc: 98.78%
+Epoch [3/50], Train Loss: 0.0338, Train Acc: 98.97%
+Epoch [4/50], Train Loss: 0.0292, Train Acc: 99.12%
+Epoch [5/50], Train Loss: 0.0285, Train Acc: 99.12%
+Epoch [6/50], Train Loss: 0.0250, Train Acc: 99.24%
+Epoch [7/50], Train Loss: 0.0220, Train Acc: 99.36%
+Epoch [8/50], Train Loss: 0.0203, Train Acc: 99.39%
+Epoch [9/50], Train Loss: 0.0201, Train Acc: 99.42%
+Epoch [10/50], Train Loss: 0.0222, Train Acc: 99.26%
+Epoch [11/50], Train Loss: 0.0213, Train Acc: 99.33%
+Early stopping at epoch 11. Best was epoch 1 (val_loss=0.2388).
+Restored best model from epoch 1.
+Test Accuracy: 92.94%
+[Run 2 cand 4] val_acc=92.7900 test_acc=0.9313 time=650.1s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18142 rows, 26140 columns and 2231980 nonzeros
+Model fingerprint: 0xa068f6f6
+Model has 18000 simple general constraints
+  18000 INDICATOR
+Variable types: 15140 continuous, 11000 integer (11000 binary)
+Coefficient statistics:
+  Matrix range     [6e-08, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-03, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 25999 rows and 26000 columns
+Presolve time: 1.52s
+Presolved: 44141 rows, 52140 columns, 2298410 nonzeros
+Presolved model has 18000 SOS constraint(s)
+Variable types: 33140 continuous, 19000 integer (19000 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.00s
+
+Barrier statistics:
+ AA' NZ     : 0.000e+00
+ Factor NZ  : 1.000e+00
+ Factor Ops : 1.000e+00 (less than 1 second per iteration)
+ Threads    : 1
+
+Barrier performed 0 iterations in 1.86 seconds (2.16 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.00s
+
+Solved with primal simplex
+
+Root relaxation: objective 0.000000e+00, 0 iterations, 0.28 seconds (0.48 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+H    0     0                     114.2972140    0.00000   100%     -    3s
+     0     0    0.00000    0   45  114.29721    0.00000   100%     -    7s
+     0     2    0.00000    0   45  114.29721    0.00000   100%     -    9s
+     1     4    0.00000    1   44  114.29721    0.00000   100%   0.0   10s
+    58    65    7.38003    8  119  114.29721    0.00000   100%   273   15s
+   100   107    7.92781   11   67  114.29721    0.00000   100%   294   20s
+   137   149    0.00000   14   31  114.29721    0.00000   100%   329   25s
+   197   205    0.00000   20   25  114.29721    0.00000   100%   301   30s
+   221   231    7.62609   22   42  114.29721    0.00000   100%   304   38s
+   247   254    0.00000   26   20  114.29721    0.00000   100%   299   40s
+   293   300    7.53396   32   98  114.29721    0.00000   100%   283   45s
+   346   364    0.00000   36   15  114.29721    0.00000   100%   271   50s
+   400   407    8.61198   42   45  114.29721    0.00000   100%   270   56s
+   443   452    7.26608   48   34  114.29721    0.00000   100%   258   60s
+   503   523    5.68825   55   50  114.29721    0.00000   100%   246   65s
+   571   598    0.00000   59   12  114.29721    0.00000   100%   235   71s
+   613   633    4.54348   60   86  114.29721    0.00000   100%   230   75s
+*  630   509              54      35.0731231    0.00000   100%   226   79s
+*  632   507              55      35.0110773    0.00000   100%   226   79s
+*  634   499              56      34.7128247    0.00000   100%   226   79s
+   638   525    0.00000   60   12   34.71282    0.00000   100%   225   81s
+*  758   560              61      34.5965427    0.00000   100%   198   83s
+   793   597    7.61842   74   34   34.59654    0.00000   100%   193   86s
+*  843   557              68      33.5282472    0.00000   100%   183   89s
+   868   612    5.60681   82   21   33.52825    0.00000   100%   181   92s
+*  975   531              70      18.1720160    0.00000   100%   166   98s
+*  977   531              71      18.1599681    0.00000   100%   166   98s
+  1040   575    0.00000   97    9   18.15997    0.00000   100%   159  101s
+* 1145   594              80      18.0548748    0.00000   100%   149  104s
+* 1151   380              99       2.9819010    0.00000   100%   148  108s
+  1219   277     cutoff  110         2.98190    0.00000   100%   141  111s
+  1393   234     cutoff  122         2.98190    0.00000   100%   124  126s
+  1492   200     cutoff  127         2.98190    0.00000   100%   115  141s
+  1568   166     cutoff  120         2.98190    0.00000   100%   110  155s
+  1640   210     cutoff  129         2.98190    0.00000   100%   105  161s
+  1798   210    2.53431  160    4    2.98190    0.00000   100%  96.3  169s
+  1810   273    2.53431  161    4    2.98190    0.00000   100%  95.7  173s
+  2051   341    2.53431  222    4    2.98190    0.00000   100%  84.8  176s
+  2295   318    2.53431  291    4    2.98190    0.00000   100%  76.1  189s
+  2301   323    2.53431  292    4    2.98190    0.00000   100%  75.9  200s
+  2554   410    2.53431  370    4    2.98190    0.00000   100%  68.7  207s
+  2816   368    2.53431  210    0    2.98190    0.00000   100%  62.6  301s
+  2818   369    2.53431  423   10    2.98190    0.00000   100%  62.5  342s
+  2819   370    2.53431  352   10    2.98190    0.00000   100%  62.5  350s
+  2820   371    2.53431  169   10    2.98190    0.00000   100%  62.5  368s
+  2821   371    2.53431  392   10    2.98190    0.00000   100%  62.5  374s
+  2822   372    2.53431  281   10    2.98190    0.00000   100%  62.4  401s
+  2823   373    2.53431  191   10    2.98190    0.00000   100%  62.4  435s
+  2824   373    2.53431  264   10    2.98190    0.00000   100%  62.4  474s
+  2825   374    2.53431  364   10    2.98190    0.00000   100%  62.4  480s
+  2827   375    2.53431  283   10    2.98190    0.00000   100%  62.3  498s
+  2828   378    0.00000   12   12    2.98190    0.00000   100%  85.5  507s
+  2829   377    0.00000   13   12    2.98190    0.00000   100%  85.5  514s
+  2831   376    0.00000   14   12    2.98190    0.00000   100%  85.8  516s
+  2833   375    0.00000   15   12    2.98190    0.00000   100%  85.9  522s
+  2836   375    0.00000   17   12    2.98190    0.00000   100%  86.0  528s
+  2837   375    0.00000   18   12    2.98190    0.00000   100%  86.0  534s
+  2839   374    0.00000   19   12    2.98190    0.00000   100%  86.0  540s
+  2841   374    0.00000   20   12    2.98190    0.00000   100%  86.0  547s
+  2843   372     cutoff   20         2.98190    0.00000   100%  85.9  553s
+  2846   371     cutoff   22         2.98190    0.00000   100%  85.9  559s
+  2848   370     cutoff   23         2.98190    0.00000   100%  86.7  566s
+  2850   370     cutoff   24         2.98190    0.00000   100%  86.9  573s
+  2852   369 infeasible   25         2.98190    0.00000   100%  87.5  579s
+  2854   368     cutoff   26         2.98190    0.00000   100%  87.5  585s
+  2856   373    0.00000   27   12    2.98190    0.00000   100%  87.4  591s
+  2861   369    0.00000   32   12    2.98190    0.00000   100%  87.2  600s
+
+Cutting planes:
+  Gomory: 14
+
+Explored 2865 nodes (257491 simplex iterations) in 600.06 seconds (1077.53 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 10: 2.9819 18.0549 18.16 ... 114.297
+
+Time limit reached
+Best objective 2.981901006383e+00, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 5
+Epoch [1/50], Train Loss: 0.0387, Train Acc: 98.78%
+Epoch [2/50], Train Loss: 0.0325, Train Acc: 98.96%
+Epoch [3/50], Train Loss: 0.0299, Train Acc: 99.10%
+Epoch [4/50], Train Loss: 0.0284, Train Acc: 99.12%
+Epoch [5/50], Train Loss: 0.0248, Train Acc: 99.23%
+Epoch [6/50], Train Loss: 0.0233, Train Acc: 99.27%
+Epoch [7/50], Train Loss: 0.0223, Train Acc: 99.30%
+Epoch [8/50], Train Loss: 0.0171, Train Acc: 99.49%
+Epoch [9/50], Train Loss: 0.0143, Train Acc: 99.62%
+Epoch [10/50], Train Loss: 0.0137, Train Acc: 99.62%
+Epoch [11/50], Train Loss: 0.0118, Train Acc: 99.71%
+Epoch [12/50], Train Loss: 0.0107, Train Acc: 99.76%
+Early stopping at epoch 12. Best was epoch 2 (val_loss=0.2372).
+Restored best model from epoch 2.
+Test Accuracy: 93.00%
+[Run 2 cand 5] val_acc=92.8100 test_acc=0.9314 time=650.6s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18604 rows, 25480 columns and 2218216 nonzeros
+Model fingerprint: 0x813897c1
+Model has 16812 simple general constraints
+  16812 INDICATOR
+Variable types: 15140 continuous, 10340 integer (10340 binary)
+Coefficient statistics:
+  Matrix range     [2e-07, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 23623 rows and 23624 columns
+Presolve time: 2.17s
+Presolved: 42227 rows, 49104 columns, 2278772 nonzeros
+Presolved model has 16812 SOS constraint(s)
+Variable types: 31358 continuous, 17746 integer (17746 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.08s
+
+Barrier performed 0 iterations in 2.65 seconds (3.34 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.04s
+
+Solved with dual simplex
+
+Root relaxation: objective 0.000000e+00, 2837 iterations, 0.37 seconds (1.10 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   90          -    0.00000      -     -    2s
+     0     0    0.00000    0   90          -    0.00000      -     -   14s
+     0     2    0.00000    0   90          -    0.00000      -     -   48s
+     1     4    0.00000    1   89          -    0.00000      -   0.0   72s
+     3     8    0.00000    2   88          -    0.00000      - 12559   93s
+     7    14    0.00000    3   87          -    0.00000      - 10767  110s
+    13    30    0.00000    4   86          -    0.00000      -  8158  130s
+    29    58    5.73448    6  129          -    0.00000      -  4542  138s
+    57    75    0.00000    8   82          -    0.00000      -  2741  150s
+    74    96   10.28898   10  112          -    0.00000      -  2436  155s
+   113   123    0.00000   12   78          -    0.00000      -  1800  170s
+   136   152    5.46227   16   93          -    0.00000      -  1684  179s
+   151   154   12.78994   18   33          -    0.00000      -  1598  193s
+   153   163    0.00000   18   72          -    0.00000      -  1603  207s
+   162   177    8.48609   20   89          -    0.00000      -  1554  216s
+   176   183   13.89965   16   54          -    0.00000      -  1474  229s
+   182   190    0.00000   22   68          -    0.00000      -  1451  244s
+   189   197   13.98845   18   43          -    0.00000      -  1420  259s
+   196   208    0.00000   24   66          -    0.00000      -  1394  272s
+   207   217   15.28310   21   45          -    0.00000      -  1377  287s
+   216   239    0.00000   26   66          -    0.00000      -  1360  297s
+   238   254    0.00000   28   66          -    0.00000      -  1288  311s
+   253   274   19.05593   30    6          -    0.00000      -  1235  326s
+   273   282    0.00000   30   66          -    0.00000      -  1203  345s
+   281   288   16.12826   31   22          -    0.00000      -  1201  365s
+   287   295    0.00000   32   66          -    0.00000      -  1176  385s
+   294   303   16.12826   33   20          -    0.00000      -  1170  405s
+   302   312    0.00000   34   66          -    0.00000      -  1180  425s
+   311   319   20.08604   34   65          -    0.00000      -  1230  448s
+*  317   319              34      16.4418952    0.00000   100%  1258  449s
+   320   315    0.00000   36   64   16.44190    0.00000   100%  1246  474s
+   327   321    0.00000   37   63   16.44190    0.00000   100%  1256  493s
+   345   331   12.65043   38   74   16.44190    0.00000   100%  1243  515s
+   368   324    0.00000   42   58   16.44190    0.00000   100%  1204  535s
+   374   328    0.00000   43   57   16.44190    0.00000   100%  1189  560s
+   378   324    6.89251   37   49   16.44190    0.00000   100%  1221  593s
+   383   328    0.00000   44   56   16.44190    0.00000   100%  1213  600s
+
+Explored 392 nodes (467627 simplex iterations) in 600.14 seconds (1271.04 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 1: 16.4419 
+
+Time limit reached
+Best objective 1.644189516644e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 10
+Epoch [1/50], Train Loss: 0.0312, Train Acc: 99.20%
+Epoch [2/50], Train Loss: 0.0241, Train Acc: 99.31%
+Epoch [3/50], Train Loss: 0.0228, Train Acc: 99.40%
+Epoch [4/50], Train Loss: 0.0212, Train Acc: 99.45%
+Epoch [5/50], Train Loss: 0.0217, Train Acc: 99.38%
+Epoch [6/50], Train Loss: 0.0189, Train Acc: 99.52%
+Epoch [7/50], Train Loss: 0.0185, Train Acc: 99.53%
+Epoch [8/50], Train Loss: 0.0174, Train Acc: 99.58%
+Epoch [9/50], Train Loss: 0.0173, Train Acc: 99.58%
+Epoch [10/50], Train Loss: 0.0170, Train Acc: 99.56%
+Epoch [11/50], Train Loss: 0.0155, Train Acc: 99.61%
+Epoch [12/50], Train Loss: 0.0144, Train Acc: 99.69%
+Early stopping at epoch 12. Best was epoch 2 (val_loss=0.2261).
+Restored best model from epoch 2.
+Test Accuracy: 93.30%
+[Run 2 cand 6] val_acc=93.4600 test_acc=0.9326 time=650.8s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 24582 rows, 16940 columns and 2217070 nonzeros
+Model fingerprint: 0x82d311c0
+Model has 1440 simple general constraints
+  1440 INDICATOR
+Variable types: 15140 continuous, 1800 integer (1800 binary)
+Coefficient statistics:
+  Matrix range     [2e-07, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve removed 7121 rows and 7120 columns
+Presolve time: 4.16s
+Presolved: 17461 rows, 9820 columns, 2201620 nonzeros
+Presolved model has 1440 SOS constraint(s)
+Variable types: 8300 continuous, 1520 integer (1520 binary)
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0      handle free variables                         12s
+    4135    1.1953936e-04   7.746225e+04   0.000000e+00     15s
+    5185    5.5383197e-04   6.357352e+04   0.000000e+00     20s
+    7015    1.4708054e-03   1.614810e+05   0.000000e+00     25s
+    8985    3.2068213e-03   6.753981e+04   0.000000e+00     30s
+   11413    0.0000000e+00   0.000000e+00   0.000000e+00     33s
+
+Root relaxation: objective 0.000000e+00, 11413 iterations, 21.54 seconds (54.41 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   45          -    0.00000      -     -   33s
+H    0     0                     140.4963403    0.00000   100%     -   52s
+     0     0    0.00000    0   45  140.49634    0.00000   100%     -   60s
+     0     2    0.00000    0   45  140.49634    0.00000   100%     -  139s
+     1     3    0.00000    1   44  140.49634    0.00000   100%   0.0  143s
+     2     4    0.00000    2   43  140.49634    0.00000   100%   0.0  149s
+     3     6    0.00000    3   42  140.49634    0.00000   100%   0.0  155s
+     5     9    0.00000    4   42  140.49634    0.00000   100%   154  167s
+     8    13    0.00000    5   42  140.49634    0.00000   100%   738  176s
+    12    18    0.00000    6   42  140.49634    0.00000   100%   514  185s
+    17    38    0.00000    7   42  140.49634    0.00000   100%   935  196s
+    37    43    6.01745   12   38  140.49634    0.00000   100%   556  206s
+    42    53    0.00000    9   41  140.49634    0.00000   100%   589  215s
+    52    56    6.01745   14   36  140.49634    0.00000   100%   750  228s
+    55    67    0.00000   11   39  140.49634    0.00000   100%   852  240s
+    66    72    6.01745   20   36  140.49634    0.00000   100%   752  252s
+    71    78    0.00000   13   39  140.49634    0.00000   100%   699  260s
+    77    83    0.00000   14   39  140.49634    0.00000   100%   683  271s
+    82    88    6.01745   24   35  140.49634    0.00000   100%   705  286s
+    87    98    6.01745   25   35  140.49634    0.00000   100%   890  297s
+    97   104    0.00000   15   39  140.49634    0.00000   100%   846  312s
+   103   110    0.00000   16   39  140.49634    0.00000   100%   810  321s
+   109   115    6.01745   32   31  140.49634    0.00000   100%   794  334s
+   114   141    8.73986   17   46  140.49634    0.00000   100%   861  348s
+   140   157    0.00000   17   38  140.49634    0.00000   100%   811  364s
+   156   192    8.95223   19   43  140.49634    0.00000   100%   807  374s
+   191   196    6.01745   63   26  140.49634    0.00000   100%   771  391s
+   195   216    0.00000   23   36  140.49634    0.00000   100%   875  407s
+   215   238   12.72403   25   43  140.49634    0.00000   100%   860  416s
+   237   257    0.00000   27   36  140.49634    0.00000   100%   845  431s
+   256   270    0.00000   28   35  140.49634    0.00000   100%   794  445s
+   269   293    9.02511   28   42  140.49634    0.00000   100%   783  460s
+   292   299    7.80733   29   40  140.49634    0.00000   100%   791  470s
+   298   314    0.00000   29   35  140.49634    0.00000   100%   783  481s
+   313   342    0.00000   30   35  140.49634    0.00000   100%   746  490s
+   341   356    0.00000   31   35  140.49634    0.00000   100%   722  501s
+   355   384    0.00000   32   35  140.49634    0.00000   100%   712  510s
+   383   390   11.08433   32   44  140.49634    0.00000   100%   681  524s
+   389   408    8.01564   33   39  140.49634    0.00000   100%   681  537s
+   407   453    0.00000   33   34  140.49634    0.00000   100%   668  549s
+   452   465    0.00000   35   32  140.49634    0.00000   100%   654  562s
+   464   494    0.00000   36   31  140.49634    0.00000   100%   650  576s
+   493   498    6.01745  171   19  140.49634    0.00000   100%   625  598s
+   497   504    0.00000   37   31  140.49634    0.00000   100%   632  600s
+
+Explored 503 nodes (325639 simplex iterations) in 600.12 seconds (1575.14 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 1: 140.496 
+
+Time limit reached
+Best objective 1.404963402513e+02, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 20
+Epoch [1/50], Train Loss: 0.1161, Train Acc: 99.02%
+Epoch [2/50], Train Loss: 0.0414, Train Acc: 99.35%
+Epoch [3/50], Train Loss: 0.0321, Train Acc: 99.43%
+Epoch [4/50], Train Loss: 0.0291, Train Acc: 99.42%
+Epoch [5/50], Train Loss: 0.0261, Train Acc: 99.40%
+Epoch [6/50], Train Loss: 0.0230, Train Acc: 99.53%
+Epoch [7/50], Train Loss: 0.0216, Train Acc: 99.53%
+Epoch [8/50], Train Loss: 0.0188, Train Acc: 99.61%
+Epoch [9/50], Train Loss: 0.0188, Train Acc: 99.56%
+Epoch [10/50], Train Loss: 0.0178, Train Acc: 99.59%
+Epoch [11/50], Train Loss: 0.0176, Train Acc: 99.58%
+Epoch [12/50], Train Loss: 0.0154, Train Acc: 99.67%
+Epoch [13/50], Train Loss: 0.0155, Train Acc: 99.64%
+Early stopping at epoch 13. Best was epoch 3 (val_loss=0.2177).
+Restored best model from epoch 3.
+Test Accuracy: 92.99%
+[Run 2 cand 7] val_acc=93.3400 test_acc=0.9333 time=650.3s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18142 rows, 26140 columns and 2230510 nonzeros
+Model fingerprint: 0x3844df4d
+Model has 18000 simple general constraints
+  18000 INDICATOR
+Variable types: 15140 continuous, 11000 integer (11000 binary)
+Coefficient statistics:
+  Matrix range     [1e-07, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [3e-04, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 25999 rows and 26000 columns
+Presolve time: 3.01s
+Presolved: 44141 rows, 52140 columns, 2296940 nonzeros
+Presolved model has 18000 SOS constraint(s)
+Variable types: 33140 continuous, 19000 integer (19000 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.00s
+
+Barrier statistics:
+ AA' NZ     : 0.000e+00
+ Factor NZ  : 1.000e+00
+ Factor Ops : 1.000e+00 (less than 1 second per iteration)
+ Threads    : 1
+
+Barrier performed 0 iterations in 3.33 seconds (3.84 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.00s
+
+Solved with dual simplex
+
+Root relaxation: objective 0.000000e+00, 0 iterations, 0.25 seconds (0.48 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+H    0     0                      43.7710870    0.00000   100%     -    3s
+     0     0    0.00000    0    9   43.77109    0.00000   100%     -    7s
+     0     2    0.00000    0    9   43.77109    0.00000   100%     -    9s
+     1     4    0.00000    1    8   43.77109    0.00000   100%   0.0   10s
+*   68    59               9      16.9578738    0.00000   100%  29.5   17s
+*   70    59               9      16.5777694    0.00000   100%  29.9   20s
+*   78    40               9      10.3145292    0.00000   100%  30.7   24s
+   101    13    0.00000   10    1   10.31453    0.00000   100%  24.4   25s
+*  163     2              23       9.8227139    0.00000   100%  15.9   31s
+   226     2     cutoff   55         9.82271    0.00000   100%  12.8   35s
+*  269     2              80       4.0436036    0.00000   100%  11.5   41s
+   313    12     cutoff   98         4.04360    0.00000   100%  10.5   45s
+*  356     2             119       3.5521222    0.00000   100%   9.7   50s
+   447     4     cutoff  172         3.55212    0.00000   100%   8.4   55s
+*  491    11             188       0.8865590    0.00000   100%   8.0   60s
+   575    22     cutoff  234         0.88656    0.00000   100%   7.3   65s
+   705     1    0.00000  294    1    0.88656    0.00000   100%   6.7   70s
+   735     2     cutoff  309         0.88656    0.00000   100%   6.5   77s
+   767    25     cutoff  331         0.88656    0.00000   100%   6.4   80s
+*  955    23             415       0.8269206    0.00000   100%   5.8   88s
+   978     5     cutoff  441         0.82692    0.00000   100%   5.7   90s
+  1079     1     cutoff  481         0.82692    0.00000   100%   5.6   96s
+  1112     2    0.00000  497    1    0.82692    0.00000   100%   5.5  100s
+  1378    84     cutoff  664         0.82692    0.00000   100%   5.0  105s
+* 1621   129             708       0.3861793    0.00000   100%   4.8  112s
+  1728   159     cutoff  869         0.38618    0.00000   100%   4.6  115s
+* 1970    70             889       0.3485733    0.00000   100%   4.5  121s
+* 1983    70             976       0.0866623    0.00000   100%   4.5  124s
+  2019    13 infeasible  985         0.08666    0.00000   100%   4.5  126s
+  2172    89 infeasible 1059         0.08666    0.00000   100%   4.4  130s
+  2582    54     cutoff 1294         0.08666    0.00000   100%   4.1  136s
+* 2660    54            1122       0.0484481    0.00000   100%   4.2  140s
+  2795     1     cutoff 1192         0.04845    0.00000   100%   4.0  145s
+  2916     1    0.00000 1399    1    0.04845    0.00000   100%   3.9  151s
+  2998     2    0.00000 1440    1    0.04845    0.00000   100%   3.9  156s
+  3061     3     cutoff 1472         0.04845    0.00000   100%   3.8  160s
+  3312   114    0.00000 1605    1    0.04845    0.00000   100%   3.6  166s
+  3648    21 infeasible 1831         0.04845    0.00000   100%   3.4  170s
+  3946    75 infeasible 1959         0.04845    0.00000   100%   3.2  177s
+  4289   150    0.00000 2087    0    0.04845    0.00000   100%   3.1  185s
+  4293   153    0.00000 2101    2    0.04845    0.00000   100%   3.1  192s
+  4301   158    0.00000 2140    4    0.04845    0.00000   100%   3.1  195s
+  4307   162    0.00000 2091    4    0.04845    0.00000   100%   3.1  202s
+  4313   165     cutoff   14         0.04845    0.00000   100%   5.0  205s
+  4334   155    0.00000   18    4    0.04845    0.00000   100%  10.7  213s
+  4354   148    0.00000   22    4    0.04845    0.00000   100%  13.5  215s
+  4379   141    0.00000   27    4    0.04845    0.00000   100%  16.4  221s
+  4391   138    0.00000   30   17    0.04845    0.00000   100%  18.6  226s
+  4400   134     cutoff   32         0.04845    0.00000   100%  20.9  232s
+  4406   130 infeasible   34         0.04845    0.00000   100%  24.3  236s
+  4410   130    0.00000   35    3    0.04845    0.00000   100%  25.6  240s
+  4421   125     cutoff   42         0.04845    0.00000   100%  28.9  245s
+  4429   122    0.00000   46    2    0.04845    0.00000   100%  30.7  251s
+  4433   121    0.00000   48    2    0.04845    0.00000   100%  32.8  257s
+  4438   119    0.00000   51    4    0.04845    0.00000   100%  33.2  260s
+  4443   118    0.00000   53    3    0.04845    0.00000   100%  33.6  265s
+  4457   113    0.00000   58    3    0.04845    0.00000   100%  35.4  270s
+  4459   113    0.00000   59    2    0.04845    0.00000   100%  37.2  275s
+  4464   112    0.00000   62    3    0.04845    0.00000   100%  37.4  280s
+* 4483    96              71       0.0285476    0.00000   100%  40.0  284s
+  4489    93    0.00000   72    3    0.02855    0.00000   100%  40.7  288s
+  4508    87    0.00000   86    2    0.02855    0.00000   100%  42.0  295s
+  4545    75    0.00000  104    4    0.02855    0.00000   100%  48.1  304s
+  4553    72    0.00000  106    4    0.02855    0.00000   100%  50.8  309s
+  4555    71    0.00000  107    4    0.02855    0.00000   100%  51.7  310s
+  4588    62     cutoff  124         0.02855    0.00000   100%  54.5  315s
+  4619    51    0.00000  146    4    0.02855    0.00000   100%  57.9  321s
+  4676    31    0.00000  185    3    0.02855    0.00000   100%  64.5  325s
+  4703    28     cutoff  203         0.02855    0.00000   100%  68.5  330s
+
+Cutting planes:
+  Gomory: 13
+
+Explored 4764 nodes (357785 simplex iterations) in 334.56 seconds (664.03 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 10: 0.0285476 0.0484481 0.0866623 ... 9.82271
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.854760190987e-02, best bound 2.854760190987e-02, gap 0.0000%
+Total misclassified samples: 1
+Epoch [1/50], Train Loss: 0.0189, Train Acc: 99.50%
+Epoch [2/50], Train Loss: 0.0177, Train Acc: 99.51%
+Epoch [3/50], Train Loss: 0.0166, Train Acc: 99.57%
+Epoch [4/50], Train Loss: 0.0162, Train Acc: 99.60%
+Epoch [5/50], Train Loss: 0.0168, Train Acc: 99.56%
+Epoch [6/50], Train Loss: 0.0167, Train Acc: 99.54%
+Epoch [7/50], Train Loss: 0.0150, Train Acc: 99.61%
+Epoch [8/50], Train Loss: 0.0141, Train Acc: 99.62%
+Epoch [9/50], Train Loss: 0.0140, Train Acc: 99.69%
+Epoch [10/50], Train Loss: 0.0140, Train Acc: 99.67%
+Epoch [11/50], Train Loss: 0.0138, Train Acc: 99.67%
+Early stopping at epoch 11. Best was epoch 1 (val_loss=0.2342).
+Restored best model from epoch 1.
+Test Accuracy: 93.45%
+[Run 2 cand 8] val_acc=93.5000 test_acc=0.9373 time=385.3s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18653 rows, 25410 columns and 2219828 nonzeros
+Model fingerprint: 0xf7326b85
+Model has 16686 simple general constraints
+  16686 INDICATOR
+Variable types: 15140 continuous, 10270 integer (10270 binary)
+Coefficient statistics:
+  Matrix range     [1e-07, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 23371 rows and 23372 columns
+Presolve time: 2.16s
+Presolved: 42024 rows, 48782 columns, 2279761 nonzeros
+Presolved model has 16686 SOS constraint(s)
+Variable types: 31169 continuous, 17613 integer (17613 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.14s
+
+Barrier statistics:
+ Free vars  : 2634
+ AA' NZ     : 3.684e+05
+ Factor NZ  : 5.448e+05 (roughly 10 MB of memory)
+ Factor Ops : 8.462e+07 (less than 1 second per iteration)
+ Threads    : 4
+
+                  Objective                Residual
+Iter       Primal          Dual         Primal    Dual     Compl     Time
+   0   2.72272661e+04  0.00000000e+00  1.70e+00 0.00e+00  7.38e+00     3s
+   1   7.80729346e+03 -4.59052579e+00  2.08e-08 8.05e-02  1.17e+00     3s
+   2   1.09895804e+03 -1.62803858e+01  1.21e-08 1.32e-02  1.49e-01     3s
+   3   7.50776841e+01 -1.60267907e+01  8.67e-09 1.41e-06  1.09e-02     3s
+   4   4.16153145e+00 -6.63476900e-01  1.27e-08 1.09e-07  5.78e-04     3s
+   5   3.45221835e-02 -5.90358206e-03  7.18e-09 4.17e-09  4.84e-06     3s
+   6   1.47131595e-04 -1.35471878e-05  7.57e-11 2.81e-13  1.92e-08     3s
+   7   1.47132273e-07 -1.35464840e-08  2.73e-10 4.04e-13  1.92e-11     3s
+   8   1.47132176e-10 -1.35464832e-11  2.10e-13 4.00e-16  1.92e-14     3s
+
+Barrier solved model in 8 iterations and 2.91 seconds (3.54 work units)
+Optimal objective 1.47132176e-10
+
+Concurrent spin time: 0.19s (can be avoided by choosing Method=3)
+
+Solved with dual simplex
+
+Root relaxation: objective 0.000000e+00, 3866 iterations, 0.67 seconds (1.32 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   45          -    0.00000      -     -    3s
+     0     0    0.00000    0   45          -    0.00000      -     -   14s
+     0     2    0.00000    0   45          -    0.00000      -     -   49s
+     1     4    0.00000    1   44          -    0.00000      -   0.0   56s
+     3     8    0.00000    2   43          -    0.00000      -  1337   75s
+     7    14    0.00000    3   42          -    0.00000      -  5337   87s
+    13    36    0.00000    4   41          -    0.00000      -  3461   99s
+    35    37   11.97956    6   43          -    0.00000      -  1839  114s
+    36    47    0.00000    6   39          -    0.00000      -  1788  125s
+    46    66   10.34191    8   74          -    0.00000      -  1992  137s
+    65    76   16.72474   10   18          -    0.00000      -  1709  151s
+    75    86    0.00000   10   35          -    0.00000      -  1625  165s
+    85   106    6.95436   12   38          -    0.00000      -  1588  174s
+   105   113    0.00000   14   31          -    0.00000      -  1427  192s
+   112   119   16.68204   15    3          -    0.00000      -  1421  209s
+   118   124    0.00000   16   29          -    0.00000      -  1445  225s
+*  121   124              15      13.8576870    0.00000   100%  1438  225s
+   129   115     cutoff   17        13.85769    0.00000   100%  1434  245s
+   135   119    0.00000   19   27   13.85769    0.00000   100%  1370  269s
+   139   123    0.00000   21   27   13.85769    0.00000   100%  1331  295s
+   143   134    0.00000   23   27   13.85769    0.00000   100%  1293  318s
+   156   138    0.00000   33   19   13.85769    0.00000   100%  1259  352s
+   160   140    0.00000   36   17   13.85769    0.00000   100%  1227  391s
+   162   164    0.00000   37   17   13.85769    0.00000   100%  1212  435s
+   186   200    7.26520   14   34   13.85769    0.00000   100%  1056  499s
+   222   219   11.85817   56   21   13.85769    0.00000   100%  1058  600s
+
+Explored 241 nodes (238734 simplex iterations) in 600.09 seconds (1175.55 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 1: 13.8577 
+
+Time limit reached
+Best objective 1.385768696966e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 5
+Epoch [1/50], Train Loss: 0.0203, Train Acc: 99.52%
+Epoch [2/50], Train Loss: 0.0178, Train Acc: 99.57%
+Epoch [3/50], Train Loss: 0.0172, Train Acc: 99.53%
+Epoch [4/50], Train Loss: 0.0170, Train Acc: 99.52%
+Epoch [5/50], Train Loss: 0.0158, Train Acc: 99.59%
+Epoch [6/50], Train Loss: 0.0168, Train Acc: 99.52%
+Epoch [7/50], Train Loss: 0.0149, Train Acc: 99.58%
+Epoch [8/50], Train Loss: 0.0144, Train Acc: 99.68%
+Epoch [9/50], Train Loss: 0.0146, Train Acc: 99.64%
+Epoch [10/50], Train Loss: 0.0138, Train Acc: 99.66%
+Epoch [11/50], Train Loss: 0.0136, Train Acc: 99.66%
+Epoch [12/50], Train Loss: 0.0136, Train Acc: 99.67%
+Epoch [13/50], Train Loss: 0.0123, Train Acc: 99.70%
+Epoch [14/50], Train Loss: 0.0118, Train Acc: 99.75%
+Epoch [15/50], Train Loss: 0.0121, Train Acc: 99.75%
+Early stopping at epoch 15. Best was epoch 5 (val_loss=0.2305).
+Restored best model from epoch 5.
+Test Accuracy: 93.41%
+[Run 2 cand 9] val_acc=93.1200 test_acc=0.9387 time=650.5s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 24582 rows, 16940 columns and 2219590 nonzeros
+Model fingerprint: 0x3ba2d198
+Model has 1440 simple general constraints
+  1440 INDICATOR
+Variable types: 15140 continuous, 1800 integer (1800 binary)
+Coefficient statistics:
+  Matrix range     [1e-08, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve removed 7121 rows and 7120 columns
+Presolve time: 4.11s
+Presolved: 17461 rows, 9820 columns, 2204140 nonzeros
+Presolved model has 1440 SOS constraint(s)
+Variable types: 8300 continuous, 1520 integer (1520 binary)
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0      handle free variables                         12s
+    4713    3.2380564e-04   5.580027e+04   0.000000e+00     15s
+    6603    1.1898503e-03   5.057219e+04   0.000000e+00     20s
+    8613    2.8042697e-03   8.885395e+04   0.000000e+00     25s
+   11415    0.0000000e+00   0.000000e+00   0.000000e+00     29s
+
+Root relaxation: objective 0.000000e+00, 11415 iterations, 17.31 seconds (55.25 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   21          -    0.00000      -     -   29s
+H    0     0                      99.5261096    0.00000   100%     -   39s
+     0     0    0.00000    0   21   99.52611    0.00000   100%     -   47s
+     0     2    0.00000    0   21   99.52611    0.00000   100%     -  110s
+     2     4    0.00000    2   20   99.52611    0.00000   100%   0.5  120s
+     3     5    0.00000    3   20   99.52611    0.00000   100%   0.7  128s
+     4     7    0.00000    4   20   99.52611    0.00000   100%   0.8  140s
+     7    10   16.87104    3   25   99.52611    0.00000   100%   744  153s
+     9    15    0.00000    6   20   99.52611    0.00000   100%   579  162s
+    14    33    0.00000    7   19   99.52611    0.00000   100%   673  175s
+    32    39    8.53307    9   24   99.52611    0.00000   100%   942  180s
+    38    49    0.00000    9   17   99.52611    0.00000   100%   900  187s
+    48    60    0.00000   10   17   99.52611    0.00000   100%   747  193s
+    59    71   35.12206   19   29   99.52611    0.00000   100%   693  202s
+    70    75   35.12206   24   23   99.52611    0.00000   100%   696  212s
+    74    90    0.00000   11   17   99.52611    0.00000   100%   685  217s
+    89    96    0.00000   12   17   99.52611    0.00000   100%   632  229s
+*   95   106              31      36.7445849    0.00000   100%   679  239s
+   109   114     cutoff   33        36.74458    0.00000   100%   672  248s
+   127   120    0.00000   13   17   36.74458    0.00000   100%   658  252s
+   133   127    0.00000   14   17   36.74458    0.00000   100%   645  259s
+   140   137   10.32908    9   28   36.74458    0.00000   100%   645  268s
+   150   156   10.45044   15   28   36.74458    0.00000   100%   752  275s
+   169   167   19.35439   13   33   36.74458    0.00000   100%   738  287s
+   180   196    0.00000   17   16   36.74458    0.00000   100%   720  299s
+   209   207    8.71115   19   25   36.74458    0.00000   100%   679  308s
+   224   225    0.00000   19   16   36.74458    0.00000   100%   657  320s
+   248   232     cutoff   25        36.74458    0.00000   100%   658  332s
+   259   261    0.00000   21   15   36.74458    0.00000   100%   640  341s
+   296   270     cutoff   30        36.74458    0.00000   100%   605  351s
+   315   293    0.00000   25   15   36.74458    0.00000   100%   595  363s
+   350   312   35.80601   40   22   36.74458    0.00000   100%   575  376s
+   369   340    0.00000   27   15   36.74458    0.00000   100%   565  387s
+   413   352   35.80601   48   21   36.74458    0.00000   100%   548  398s
+   443   374    0.00000   29   15   36.74458    0.00000   100%   528  411s
+   479   382    8.25982   31   19   36.74458    0.00000   100%   531  421s
+   491   407    0.00000   31   15   36.74458    0.00000   100%   531  430s
+   530   415   35.80601   69   21   36.74458    0.00000   100%   528  444s
+   538   445    0.00000   33   15   36.74458    0.00000   100%   524  456s
+   582   456    0.00000   35   13   36.74458    0.00000   100%   506  468s
+   613   471    0.00000   36   13   36.74458    0.00000   100%   492  485s
+   640   486    9.56033   39   18   36.74458    0.00000   100%   500  497s
+   659   507    0.00000   39   12   36.74458    0.00000   100%   501  514s
+   682   522   32.12068   33   11   36.74458    0.00000   100%   498  531s
+   697   575    0.00000   41   12   36.74458    0.00000   100%   498  544s
+   762   604    6.63047   45   19   36.74458    0.00000   100%   490  558s
+   795   620    0.00000   45   12   36.74458    0.00000   100%   490  573s
+   813   667     cutoff   51        36.74458    0.00000   100%   489  590s
+   866   708    0.00000   47   12   36.74458    0.00000   100%   492  600s
+
+Explored 913 nodes (457356 simplex iterations) in 600.12 seconds (1770.54 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 36.7446 99.5261 
+
+Time limit reached
+Best objective 3.674458491186e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 10
+Epoch [1/50], Train Loss: 0.0244, Train Acc: 99.48%
+Epoch [2/50], Train Loss: 0.0187, Train Acc: 99.55%
+Epoch [3/50], Train Loss: 0.0163, Train Acc: 99.64%
+Epoch [4/50], Train Loss: 0.0168, Train Acc: 99.59%
+Epoch [5/50], Train Loss: 0.0144, Train Acc: 99.67%
+Epoch [6/50], Train Loss: 0.0137, Train Acc: 99.72%
+Epoch [7/50], Train Loss: 0.0147, Train Acc: 99.62%
+Epoch [8/50], Train Loss: 0.0134, Train Acc: 99.68%
+Epoch [9/50], Train Loss: 0.0132, Train Acc: 99.71%
+Epoch [10/50], Train Loss: 0.0125, Train Acc: 99.69%
+Epoch [11/50], Train Loss: 0.0127, Train Acc: 99.67%
+Early stopping at epoch 11. Best was epoch 1 (val_loss=0.2389).
+Restored best model from epoch 1.
+Test Accuracy: 93.37%
+[Run 2 cand 10] val_acc=93.1400 test_acc=0.9353 time=650.4s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18142 rows, 26140 columns and 2234260 nonzeros
+Model fingerprint: 0xf4e7dd1e
+Model has 18000 simple general constraints
+  18000 INDICATOR
+Variable types: 15140 continuous, 11000 integer (11000 binary)
+Coefficient statistics:
+  Matrix range     [4e-07, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [3e-04, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 25999 rows and 26000 columns
+Presolve time: 1.53s
+Presolved: 44141 rows, 52140 columns, 2300690 nonzeros
+Presolved model has 18000 SOS constraint(s)
+Variable types: 33140 continuous, 19000 integer (19000 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.00s
+
+Barrier statistics:
+ AA' NZ     : 0.000e+00
+ Factor NZ  : 1.000e+00
+ Factor Ops : 1.000e+00 (less than 1 second per iteration)
+ Threads    : 1
+
+Barrier performed 0 iterations in 1.84 seconds (2.16 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.00s
+
+Solved with primal simplex
+
+Root relaxation: objective 0.000000e+00, 0 iterations, 0.25 seconds (0.48 work units)
+Total elapsed time = 13.84s (DegenMoves)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0  180          -    0.00000      -     -   14s
+     0     2    0.00000    0  180          -    0.00000      -     -   50s
+    79    86    7.41077   10  199          -    0.00000      -   172   55s
+   205   224    0.00000   20  160          -    0.00000      -   152   60s
+   355   375    7.49327   34  165          -    0.00000      -   135   65s
+   495   512    7.86954   48  527          -    0.00000      -   128   70s
+   655   689    0.00000   62  118          -    0.00000      -   126   75s
+   843   880    0.00000   79  101          -    0.00000      -   118   80s
+  1017  1068    0.00000   95   85          -    0.00000      -   119   85s
+  1173  1235    0.00000  108   73          -    0.00000      -   114   90s
+  1358  1431    0.00000  125   71          -    0.00000      -   111   95s
+  1500  1562    0.00000  140   71          -    0.00000      -   111  101s
+  1639  1713    0.00000  152   71          -    0.00000      -   112  105s
+  1768  1838    5.60524  166   97          -    0.00000      -   117  113s
+  1837  1915    0.00000  174   68          -    0.00000      -   118  115s
+  2003  2109    0.00000  193   68          -    0.00000      -   118  121s
+  2192  2266    8.76285  214  339          -    0.00000      -   117  127s
+  2265  2333    0.00000  222   67          -    0.00000      -   116  130s
+  2405  2474    0.00000  245   67          -    0.00000      -   118  137s
+* 2445  1552             226      17.6610686    0.00000   100%   118  137s
+  2481  1506    6.90751  256  130   17.66107    0.00000   100%   118  147s
+  2497  1608    0.00000  256   67   17.66107    0.00000   100%   117  151s
+  2651  1715    0.00000  266   67   17.66107    0.00000   100%   113  155s
+  2963  2023    0.00000  292   67   17.66107    0.00000   100%   109  162s
+  3120  2193    0.00000  306   67   17.66107    0.00000   100%   109  166s
+  3290  2368    0.00000  322   67   17.66107    0.00000   100%   107  170s
+  3465  2437    0.00000  337   67   17.66107    0.00000   100%   106  183s
+  3534  2517    9.34464  337   80   17.66107    0.00000   100%   106  241s
+  3614  2729    5.06426  338  111   17.66107    0.00000   100%   106  246s
+  3826  2964    0.00000  357   67   17.66107    0.00000   100%   105  251s
+  4063  3197    7.77351  378  162   17.66107    0.00000   100%   104  255s
+  4308  3416    8.09826  396   96   17.66107    0.00000   100%   102  261s
+  4557  3671    8.38133  416   85   17.66107    0.00000   100%   100  266s
+  4813  3672   13.00834   17    0   17.66107    0.00000   100%  99.1  385s
+  4815  3673   14.70556   69   40   17.66107    0.00000   100%  99.1  426s
+  4816  3674    9.83064  349   40   17.66107    0.00000   100%  99.1  450s
+  4817  3675   16.38899   29   40   17.66107    0.00000   100%  99.0  477s
+  4818  3675   11.35931  206   40   17.66107    0.00000   100%  99.0  535s
+  4819  3676   14.91059   92   40   17.66107    0.00000   100%  99.0  595s
+
+Cutting planes:
+  Gomory: 20
+
+Explored 4819 nodes (534658 simplex iterations) in 600.23 seconds (1075.68 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 1: 17.6611 
+
+Time limit reached
+Best objective 1.766106862093e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 20
+Epoch [1/50], Train Loss: 0.0196, Train Acc: 99.64%
+Epoch [2/50], Train Loss: 0.0173, Train Acc: 99.60%
+Epoch [3/50], Train Loss: 0.0163, Train Acc: 99.62%
+Epoch [4/50], Train Loss: 0.0145, Train Acc: 99.67%
+Epoch [5/50], Train Loss: 0.0144, Train Acc: 99.68%
+Epoch [6/50], Train Loss: 0.0139, Train Acc: 99.67%
+Epoch [7/50], Train Loss: 0.0139, Train Acc: 99.67%
+Epoch [8/50], Train Loss: 0.0127, Train Acc: 99.68%
+Epoch [9/50], Train Loss: 0.0134, Train Acc: 99.69%
+Epoch [10/50], Train Loss: 0.0116, Train Acc: 99.73%
+Epoch [11/50], Train Loss: 0.0118, Train Acc: 99.73%
+Early stopping at epoch 11. Best was epoch 1 (val_loss=0.2378).
+Restored best model from epoch 1.
+Test Accuracy: 93.31%
+[Run 2 cand 11] val_acc=93.2300 test_acc=0.9353 time=651.0s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18730 rows, 25300 columns and 2222644 nonzeros
+Model fingerprint: 0x7eb6ca52
+Model has 16488 simple general constraints
+  16488 INDICATOR
+Variable types: 15140 continuous, 10160 integer (10160 binary)
+Coefficient statistics:
+  Matrix range     [8e-08, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 22975 rows and 22976 columns
+Presolve time: 3.73s
+Presolved: 41705 rows, 48276 columns, 2281598 nonzeros
+Presolved model has 16488 SOS constraint(s)
+Variable types: 30872 continuous, 17404 integer (17404 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.09s
+
+Barrier performed 0 iterations in 4.23 seconds (5.10 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.04s
+
+Solved with dual simplex
+
+Root relaxation: objective 0.000000e+00, 2884 iterations, 0.39 seconds (1.11 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0    9          -    0.00000      -     -    4s
+     0     0    0.00000    0    9          -    0.00000      -     -   16s
+     0     2    0.00000    0    9          -    0.00000      -     -   52s
+     1     4    0.00000    1    8          -    0.00000      -   0.0   67s
+     5     8   21.78231    2    7          -    0.00000      -  4312   86s
+    11    14   23.31742    3    6          -    0.00000      -  3838  106s
+    13    30    0.00000    4    5          -    0.00000      -  3935  128s
+    29    54   27.41119    6    3          -    0.00000      -  2738  139s
+    53    58   17.42206    8    1          -    0.00000      -  2069  149s
+*   56    58               9      13.7198353    0.00000   100%  1972  149s
+    73    36     cutoff    9        13.71984    0.00000   100%  1745  157s
+    95    22    0.00000   10    1   13.71984    0.00000   100%  1432  166s
+   111    17    0.00000   11    1   13.71984    0.00000   100%  1226  175s
+   118    16    0.00000   12    1   13.71984    0.00000   100%  1194  187s
+   121    17    0.00000   13    1   13.71984    0.00000   100%  1164  200s
+   122    18    0.00000   14    1   13.71984    0.00000   100%  1155  213s
+   123    19    0.00000   15    1   13.71984    0.00000   100%  1145  227s
+   124    20    0.00000   16    1   13.71984    0.00000   100%  1136  242s
+   125    21    0.00000   17    1   13.71984    0.00000   100%  1127  255s
+   126    22    0.00000   18    1   13.71984    0.00000   100%  1118  269s
+   127    24    0.00000   19    1   13.71984    0.00000   100%  1109  290s
+   129    34    0.00000   21    1   13.71984    0.00000   100%  1092  308s
+   139    43    0.00000   31    1   13.71984    0.00000   100%  1013  339s
+   148    45    0.00000   40    1   13.71984    0.00000   100%   952  380s
+   150    70    0.00000   42    1   13.71984    0.00000   100%   939  417s
+   175    95    0.00000   67    1   13.71984    0.00000   100%   805  499s
+   200    96     cutoff   90        13.71984    0.00000   100%   834  600s
+
+Explored 203 nodes (169601 simplex iterations) in 600.05 seconds (1155.65 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 1: 13.7198 
+
+Time limit reached
+Best objective 1.371983531099e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 1
+Epoch [1/50], Train Loss: 0.0219, Train Acc: 99.56%
+Epoch [2/50], Train Loss: 0.0173, Train Acc: 99.61%
+Epoch [3/50], Train Loss: 0.0146, Train Acc: 99.69%
+Epoch [4/50], Train Loss: 0.0136, Train Acc: 99.70%
+Epoch [5/50], Train Loss: 0.0140, Train Acc: 99.68%
+Epoch [6/50], Train Loss: 0.0145, Train Acc: 99.66%
+Epoch [7/50], Train Loss: 0.0133, Train Acc: 99.69%
+Epoch [8/50], Train Loss: 0.0124, Train Acc: 99.73%
+Epoch [9/50], Train Loss: 0.0126, Train Acc: 99.71%
+Epoch [10/50], Train Loss: 0.0121, Train Acc: 99.67%
+Epoch [11/50], Train Loss: 0.0118, Train Acc: 99.72%
+Epoch [12/50], Train Loss: 0.0114, Train Acc: 99.72%
+Epoch [13/50], Train Loss: 0.0108, Train Acc: 99.75%
+Epoch [14/50], Train Loss: 0.0111, Train Acc: 99.75%
+Epoch [15/50], Train Loss: 0.0106, Train Acc: 99.77%
+Early stopping at epoch 15. Best was epoch 5 (val_loss=0.2335).
+Restored best model from epoch 5.
+Test Accuracy: 93.31%
+[Run 2 cand 12] val_acc=93.4300 test_acc=0.9385 time=650.9s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 24568 rows, 16960 columns and 2223578 nonzeros
+Model fingerprint: 0x4165f314
+Model has 1476 simple general constraints
+  1476 INDICATOR
+Variable types: 15140 continuous, 1820 integer (1820 binary)
+Coefficient statistics:
+  Matrix range     [2e-07, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve removed 7049 rows and 7048 columns
+Presolve time: 4.78s
+Presolved: 17519 rows, 9912 columns, 2208306 nonzeros
+Presolved model has 1476 SOS constraint(s)
+Variable types: 8354 continuous, 1558 integer (1558 binary)
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0      handle free variables                         12s
+    4538    3.6884306e-04   2.245194e+05   0.000000e+00     15s
+    6488    1.7397045e-03   1.679305e+05   0.000000e+00     20s
+    8638    4.0958958e-03   1.702352e+05   0.000000e+00     25s
+   10670    0.0000000e+00   0.000000e+00   0.000000e+00     28s
+
+Root relaxation: objective 0.000000e+00, 10670 iterations, 15.41 seconds (49.25 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   11          -    0.00000      -     -   27s
+H    0     0                      72.4985290    0.00000   100%     -   35s
+     0     0    0.00000    0   11   72.49853    0.00000   100%     -   42s
+     0     2    0.00000    0   11   72.49853    0.00000   100%     -   89s
+     1     3    0.00000    1   10   72.49853    0.00000   100%   0.0   93s
+     2     5    0.00000    2    9   72.49853    0.00000   100%   0.0   98s
+     4    10    0.00000    3    9   72.49853    0.00000   100%   596  102s
+    14    27    0.00000    5    9   72.49853    0.00000   100%   517  118s
+    26    35   21.05806    7   25   72.49853    0.00000   100%   845  125s
+    34    43    0.00000    7    9   72.49853    0.00000   100%   730  134s
+    42    47   18.18626    7   15   72.49853    0.00000   100%   685  146s
+    46    59    0.00000    9    9   72.49853    0.00000   100%   659  157s
+    58    63    8.87456    9   16   72.49853    0.00000   100%   670  171s
+    62    69    0.00000   11    9   72.49853    0.00000   100%   727  176s
+    68    74    0.00000   12    9   72.49853    0.00000   100%   663  189s
+    73    90    4.44169   13   13   72.49853    0.00000   100%   790  196s
+    89    99    0.00000   15    9   72.49853    0.00000   100%   810  207s
+    98   105    9.02368   17   19   72.49853    0.00000   100%   784  221s
+   104   111    0.00000   17    9   72.49853    0.00000   100%   738  231s
+*  111   111              18      24.5262447    0.00000   100%   843  233s
+*  113   111              19      23.2226190    0.00000   100%   833  235s
+   114   119   15.96081   12   17   23.22262    0.00000   100%   838  246s
+*  124   119              20      22.9815598    0.00000   100%   860  246s
+   128   130    0.00000   19    9   22.98156    0.00000   100%   838  262s
+   143   140   13.84792   21   14   22.98156    0.00000   100%   899  271s
+   153   147    8.87456   17   10   22.98156    0.00000   100%   908  288s
+   160   158    0.00000   23    9   22.98156    0.00000   100%  1111  303s
+   171   165    8.17307   25   15   22.98156    0.00000   100%  1143  315s
+   178   194    0.00000   25    9   22.98156    0.00000   100%  1109  325s
+   213   203    0.00000   29    9   22.98156    0.00000   100%  1066  342s
+   222   228    0.00000   30    9   22.98156    0.00000   100%  1050  355s
+   249   235    2.32551   33    9   22.98156    0.00000   100%   998  366s
+   256   264    0.00000   33    7   22.98156    0.00000   100%   984  375s
+   289   270    5.29314   35    7   22.98156    0.00000   100%   929  386s
+   295   289    0.00000   35    7   22.98156    0.00000   100%   918  397s
+   318   310    0.00000   36    7   22.98156    0.00000   100%   889  407s
+   339   341    5.81686   36   10   22.98156    0.00000   100%   879  417s
+   376   341    0.00000   38    7   22.98156    0.00000   100%   829  431s
+   382   361    8.87456   32   10   22.98156    0.00000   100%   822  444s
+   409   357   19.99981   32   22   22.98156    0.00000   100%   808  460s
+   414   393    0.00000   39    7   22.98156    0.00000   100%   807  469s
+   452   398    0.00000   40    7   22.98156    0.00000   100%   778  487s
+   457   432   11.26696   40   16   22.98156    0.00000   100%   774  496s
+   493   455   15.53860   41   21   22.98156    0.00000   100%   749  508s
+   520   494    0.00000   41    7   22.98156    0.00000   100%   736  519s
+   567   514    0.00000   42    7   22.98156    0.00000   100%   718  532s
+   591   534    8.88437   49    8   22.98156    0.00000   100%   706  550s
+   615   546    7.25338   43   10   22.98156    0.00000   100%   696  564s
+   635   580    5.77825   44   10   22.98156    0.00000   100%   692  581s
+   669   622    4.83566   45   11   22.98156    0.00000   100%   680  598s
+   715   627    0.00000   45    6   22.98156    0.00000   100%   664  600s
+
+Explored 720 nodes (485698 simplex iterations) in 600.10 seconds (1715.48 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 4: 22.9816 23.2226 24.5262 72.4985 
+
+Time limit reached
+Best objective 2.298155978459e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 5
+Epoch [1/50], Train Loss: 0.0174, Train Acc: 99.61%
+Epoch [2/50], Train Loss: 0.0152, Train Acc: 99.61%
+Epoch [3/50], Train Loss: 0.0134, Train Acc: 99.70%
+Epoch [4/50], Train Loss: 0.0126, Train Acc: 99.75%
+Epoch [5/50], Train Loss: 0.0118, Train Acc: 99.72%
+Epoch [6/50], Train Loss: 0.0118, Train Acc: 99.73%
+Epoch [7/50], Train Loss: 0.0107, Train Acc: 99.75%
+Epoch [8/50], Train Loss: 0.0113, Train Acc: 99.74%
+Epoch [9/50], Train Loss: 0.0108, Train Acc: 99.77%
+Epoch [10/50], Train Loss: 0.0102, Train Acc: 99.78%
+Epoch [11/50], Train Loss: 0.0108, Train Acc: 99.74%
+Epoch [12/50], Train Loss: 0.0104, Train Acc: 99.75%
+Epoch [13/50], Train Loss: 0.0108, Train Acc: 99.75%
+Epoch [14/50], Train Loss: 0.0100, Train Acc: 99.80%
+Epoch [15/50], Train Loss: 0.0098, Train Acc: 99.80%
+Early stopping at epoch 15. Best was epoch 5 (val_loss=0.2406).
+Restored best model from epoch 5.
+Test Accuracy: 93.36%
+[Run 2 cand 13] val_acc=93.3300 test_acc=0.9364 time=650.3s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18142 rows, 26140 columns and 2226160 nonzeros
+Model fingerprint: 0x59a3e55c
+Model has 18000 simple general constraints
+  18000 INDICATOR
+Variable types: 15140 continuous, 11000 integer (11000 binary)
+Coefficient statistics:
+  Matrix range     [2e-07, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [3e-04, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 25999 rows and 26000 columns
+Presolve time: 1.55s
+Presolved: 44141 rows, 52140 columns, 2292590 nonzeros
+Presolved model has 18000 SOS constraint(s)
+Variable types: 33140 continuous, 19000 integer (19000 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.00s
+
+Barrier statistics:
+ AA' NZ     : 0.000e+00
+ Factor NZ  : 1.000e+00
+ Factor Ops : 1.000e+00 (less than 1 second per iteration)
+ Threads    : 1
+
+Barrier performed 0 iterations in 1.88 seconds (2.15 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.00s
+
+Solved with primal simplex
+
+Root relaxation: objective 0.000000e+00, 0 iterations, 0.31 seconds (0.48 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+H    0     0                     136.4191297    0.00000   100%     -    5s
+     0     0    0.00000    0   90  136.41913    0.00000   100%     -   11s
+     0     2    0.00000    0   90  136.41913    0.00000   100%     -   16s
+    37    44    0.00000    6   84  136.41913    0.00000   100%   168   20s
+   135   154    0.00000   14   76  136.41913    0.00000   100%   160   25s
+   219   226    7.24835   21   98  136.41913    0.00000   100%   164   30s
+   267   274    7.74502   25  125  136.41913    0.00000   100%   165   35s
+   322   329    5.83801   31   74  136.41913    0.00000   100%   162   40s
+   365   373    0.00000   34   56  136.41913    0.00000   100%   161   45s
+   410   425    0.00000   38   52  136.41913    0.00000   100%   154   50s
+   469   476    5.78040   45   69  136.41913    0.00000   100%   157   55s
+   481   488    0.00000   46   44  136.41913    0.00000   100%   157   76s
+   524   531    4.92584   51   99  136.41913    0.00000   100%   163   80s
+   561   572    0.00000   54   36  136.41913    0.00000   100%   168   85s
+   601   611    0.00000   56   34  136.41913    0.00000   100%   180   91s
+   640   656    2.59375   58   54  136.41913    0.00000   100%   192   98s
+   655   685    0.00000   61   29  136.41913    0.00000   100%   198  100s
+   702   716    0.00000   67   29  136.41913    0.00000   100%   203  106s
+   732   757    0.00000   68   29  136.41913    0.00000   100%   213  112s
+   756   769    1.52307   71   38  136.41913    0.00000   100%   215  117s
+   768   796   10.18099   72   77  136.41913    0.00000   100%   222  120s
+   802   828    0.00000   77   29  136.41913    0.00000   100%   229  127s
+   827   842    8.00392   77   70  136.41913    0.00000   100%   232  130s
+   879   893    0.00000   78   29  136.41913    0.00000   100%   234  137s
+   892   923    0.00000   79   29  136.41913    0.00000   100%   234  140s
+   937   989    0.00000   81   29  136.41913    0.00000   100%   233  148s
+   988   996    0.00000   84   29  136.41913    0.00000   100%   230  152s
+   995  1007    0.00000   85   29  136.41913    0.00000   100%   230  155s
+  1006  1049    5.73556   85   70  136.41913    0.00000   100%   230  160s
+  1058  1099    0.00000   89   29  136.41913    0.00000   100%   230  168s
+  1098  1129    6.09953   98   46  136.41913    0.00000   100%   227  172s
+  1128  1195    0.00000   98   29  136.41913    0.00000   100%   224  177s
+  1194  1281    8.13231  112   58  136.41913    0.00000   100%   221  182s
+  1280  1319    5.92516  128   62  136.41913    0.00000   100%   214  186s
+  1318  1374    0.00000  128   29  136.41913    0.00000   100%   213  191s
+  1373  1435    0.00000  134   29  136.41913    0.00000   100%   211  196s
+  1434  1509    3.64106  150   48  136.41913    0.00000   100%   207  201s
+  1508  1542    0.00000  162   29  136.41913    0.00000   100%   203  207s
+  1541  1610    0.00000  163   29  136.41913    0.00000   100%   203  213s
+* 1590  1028             190      35.4730887    0.00000   100%   198  217s
+* 1592  1028             191      35.3932856    0.00000   100%   198  217s
+  1615  1170    0.00000  177   29   35.39329    0.00000   100%   197  222s
+  1853  1317    7.03628  202   35   35.39329    0.00000   100%   179  228s
+  2008  1473    0.00000  222   29   35.39329    0.00000   100%   168  234s
+  2164  1636    0.00000  241   29   35.39329    0.00000   100%   161  240s
+  2339  1789    8.39412  260   71   35.39329    0.00000   100%   153  247s
+* 2395  1575             125      24.1224559    0.00000   100%   150  250s
+  2526  1718    0.00000  276   29   24.12246    0.00000   100%   145  256s
+  2783  1909    7.12922  300   67   24.12246    0.00000   100%   136  263s
+  3027  1910   22.29029   98    0   24.12246    0.00000   100%   128  378s
+  3029  1911   10.92956   80   20   24.12246    0.00000   100%   128  421s
+  3030  1912   10.47904  176   20   24.12246    0.00000   100%   127  430s
+  3031  1913   11.88023  270   20   24.12246    0.00000   100%   127  482s
+  3032  1913    4.82629  232   20   24.12246    0.00000   100%   127  486s
+  3033  1914   10.90269   76   20   24.12246    0.00000   100%   127  502s
+  3034  1918    9.30702   16  131   24.12246    0.00000   100%   144  508s
+  3036  1920    9.18370   17   42   24.12246    0.00000   100%   144  513s
+  3039  1923    0.00000   18   22   24.12246    0.00000   100%   145  521s
+  3043  1927    0.00000   19   22   24.12246    0.00000   100%   145  528s
+  3048  1933    0.00000   20   22   24.12246    0.00000   100%   146  542s
+  3056  1949    0.00000   21   22   24.12246    0.00000   100%   148  557s
+  3075  1957    0.00000   22   22   24.12246    0.00000   100%   148  570s
+  3089  1961    0.00000   23   22   24.12246    0.00000   100%   148  584s
+  3098  1964    0.00000   24   22   24.12246    0.00000   100%   148  600s
+
+Cutting planes:
+  Gomory: 3
+
+Explored 3104 nodes (466500 simplex iterations) in 600.12 seconds (1123.78 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 4: 24.1225 35.3933 35.4731 136.419 
+
+Time limit reached
+Best objective 2.412245591057e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 10
+Epoch [1/50], Train Loss: 0.0149, Train Acc: 99.69%
+Epoch [2/50], Train Loss: 0.0132, Train Acc: 99.74%
+Epoch [3/50], Train Loss: 0.0126, Train Acc: 99.76%
+Epoch [4/50], Train Loss: 0.0118, Train Acc: 99.80%
+Epoch [5/50], Train Loss: 0.0113, Train Acc: 99.75%
+Epoch [6/50], Train Loss: 0.0115, Train Acc: 99.75%
+Epoch [7/50], Train Loss: 0.0115, Train Acc: 99.73%
+Epoch [8/50], Train Loss: 0.0105, Train Acc: 99.79%
+Epoch [9/50], Train Loss: 0.0110, Train Acc: 99.73%
+Epoch [10/50], Train Loss: 0.0095, Train Acc: 99.81%
+Epoch [11/50], Train Loss: 0.0103, Train Acc: 99.79%
+Epoch [12/50], Train Loss: 0.0093, Train Acc: 99.83%
+Early stopping at epoch 12. Best was epoch 2 (val_loss=0.2387).
+Restored best model from epoch 2.
+Test Accuracy: 92.99%
+[Run 2 cand 14] val_acc=93.0600 test_acc=0.9336 time=651.0s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18730 rows, 25300 columns and 2224374 nonzeros
+Model fingerprint: 0x5270d30e
+Model has 16488 simple general constraints
+  16488 INDICATOR
+Variable types: 15140 continuous, 10160 integer (10160 binary)
+Coefficient statistics:
+  Matrix range     [6e-08, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 22975 rows and 22976 columns
+Presolve time: 2.23s
+Presolved: 41705 rows, 48276 columns, 2283328 nonzeros
+Presolved model has 16488 SOS constraint(s)
+Variable types: 30872 continuous, 17404 integer (17404 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.18s
+
+Barrier performed 0 iterations in 2.93 seconds (4.00 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.09s
+
+Solved with dual simplex
+
+Root relaxation: objective 0.000000e+00, 3237 iterations, 0.61 seconds (1.75 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0  180          -    0.00000      -     -    3s
+     0     0    0.00000    0  180          -    0.00000      -     -   14s
+     0     2    0.00000    0  180          -    0.00000      -     -   58s
+     1     4    0.00000    1  179          -    0.00000      -   0.0   64s
+     3     8    0.00000    2  178          -    0.00000      -   934   70s
+     7    14    0.00000    3  177          -    0.00000      -  1310   76s
+    13    28    0.00000    4  176          -    0.00000      -  1164   92s
+    27    52    6.22744    6  180          -    0.00000      -  1479  101s
+    51    54   19.94737    8  195          -    0.00000      -  1555  116s
+    53    72    0.00000    8  172          -    0.00000      -  1629  124s
+    71    74   24.28479   10  198          -    0.00000      -  1624  138s
+    73    88    0.00000   10  170          -    0.00000      -  1681  152s
+    87   108   12.37426   12  178          -    0.00000      -  1480  160s
+   107   112    7.49661   12  174          -    0.00000      -  1326  172s
+   111   128    0.00000   14  166          -    0.00000      -  1312  181s
+   127   140    8.82522   16  227          -    0.00000      -  1283  190s
+   139   151    0.00000   16  164          -    0.00000      -  1236  201s
+   150   159    7.49661   16  178          -    0.00000      -  1230  216s
+   158   175    0.00000   18  162          -    0.00000      -  1238  225s
+   174   184    8.69866   21  174          -    0.00000      -  1228  236s
+   183   192    0.00000   20  160          -    0.00000      -  1214  251s
+   191   207    7.80907   22  171          -    0.00000      -  1205  263s
+   206   217    0.00000   22  158          -    0.00000      -  1214  280s
+   216   241   11.09307   24  167          -    0.00000      -  1267  295s
+   240   245   22.86447   28  167          -    0.00000      -  1338  315s
+   244   268    0.00000   26  155          -    0.00000      -  1382  332s
+   267   279    7.80907   30  162          -    0.00000      -  1341  350s
+   278   311    0.00000   28  153          -    0.00000      -  1375  364s
+   310   317    0.00000   32  149          -    0.00000      -  1323  382s
+   316   333    7.80907   34  158          -    0.00000      -  1369  401s
+   332   361    0.00000   34  147          -    0.00000      -  1405  422s
+   360   370   15.57321   40  236          -    0.00000      -  1361  445s
+   369   388    0.00000   38  143          -    0.00000      -  1432  468s
+   387   406    9.62419   40  200          -    0.00000      -  1458  484s
+   405   411    8.10515   41  185          -    0.00000      -  1415  503s
+   410   415    7.80907   44  146          -    0.00000      -  1411  523s
+   414   421    0.00000   42  139          -    0.00000      -  1410  539s
+   420   427    0.00000   43  138          -    0.00000      -  1390  557s
+   426   431   19.14011   46  152          -    0.00000      -  1443  579s
+   430   441    9.50137   44  243          -    0.00000      -  1481  594s
+   440   449    0.00000   44  137          -    0.00000      -  1460  600s
+
+Explored 448 nodes (647105 simplex iterations) in 600.12 seconds (1259.77 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 0
+
+Time limit reached
+Best objective -, best bound 0.000000000000e+00, gap -
+No solution found.
+Gurobi did not find a solution.
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 24631 rows, 16870 columns and 2223512 nonzeros
+Model fingerprint: 0x7bda4253
+Model has 1314 simple general constraints
+  1314 INDICATOR
+Variable types: 15140 continuous, 1730 integer (1730 binary)
+Coefficient statistics:
+  Matrix range     [3e-08, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve removed 7373 rows and 7372 columns
+Presolve time: 4.73s
+Presolved: 17258 rows, 9498 columns, 2207439 nonzeros
+Presolved model has 1314 SOS constraint(s)
+Variable types: 8111 continuous, 1387 integer (1387 binary)
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0      handle free variables                         13s
+    4408    2.6382617e-04   9.852767e+04   0.000000e+00     15s
+    6398    1.3520793e-03   8.510970e+04   0.000000e+00     20s
+    8218    2.7847843e-03   2.136422e+05   0.000000e+00     25s
+   10779    0.0000000e+00   0.000000e+00   0.000000e+00     29s
+
+Root relaxation: objective 0.000000e+00, 10779 iterations, 16.22 seconds (50.20 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   18          -    0.00000      -     -   28s
+H    0     0                       7.6312625    0.00000   100%     -   30s
+     0     0    0.00000    0    1    7.63126    0.00000   100%     -   36s
+     0     0    0.00000    0    1    7.63126    0.00000   100%     -   43s
+     0     2    0.00000    0    1    7.63126    0.00000   100%     -   44s
+     1     3    0.00000    1    1    7.63126    0.00000   100%   0.0   48s
+     2     5    0.00000    2    1    7.63126    0.00000   100%   7.5   52s
+     4     3    0.00000    3    1    7.63126    0.00000   100%   501   58s
+*    5     3               2       7.4289958    0.00000   100%   401   60s
+     8     3    0.00000    4    1    7.42900    0.00000   100%   802   66s
+*    9     3               4       1.5415366    0.00000   100%   804   68s
+    10     3    0.00000    5    1    1.54154    0.00000   100%   724   73s
+    12     2    0.00000    6    1    1.54154    0.00000   100%   786   76s
+    15     3    0.00000    7    1    1.54154    0.00000   100%   740   81s
+*   17     3               7       0.8478345    0.00000   100%   849   83s
+    18     3     cutoff    9         0.84783    0.00000   100%   864   89s
+    22     4    0.00000   11    1    0.84783    0.00000   100%   708   96s
+    33     8     cutoff   18         0.84783    0.00000   100%   647  108s
+    41    11     cutoff   23         0.84783    0.00000   100%   590  118s
+    48    13     cutoff   26         0.84783    0.00000   100%   542  127s
+    56     5     cutoff   33         0.84783    0.00000   100%   495  138s
+*   58     5              31       0.1693436    0.00000   100%   570  140s
+*   63     5              30       0.1007146    0.00000   100%   549  142s
+    66     8     cutoff   29         0.10071    0.00000   100%   777  150s
+    73     7     cutoff   36         0.10071    0.00000   100%   722  163s
+    78     6     cutoff   37         0.10071    0.00000   100%   681  184s
+    81     5     cutoff   24         0.10071    0.00000   100%   656  198s
+    84     2     cutoff   42         0.10071    0.00000   100%   653  200s
+    93     3    0.00000   46    1    0.10071    0.00000   100%   606  206s
+    94     3     cutoff   46         0.10071    0.00000   100%   600  213s
+    96     2     cutoff   48         0.10071    0.00000   100%   598  218s
+    99     2     cutoff   49         0.10071    0.00000   100%   630  221s
+   101     2     cutoff   50         0.10071    0.00000   100%   620  227s
+   109     2     cutoff   53         0.10071    0.00000   100%   601  234s
+   115     6    0.00000   57    1    0.10071    0.00000   100%   637  236s
+   121     3     cutoff   59         0.10071    0.00000   100%   621  245s
+   128     7    0.00000   64    1    0.10071    0.00000   100%   624  251s
+   134     7     cutoff   66         0.10071    0.00000   100%   600  256s
+   144     4     cutoff   74         0.10071    0.00000   100%   619  266s
+   151     3     cutoff   70         0.10071    0.00000   100%   657  272s
+   156     1    0.00000   78    1    0.10071    0.00000   100%   636  276s
+   168     3     cutoff   83         0.10071    0.00000   100%   652  283s
+   174     3     cutoff   87         0.10071    0.00000   100%   645  285s
+   193    10     cutoff   99         0.10071    0.00000   100%   597  296s
+   205    13     cutoff  103         0.10071    0.00000   100%   610  303s
+   216    10     cutoff  110         0.10071    0.00000   100%   589  313s
+   223    13    0.00000  115    1    0.10071    0.00000   100%   618  322s
+   236    14 infeasible  121         0.10071    0.00000   100%   600  333s
+   245    17     cutoff  128         0.10071    0.00000   100%   588  344s
+   262    20     cutoff  135         0.10071    0.00000   100%   575  357s
+   279    22     cutoff  148         0.10071    0.00000   100%   553  369s
+   307    31     cutoff  163         0.10071    0.00000   100%   543  386s
+   328    33     cutoff  178         0.10071    0.00000   100%   532  399s
+   376    22     cutoff  203         0.10071    0.00000   100%   591  426s
+   395    15 infeasible  180         0.10071    0.00000   100%   584  449s
+   406     8     cutoff  170         0.10071    0.00000   100%   594  461s
+   423     5     cutoff  181         0.10071    0.00000   100%   580  474s
+   438     2 infeasible  196         0.10071    0.00000   100%   598  481s
+   445    13    0.00000  222    1    0.10071    0.00000   100%   608  485s
+   458    10 infeasible  230         0.10071    0.00000   100%   598  502s
+   463     5 infeasible  235         0.10071    0.00000   100%   616  510s
+   470     2 infeasible  236         0.10071    0.00000   100%   611  521s
+   475     3     cutoff  237         0.10071    0.00000   100%   644  556s
+   478     3    0.00000  239    1    0.10071    0.00000   100%   640  566s
+   486     2     cutoff  239         0.10071    0.00000   100%   635  574s
+   491     3     cutoff  245         0.10071    0.00000   100%   630  582s
+   494    18    0.00000  247    1    0.10071    0.00000   100%   626  585s
+   513    12     cutoff  260         0.10071    0.00000   100%   606  600s
+
+Cutting planes:
+  Cover: 9
+  Clique: 12
+
+Explored 527 nodes (331064 simplex iterations) in 600.07 seconds (1743.83 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 6: 0.100715 0.169344 0.847835 ... 7.63126
+
+Time limit reached
+Best objective 1.007145792082e-01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 1
+Epoch [1/50], Train Loss: 0.0106, Train Acc: 99.75%
+Epoch [2/50], Train Loss: 0.0106, Train Acc: 99.77%
+Epoch [3/50], Train Loss: 0.0103, Train Acc: 99.77%
+Epoch [4/50], Train Loss: 0.0098, Train Acc: 99.79%
+Epoch [5/50], Train Loss: 0.0097, Train Acc: 99.79%
+Epoch [6/50], Train Loss: 0.0096, Train Acc: 99.81%
+Epoch [7/50], Train Loss: 0.0092, Train Acc: 99.81%
+Epoch [8/50], Train Loss: 0.0097, Train Acc: 99.75%
+Epoch [9/50], Train Loss: 0.0095, Train Acc: 99.80%
+Epoch [10/50], Train Loss: 0.0089, Train Acc: 99.81%
+Epoch [11/50], Train Loss: 0.0092, Train Acc: 99.79%
+Epoch [12/50], Train Loss: 0.0081, Train Acc: 99.84%
+Epoch [13/50], Train Loss: 0.0085, Train Acc: 99.80%
+Epoch [14/50], Train Loss: 0.0085, Train Acc: 99.81%
+Epoch [15/50], Train Loss: 0.0076, Train Acc: 99.83%
+Epoch [16/50], Train Loss: 0.0082, Train Acc: 99.83%
+Epoch [17/50], Train Loss: 0.0082, Train Acc: 99.81%
+Epoch [18/50], Train Loss: 0.0079, Train Acc: 99.85%
+Epoch [19/50], Train Loss: 0.0078, Train Acc: 99.83%
+Epoch [20/50], Train Loss: 0.0076, Train Acc: 99.84%
+Epoch [21/50], Train Loss: 0.0071, Train Acc: 99.86%
+Epoch [22/50], Train Loss: 0.0075, Train Acc: 99.86%
+Epoch [23/50], Train Loss: 0.0071, Train Acc: 99.86%
+Epoch [24/50], Train Loss: 0.0066, Train Acc: 99.88%
+Epoch [25/50], Train Loss: 0.0071, Train Acc: 99.87%
+Epoch [26/50], Train Loss: 0.0067, Train Acc: 99.88%
+Early stopping at epoch 26. Best was epoch 16 (val_loss=0.2458).
+Restored best model from epoch 16.
+Test Accuracy: 93.73%
+[Run 2 cand 16] val_acc=93.3900 test_acc=0.9367 time=650.2s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18142 rows, 26140 columns and 2226950 nonzeros
+Model fingerprint: 0x0a9240ee
+Model has 18000 simple general constraints
+  18000 INDICATOR
+Variable types: 15140 continuous, 11000 integer (11000 binary)
+Coefficient statistics:
+  Matrix range     [3e-07, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [5e-04, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 25999 rows and 26000 columns
+Presolve time: 1.53s
+Presolved: 44141 rows, 52140 columns, 2293380 nonzeros
+Presolved model has 18000 SOS constraint(s)
+Variable types: 33140 continuous, 19000 integer (19000 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.00s
+
+Barrier statistics:
+ AA' NZ     : 0.000e+00
+ Factor NZ  : 1.000e+00
+ Factor Ops : 1.000e+00 (less than 1 second per iteration)
+ Threads    : 1
+
+Barrier performed 0 iterations in 1.86 seconds (2.15 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.00s
+
+Solved with primal simplex
+
+Root relaxation: objective 0.000000e+00, 0 iterations, 0.28 seconds (0.48 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+H    0     0                     108.5294225    0.00000   100%     -    4s
+     0     0    0.00000    0   45  108.52942    0.00000   100%     -    9s
+     0     2    0.00000    0   45  108.52942    0.00000   100%     -   11s
+    31    38    7.51169    6   88  108.52942    0.00000   100%   126   15s
+    79    86    7.41764    9   76  108.52942    0.00000   100%   203   20s
+   133   140    6.55084   14   60  108.52942    0.00000   100%   211   25s
+   187   195    5.63203   19   62  108.52942    0.00000   100%   240   30s
+   227   244    6.03990   22   81  108.52942    0.00000   100%   244   35s
+   284   295    0.00000   26   20  108.52942    0.00000   100%   230   41s
+   328   352    0.00000   32   14  108.52942    0.00000   100%   217   45s
+   351   358    0.00000   36   10  108.52942    0.00000   100%   210   56s
+   392   408    0.00000   43    6  108.52942    0.00000   100%   205   60s
+*  426   354              43      10.1257471    0.00000   100%   195   66s
+   549   359    0.00000   56    6   10.12575    0.00000   100%   160   71s
+   706   399    0.00000   71    6   10.12575    0.00000   100%   139   76s
+   897   509    0.00000   86    6   10.12575    0.00000   100%   118   81s
+  1045   596    0.00000   99    5   10.12575    0.00000   100%   105   85s
+  1197   649     cutoff  110        10.12575    0.00000   100%  94.6   99s
+  1219   652    0.00000  111    5   10.12575    0.00000   100%  93.0  116s
+  1353   744    0.00000  118    5   10.12575    0.00000   100%  86.6  120s
+  1657   879    0.00000  139    5   10.12575    0.00000   100%  78.0  127s
+  1868   948    5.78005   89    0   10.12575    0.00000   100%  74.2  234s
+  1870   949    7.47487   46   10   10.12575    0.00000   100%  74.2  287s
+  1871   950    6.83463  131   10   10.12575    0.00000   100%  74.1  295s
+  1872   951    5.98115   83   10   10.12575    0.00000   100%  74.1  313s
+  1873   951    5.61259   88   10   10.12575    0.00000   100%  74.0  427s
+  1874   952    6.66671  102   10   10.12575    0.00000   100%  74.0  430s
+  1875   953    9.52171  120   10   10.12575    0.00000   100%  74.0  455s
+  1876   955    0.00000   13   12   10.12575    0.00000   100%  98.8  463s
+  1877   958    0.00000   14   12   10.12575    0.00000   100%  98.7  480s
+  1886   965    5.00536   16   25   10.12575    0.00000   100%   104  489s
+  1890   973    8.81468   17   34   10.12575    0.00000   100%   104  499s
+  1901   972    9.35863   18   22   10.12575    0.00000   100%   108  512s
+  1904   975    8.81468   19   22   10.12575    0.00000   100%   108  526s
+  1916   975     cutoff   20        10.12575    0.00000   100%   113  538s
+  1926   976    9.37540   20   31   10.12575    0.00000   100%   115  552s
+  1936   974    9.37540   22   24   10.12575    0.00000   100%   123  571s
+  1944   978    9.37540   23   17   10.12575    0.00000   100%   125  584s
+  1954   978    9.38386   24   15   10.12575    0.00000   100%   129  595s
+  1960   978    5.00536   20   16   10.12575    0.00000   100%   130  600s
+
+Cutting planes:
+  Gomory: 8
+
+Explored 1962 nodes (255602 simplex iterations) in 600.19 seconds (1048.46 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 10.1257 108.529 
+
+Time limit reached
+Best objective 1.012574712778e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 5
+Epoch [1/50], Train Loss: 0.0091, Train Acc: 99.80%
+Epoch [2/50], Train Loss: 0.0083, Train Acc: 99.84%
+Epoch [3/50], Train Loss: 0.0079, Train Acc: 99.85%
+Epoch [4/50], Train Loss: 0.0082, Train Acc: 99.83%
+Epoch [5/50], Train Loss: 0.0074, Train Acc: 99.88%
+Epoch [6/50], Train Loss: 0.0072, Train Acc: 99.87%
+Epoch [7/50], Train Loss: 0.0070, Train Acc: 99.88%
+Epoch [8/50], Train Loss: 0.0069, Train Acc: 99.89%
+Epoch [9/50], Train Loss: 0.0070, Train Acc: 99.85%
+Epoch [10/50], Train Loss: 0.0071, Train Acc: 99.86%
+Epoch [11/50], Train Loss: 0.0072, Train Acc: 99.86%
+Epoch [12/50], Train Loss: 0.0068, Train Acc: 99.88%
+Epoch [13/50], Train Loss: 0.0068, Train Acc: 99.87%
+Early stopping at epoch 13. Best was epoch 3 (val_loss=0.2545).
+Restored best model from epoch 3.
+Test Accuracy: 93.16%
+[Run 2 cand 17] val_acc=93.3800 test_acc=0.9380 time=650.8s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 18681 rows, 25370 columns and 2226352 nonzeros
+Model fingerprint: 0xeb6b9eb2
+Model has 16614 simple general constraints
+  16614 INDICATOR
+Variable types: 15140 continuous, 10230 integer (10230 binary)
+Coefficient statistics:
+  Matrix range     [4e-08, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve added 23227 rows and 23228 columns
+Presolve time: 2.10s
+Presolved: 41908 rows, 48598 columns, 2285929 nonzeros
+Presolved model has 16614 SOS constraint(s)
+Variable types: 31061 continuous, 17537 integer (17537 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.10s
+
+Barrier performed 0 iterations in 2.58 seconds (2.93 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.04s
+
+Solved with dual simplex
+
+Root relaxation: objective 0.000000e+00, 2977 iterations, 0.39 seconds (0.69 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   90          -    0.00000      -     -    2s
+     0     0    0.00000    0   90          -    0.00000      -     -   14s
+     0     2    0.00000    0   90          -    0.00000      -     -   48s
+     1     4    0.00000    1   89          -    0.00000      -   0.0   66s
+     3     8    0.00000    2   88          -    0.00000      -  8520   80s
+     7    14    0.00000    3   87          -    0.00000      -  5031   96s
+    13    40    0.00000    4   86          -    0.00000      -  4438  106s
+    39    54   11.35989    7   79          -    0.00000      -  1798  116s
+    53    69    0.00000    6   84          -    0.00000      -  1739  123s
+    68    85   11.70130   10   45          -    0.00000      -  1529  132s
+    84   100    0.00000    8   82          -    0.00000      -  1404  140s
+    99   109    0.00000   10   80          -    0.00000      -  1321  149s
+   108   118   21.58878   12    8          -    0.00000      -  1341  160s
+   117   129    0.00000   12   78          -    0.00000      -  1371  167s
+   128   140   15.77206   14   43          -    0.00000      -  1356  177s
+   139   151    0.00000   14   76          -    0.00000      -  1345  187s
+   150   162   23.01610   15    8          -    0.00000      -  1377  200s
+   161   179    0.00000   16   74          -    0.00000      -  1379  208s
+   178   186    0.00000   18   72          -    0.00000      -  1308  222s
+   185   207   20.01849   18   29          -    0.00000      -  1337  237s
+   206   220    0.00000   20   70          -    0.00000      -  1252  254s
+   219   237    7.30338   22   96          -    0.00000      -  1251  268s
+   236   246    0.00000   24   66          -    0.00000      -  1207  287s
+   245   252   35.16243   26    5          -    0.00000      -  1222  306s
+*  247   252              30      15.5361393    0.00000   100%  1212  306s
+   253   239    0.00000   26   64   15.53614    0.00000   100%  1207  328s
+   258   243    0.00000   27   64   15.53614    0.00000   100%  1184  354s
+   262   265    0.00000   29   62   15.53614    0.00000   100%  1227  378s
+   286   269   11.21356   14   88   15.53614    0.00000   100%  1171  399s
+   290   297   11.21356   15   77   15.53614    0.00000   100%  1175  424s
+*  302   297              27      15.2295319    0.00000   100%  1134  426s
+   322   298     cutoff   26        15.22953    0.00000   100%  1106  460s
+   327   307    0.00000   33   58   15.22953    0.00000   100%  1090  487s
+   338   309   12.80480   16   67   15.22953    0.00000   100%  1062  515s
+   350   318   14.54743   17   51   15.22953    0.00000   100%  1037  540s
+   363   315     cutoff   19        15.22953    0.00000   100%  1029  574s
+   369   323     cutoff   20        15.22953    0.00000   100%  1093  600s
+
+Explored 383 nodes (414250 simplex iterations) in 600.07 seconds (1304.28 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 15.2295 15.5361 
+
+Time limit reached
+Best objective 1.522953188396e+01, best bound 0.000000000000e+00, gap 100.0000%
+Total misclassified samples: 10
+Epoch [1/50], Train Loss: 0.0103, Train Acc: 99.83%
+Epoch [2/50], Train Loss: 0.0094, Train Acc: 99.79%
+Epoch [3/50], Train Loss: 0.0084, Train Acc: 99.86%
+Epoch [4/50], Train Loss: 0.0085, Train Acc: 99.83%
+Epoch [5/50], Train Loss: 0.0087, Train Acc: 99.82%
+Epoch [6/50], Train Loss: 0.0077, Train Acc: 99.87%
+Epoch [7/50], Train Loss: 0.0070, Train Acc: 99.91%
+Epoch [8/50], Train Loss: 0.0071, Train Acc: 99.89%
+Epoch [9/50], Train Loss: 0.0071, Train Acc: 99.88%
+Epoch [10/50], Train Loss: 0.0066, Train Acc: 99.89%
+Epoch [11/50], Train Loss: 0.0067, Train Acc: 99.88%
+Epoch [12/50], Train Loss: 0.0068, Train Acc: 99.87%
+Epoch [13/50], Train Loss: 0.0066, Train Acc: 99.87%
+Epoch [14/50], Train Loss: 0.0068, Train Acc: 99.88%
+Epoch [15/50], Train Loss: 0.0067, Train Acc: 99.88%
+Early stopping at epoch 15. Best was epoch 5 (val_loss=0.2416).
+Restored best model from epoch 5.
+Test Accuracy: 93.47%
+[Run 2 cand 18] val_acc=93.4300 test_acc=0.9377 time=650.7s
+Set parameter TimeLimit to value 600
+Size of X: (1000, 256)
+Size of W: (10, 256)
+Size of b: (10,)
+Mismatch:  0
+Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (linux64 - "Ubuntu 18.04.6 LTS")
+
+CPU model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  600
+
+Optimize a model with 24421 rows, 17170 columns and 2217372 nonzeros
+Model fingerprint: 0xb50394aa
+Model has 1854 simple general constraints
+  1854 INDICATOR
+Variable types: 15140 continuous, 2030 integer (2030 binary)
+Coefficient statistics:
+  Matrix range     [4e-08, 9e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-05, 2e+01]
+  GenCon rhs range [1e-05, 1e-05]
+  GenCon coe range [1e+00, 1e+00]
+Presolve removed 6293 rows and 6292 columns
+Presolve time: 4.71s
+Presolved: 18128 rows, 10878 columns, 2203969 nonzeros
+Presolved model has 1854 SOS constraint(s)
+Variable types: 8921 continuous, 1957 integer (1957 binary)
+Root relaxation presolved: 14111 rows, 6140 columns, 1958363 nonzeros
+
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing primal log only...
+
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    0.0000000e+00   9.541062e+03   1.413176e+11     15s
+    1685    0.0000000e+00   0.000000e+00   0.000000e+00     15s
+    2663    0.0000000e+00   0.000000e+00   0.000000e+00     20s
+    3210    0.0000000e+00   5.577195e+00   2.870354e+13     25s
+Concurrent spin time: 0.44s
+
+Solved with dual simplex
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+    8079    0.0000000e+00   0.000000e+00   0.000000e+00     26s
+
+Root relaxation: objective 0.000000e+00, 8079 iterations, 12.20 seconds (33.23 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0  180          -    0.00000      -     -   25s
+     0     0    0.00000    0  180          -    0.00000      -     -   43s
+     0     2    0.00000    0  180          -    0.00000      -     -  107s
+     5     8    4.72562    2  178          -    0.00000      -   576  116s
+    13    33    0.00000    4  176          -    0.00000      -   913  124s
+    32    41    5.98685    6  177          -    0.00000      -  1156  126s
+    40    56    0.00000    6  174          -    0.00000      -  1132  135s
+    69    81    4.84544    9  170          -    0.00000      -   923  144s
+    80    89    4.07127   10  176          -    0.00000      -  1013  151s
+   105   113   12.25125   12  175          -    0.00000      -   959  157s
+   112   129    0.00000   12  168          -    0.00000      -   967  165s
+   139   157    0.00000   14  166          -    0.00000      -  1060  171s
+   167   183    0.00000   16  164          -    0.00000      -   980  180s
+   201   211    0.00000   20  160          -    0.00000      -   919  191s
+   210   233   12.31185   22  160          -    0.00000      -   918  195s
+   232   241    4.72562   22  165          -    0.00000      -   882  205s
+   240   255    0.00000   24  156          -    0.00000      -   875  215s
+   254   258    4.72562   24  163          -    0.00000      -   872  228s
+   257   279    0.00000   26  154          -    0.00000      -   895  237s
+   278   291    4.72562   28  159          -    0.00000      -   873  250s
+   290   300    0.00000   28  152          -    0.00000      -   875  263s
+   299   309    4.72562   30  157          -    0.00000      -   923  278s
+   308   318    0.00000   30  150          -    0.00000      -   922  294s
+   317   326   17.78819   34  160          -    0.00000      -   919  310s
+   325   358    0.00000   32  148          -    0.00000      -   919  320s
+   357   385   12.15329   36  152          -    0.00000      -   889  332s
+   384   390   18.11152   40  149          -    0.00000      -   867  349s
+   389   432    0.00000   38  142          -    0.00000      -   871  357s
+   431   469    0.00000   42  138          -    0.00000      -   829  366s
+   468   480   10.35525   46  135          -    0.00000      -   823  381s
+   479   496    0.00000   46  134          -    0.00000      -   856  392s
+   495   538    0.00000   48  132          -    0.00000      -   870  398s
+   537   587    0.00000   52  128          -    0.00000      -   843  405s
+   586   636   15.31228   58  129          -    0.00000      -   815  411s
+   635   683    0.00000   62  118          -    0.00000      -   784  422s
+   682   734    9.03072   66  118          -    0.00000      -   761  434s
+   733   784    0.00000   70  110          -    0.00000      -   731  445s
+   783   836   11.15295   76  105          -    0.00000      -   715  453s
+   835   890    0.00000   80  100          -    0.00000      -   698  460s
+   889   946   10.80696   87   96          -    0.00000      -   681  467s
+   945  1005    0.00000   92   88          -    0.00000      -   666  475s
+  1004  1071    6.50973   98   86          -    0.00000      -   652  483s
+  1070  1136    6.90748  104   78          -    0.00000      -   635  491s
+  1135  1209    8.81482  110   73          -    0.00000      -   620  499s
+  1208  1285    0.00000  118   62          -    0.00000      -   603  507s
+  1284  1361    6.88833  126   54          -    0.00000      -   589  516s
+  1360  1438    2.40731  134   47          -    0.00000      -   576  533s
+  1437  1517    0.00000  142   41          -    0.00000      -   562  543s
+  1516  1594    0.00000  148   41          -    0.00000      -   551  554s
+  1593  1665    0.00000  154   41          -    0.00000      -   544  565s
+  1664  1741    0.00000  160   41          -    0.00000      -   540  576s
+  1740  1811    0.00000  168   41          -    0.00000      -   536  588s
+  1810  1895    7.47902  175   47          -    0.00000      -   534  600s
+
+Explored 1894 nodes (1006192 simplex iterations) in 600.13 seconds (1811.85 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 0
+
+Time limit reached
+Best objective -, best bound 0.000000000000e+00, gap -
+No solution found.
+Gurobi did not find a solution.
+Ensemble Test Accuracy: 0.9376
