@@ -15,7 +15,7 @@ import numpy as np
 
 
 class MILP:
-    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, timeLimit=10800, loaded_inputs=None, candidate=-1):
+    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, timeLimit=10800, loaded_inputs=None, candidate=0):
         self.dataset_name = dataset_name
         self.store_file_name = store_file_name
         self.run_id = run_id
@@ -65,7 +65,7 @@ class MILP:
     
     
     def Optimize(self, Method = "MisCls_Correct"):
-        milp_log_file = f"Stats/MILP_log.csv" if self.candidate == -1 else f"Stats_Ensemble/MILP_log.csv"
+        milp_log_file = f"Stats/MILP_log.csv" if self.candidate == 0 else f"Stats_Ensemble/MILP_log.csv"
         self.LoadInputs()
         self.PrintShapes()
         
@@ -106,7 +106,7 @@ class MILP:
 
             print(f"Total misclassified samples: {misclassified}")
             
-            if self.candidate >= 0:
+            if self.candidate > 0:
                 return [W_new, b_new]
 
             if self.X_val is None:
