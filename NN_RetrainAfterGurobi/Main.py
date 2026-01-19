@@ -254,9 +254,9 @@ if __name__ == "__main__":
     misclassification_count = int(sys.argv[3]) if len(sys.argv) > 3 else 1
     misc_type = sys.argv[4] if len(sys.argv) > 4 else "A"
     subset_size = 1000
-    X_train, y_train, X_test, y_test, num_classes = LoadDataset(Datasets[0], run_id=0)
+    X_train, y_train, X_test, y_test, num_classes = LoadDataset(dataset_name, run_id=1)
 
-    TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=None, run_id=run, Method="Train")
+    TrainNN(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=None, run_id=1, Method="Train")
 
     if method == "CMC":
         if misc_type == "A":
@@ -270,7 +270,7 @@ if __name__ == "__main__":
     if Solution:
         if method == "CMC":
             method_suffix = f"F_{misc_type}"
-            TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=15, max_epochs=200000, preset_weights_path=G_checkpoint_path, run_id=run_id, Method=f"RA{method}{misclassification_count}")
+            TrainNN(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=1, Method=f"RA{method}{misclassification_count}")
         else:
             method_suffix = "B"
 
