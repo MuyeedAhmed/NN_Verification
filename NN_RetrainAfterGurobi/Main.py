@@ -8,6 +8,7 @@ import numpy as np
 import os
 import sys
 import pandas as pd
+import copy
 
 from Utils.Networks import TabularMLP, TabularMLP_Mult
 from Utils.RunGurobi_Tabular import FlipBinary_A, FlipBinary_C, FlipMulticlass_A, FlipMulticlass_C, BorderBinary, BorderMulticlass
@@ -72,7 +73,13 @@ def TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=2, patience=3
         with open(AllFileStats, "w") as f:
             f.write("Dataset,Run,Train Loss,Train Acc,Test Acc,Method\n")
     
-
+    X_train, y_train, X_val, y_val = train_test_split(
+        X_train,
+        y_train,
+        test_size=0.15,
+        random_state=42*run_id,
+        stratify=y_train
+    )
     os.makedirs("checkpoints", exist_ok=True)
     checkpoint_path = f"checkpoints/{Dataset}_{run_id}_tabular_model_{Method}.pt"
     prediction_path = f"checkpoints/{Dataset}_{run_id}_tabular_preds_{Method}.npy"
@@ -93,6 +100,8 @@ def TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=2, patience=3
         model.load_state_dict(torch.load(preset_weights_path))
 
     best_loss = float('inf')
+    best_val_acc = 0.0
+    best_model_state = None
     patience_counter = 0
 
     for epoch in range(max_epochs):
@@ -111,29 +120,44 @@ def TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=2, patience=3
         model.eval()
         with torch.no_grad():
             train_logits = model(X_train)
+            val_logits = model(X_val)
             test_logits = model(X_test)
 
             if num_classes == 2:
                 train_acc = accuracy_binary(train_logits.squeeze(), y_train)
+                val_acc = accuracy_binary(val_logits.squeeze(), y_val)
                 test_acc = accuracy_binary(test_logits.squeeze(), y_test)
             else:
                 train_acc = accuracy_multiclass(train_logits, y_train)
+                val_acc = accuracy_multiclass(val_logits, y_val)
                 test_acc = accuracy_multiclass(test_logits, y_test)
 
-        print(f"Epoch {epoch+1} | Train Loss: {loss.item():.8f} | Train Acc: {train_acc:.8f} | Test Acc: {test_acc:.8f}")
+        print(f"Epoch {epoch+1} | Train Loss: {loss.item():.8f} | Train Acc: {train_acc:.8f} | Val Acc: {val_acc:.8f} | Test Acc: {test_acc:.8f}")
         with open(IntermediateStatsFile, "a") as f:
-            f.write(f"{epoch+1},{loss.item():.8f},{train_acc:.8f},{test_acc:.8f},{Method}\n")
-        if loss.item() < best_loss - 1e-4:
-            best_loss = loss.item()
+            f.write(f"{epoch+1},{loss.item():.8f},{train_acc:.8f},{val_acc:.8f},{test_acc:.8f},{Method}\n")
+        # if loss.item() < best_loss - 1e-4:
+        #     best_loss = loss.item()
+        #     patience_counter = 0
+        # else:
+        #     patience_counter += 1
+        #     if patience_counter >= patience:
+        #         print("Early stopping triggered (train loss did not improve).")
+        #         break
+        if val_acc > best_val_acc + 1e-4:
+            best_val_acc = val_acc
+            best_state_dict = copy.deepcopy(model.state_dict())
+            best_model_state = model.state_dict()
             patience_counter = 0
         else:
             patience_counter += 1
             if patience_counter >= patience:
-                print("Early stopping triggered (train loss did not improve).")
+                print("Early stopping triggered (val accuracy did not improve).")
                 break
+        if best_model_state is not None:
+            model.load_state_dict(best_model_state)
 
     with open(AllFileStats, "a") as f:
-        f.write(f"{Dataset},{run_id},{loss.item():.8f},{train_acc:.8f},{test_acc:.8f},{Method}\n")
+        f.write(f"{Dataset},{run_id},{loss.item():.8f},{train_acc:.8f},{val_acc:.8f},{test_acc:.8f},{Method}\n")
             
     
     torch.save(model.state_dict(), checkpoint_path)
@@ -291,7 +315,7 @@ if __name__ == "__main__":
             X_train, y_train, X_test, y_test, num_classes = LoadDataset(dataset, run_id=run)
             
             TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=None, run_id=run, Method="Train")
-            
+
             # ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=-1, flipCount=0, tol=1e-5, run_id=run, Method="B")
             checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=20, tol=1e-5, run_id=run, Method="F_C")
             TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RA{"F_C"}{20}")
@@ -301,6 +325,10 @@ if __name__ == "__main__":
             TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RA{"F_A"}{20}")
             checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=30, tol=1e-5, run_id=run, Method="F_A")
             TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RA{"F_A"}{30}")
+            checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=50, tol=1e-5, run_id=run, Method="F_A")
+            TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RA{"F_A"}{50}")
+            checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=50, tol=1e-5, run_id=run, Method="F_C")
+            TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RA{"F_C"}{50}")
             
 
 
