@@ -48,7 +48,7 @@ if __name__ == "__main__":
     method = sys.argv[2]
     save_checkpoint = sys.argv[3] if len(sys.argv) > 3 else "N"
     misclassification_count = int(sys.argv[4]) if len(sys.argv) > 4 else 1
-    raf_type = sys.argv[5] if len(sys.argv) > 5 else "Any"
+    cmc_type = sys.argv[5] if len(sys.argv) > 5 else "Any"
 
     os.makedirs(f"Stats/{method}", exist_ok=True)    
     
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         n_samples_gurobi = -1
         G_epoch = 0
         misclassification_count = 0
-        raf_type = ""
+        cmc_type = ""
         if dataset_name == "EMNIST":
             n_samples_gurobi = 5000
     elif method == "RAF":
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
     
     checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
-    gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{raf_type}_{misclassification_count}.pth"
+    gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{cmc_type}_{misclassification_count}.pth"
 
     if os.path.exists(checkpoint_dir) == False:
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
@@ -161,21 +161,21 @@ if __name__ == "__main__":
 
     print("Loaded inputs for Gurobi optimization.")
     with open(TM_after_g.log_file, "a") as f:
-        f.write(f"{method}_{raf_type}_{misclassification_count},,,,,,,\n")
+        f.write(f"{method}_{cmc_type}_{misclassification_count},,,,,,,\n")
     time0 = time.time()
 
     milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi)
     if method == "RAB":
         Gurobi_output = milp_instance.Optimize(Method="LowerConf")
     elif method == "RAF":
-        if raf_type == "Correct":
+        if cmc_type == "Correct":
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
-        elif raf_type == "Any":
+        elif cmc_type == "Any":
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
-        elif raf_type == "Incorrect":
+        elif cmc_type == "Incorrect":
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
         else:
-            print(f"Unknown RAF type: {raf_type}. Exiting.")
+            print(f"Unknown RAF type: {cmc_type}. Exiting.")
             sys.exit(1)
     else:
         print(f"Unknown method: {method}. Exiting.")
@@ -209,9 +209,9 @@ if __name__ == "__main__":
 
 
     with open(TM_after_g.log_file, "a") as f:
-        f.write(f"{i},{method},{raf_type},{misclassification_count},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
-        f.write(f"{i},{method},{raf_type},{misclassification_count},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
-        f.write(f"{i},{method},{raf_type},{misclassification_count},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
+        f.write(f"{i},{method},{cmc_type},{misclassification_count},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
+        f.write(f"{i},{method},{cmc_type},{misclassification_count},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
+        f.write(f"{i},{method},{cmc_type},{misclassification_count},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
     
     
     if method == "RAF":
@@ -231,7 +231,7 @@ if __name__ == "__main__":
         "Run": i,
         "Checkpoint": gurobi_checkpoint_dir,
         "Method": method,
-        "RAF_Type": raf_type,
+        "RAF_Type": cmc_type,
         "Misclassification_Count": int(misclassification_count),
         "S1_Train_loss": float(S1_Train_loss),
         "S1_Train_acc": float(S1_Train_acc),
