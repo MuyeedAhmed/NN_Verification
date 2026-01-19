@@ -270,6 +270,7 @@ if __name__ == "__main__":
     if Solution:
         if method == "CMC":
             method_suffix = f"F_{misc_type}"
+            TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=15, max_epochs=200000, preset_weights_path=G_checkpoint_path, run_id=run_id, Method=f"RA{method}{misclassification_count}")
         else:
             method_suffix = "B"
 
