@@ -42,10 +42,10 @@ if __name__ == "__main__":
     G_epoch = 100
     
     if len(sys.argv) <= 3:
-        print("Usage: python STC.py <Method> <Dataset_Name> <Save_Checkpoint(Y/N)> <Misclassification_Count> <RAF_Type>")
+        print("Usage: python Main.py <Dataset_Name> <Method> <Save_Checkpoint(Y/N)> <Misclassification_Count> <Misclassification_Type>")
         sys.exit(1)
-    method = sys.argv[1]
-    dataset_name = sys.argv[2]
+    dataset_name = sys.argv[1]
+    method = sys.argv[2]
     save_checkpoint = sys.argv[3] if len(sys.argv) > 3 else "N"
     misclassification_count = int(sys.argv[4]) if len(sys.argv) > 4 else 1
     raf_type = sys.argv[5] if len(sys.argv) > 5 else "Any"
