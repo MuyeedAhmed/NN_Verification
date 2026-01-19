@@ -400,9 +400,6 @@ def BorderBinary(file_name, X, y, y_gt, W, b, n_samples, tol):
         if model.SolCount == 0:
             print("Timeout")
             return False
-        # Z_values = np.array([[Z[i, j].X for j in range(Output_size)] for i in range(n_samples)])
-        # print("Z_values:", Z_values)
-        # print(y)
         
         W_values_with_offset = np.array([[W[i][j] + W_offset[i, j].X for j in range(W_size)] for i in range(Output_size)])
         b_values_with_offset = np.array([b[j] + b_offset[j].X for j in range(Output_size)])
@@ -463,9 +460,6 @@ def BorderMulticlass(file_name, X, y, y_gt, W, b, n_samples, tol):
         if model.SolCount == 0:
             print("Timeout")
             return False
-        # Z_values = np.array([[Z[i, j].X for j in range(Output_size)] for i in range(n_samples)])
-        # print("Z_values:", Z_values)
-        # print(y)
         
         W_values_with_offset = np.array([[W[i][j] + W_offset[i, j].X for j in range(W_size)] for i in range(Output_size)])
         b_values_with_offset = np.array([b[j] + b_offset[j].X for j in range(Output_size)])
