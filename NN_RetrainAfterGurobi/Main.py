@@ -44,14 +44,24 @@ def LoadDataset(name="adult", run_id=0):
         stratify=y
     )
 
+    X_train, y_train, X_val, y_val = train_test_split(
+        X_train,
+        y_train,
+        test_size=0.15,
+        random_state=42*run_id,
+        stratify=y_train
+    )
+
     X_train = torch.tensor(X_train)
     y_train = torch.tensor(y_train)
+    X_val = torch.tensor(X_val)
+    y_val = torch.tensor(y_val)
     X_test = torch.tensor(X_test)
     y_test = torch.tensor(y_test)
 
     num_classes = len(np.unique(y_train.numpy()))
 
-    return X_train, y_train, X_test, y_test, num_classes
+    return X_train, y_train, X_val, y_val, X_test, y_test, num_classes
 
 
 def accuracy_binary(logits, labels):
@@ -62,29 +72,17 @@ def accuracy_multiclass(logits, labels):
     preds = torch.argmax(logits, dim=1)
     return (preds == labels).float().mean().item()
 
-def TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=2, patience=3, max_epochs=100, preset_weights_path=None, run_id=0, Method=None):
+def TrainNN(Dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=2, patience=3, max_epochs=100, preset_weights_path=None, run_id=0, Method=None):
     IntermediateStatsFile = f"Stats/Intermediate/{Dataset}_{run_id}_Epochs.csv"
     AllFileStats = f"Stats/Summary.csv"
     os.makedirs(os.path.dirname(IntermediateStatsFile), exist_ok=True)
     if os.path.exists(IntermediateStatsFile) == False:
         with open(IntermediateStatsFile, "w") as f:
-            f.write("Epoch,Train Loss,Train Acc,Test Acc,Method\n")
+            f.write("Epoch,Train Loss,Train Acc,Val Acc,Test Acc,Method\n")
     if os.path.exists(AllFileStats) == False:
         with open(AllFileStats, "w") as f:
-            f.write("Dataset,Run,Train Loss,Train Acc,Test Acc,Method\n")
+            f.write("Dataset,Run,Train Loss,Train Acc,Val Acc,Test Acc,Method\n")
     
-    if hasattr(y_train, "ndim") and y_train.ndim == 2:
-        y_strat = y_train.argmax(dim=1) if torch.is_tensor(y_train) else y_train.argmax(axis=1)
-    else:
-        y_strat = y_train
-
-    X_train, y_train, X_val, y_val = train_test_split(
-        X_train,
-        y_train,
-        test_size=0.15,
-        random_state=42*run_id,
-        stratify=y_strat
-    )
     os.makedirs("checkpoints", exist_ok=True)
     checkpoint_path = f"checkpoints/{Dataset}_{run_id}_tabular_model_{Method}.pt"
     prediction_path = f"checkpoints/{Dataset}_{run_id}_tabular_preds_{Method}.npy"
@@ -317,23 +315,23 @@ if __name__ == "__main__":
 
     for dataset in Datasets:
         for run in range(5):
-            X_train, y_train, X_test, y_test, num_classes = LoadDataset(dataset, run_id=run)
+            X_train, y_train, X_val, y_val, X_test, y_test, num_classes = LoadDataset(dataset, run_id=run)
             
-            TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=None, run_id=run, Method="Train")
+            TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=None, run_id=run, Method="Train")
 
             # ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=-1, flipCount=0, tol=1e-5, run_id=run, Method="B")
             checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=20, tol=1e-5, run_id=run, Method="F_C")
-            TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C20")
+            TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C20")
             checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=30, tol=1e-5, run_id=run, Method="F_C")
-            TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C30")
+            TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C30")
             checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=20, tol=1e-5, run_id=run, Method="F_A")
-            TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A20")
+            TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A20")
             checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=30, tol=1e-5, run_id=run, Method="F_A")
-            TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A30")
+            TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A30")
             checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=50, tol=1e-5, run_id=run, Method="F_A")
-            TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A50")
+            TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A50")
             checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=50, tol=1e-5, run_id=run, Method="F_C")
-            TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C50")
+            TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C50")
             
 
 
