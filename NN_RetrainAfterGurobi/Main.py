@@ -73,12 +73,17 @@ def TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=2, patience=3
         with open(AllFileStats, "w") as f:
             f.write("Dataset,Run,Train Loss,Train Acc,Test Acc,Method\n")
     
+    if hasattr(y_train, "ndim") and y_train.ndim == 2:
+        y_strat = y_train.argmax(dim=1) if torch.is_tensor(y_train) else y_train.argmax(axis=1)
+    else:
+        y_strat = y_train
+
     X_train, y_train, X_val, y_val = train_test_split(
         X_train,
         y_train,
         test_size=0.15,
         random_state=42*run_id,
-        stratify=y_train
+        stratify=y_strat
     )
     os.makedirs("checkpoints", exist_ok=True)
     checkpoint_path = f"checkpoints/{Dataset}_{run_id}_tabular_model_{Method}.pt"
