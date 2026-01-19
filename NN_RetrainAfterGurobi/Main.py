@@ -259,7 +259,7 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
     test_loss, test_acc, gurobi_test_preds = evaluate_tensors(model, X_test, y_test, num_classes)
 
     with open(AllFileStats, "a") as f:
-        f.write(f"{Dataset},{run_id},{train_loss:.8f},{train_acc:.8f},{test_acc:.8f},{Method}{flipCount}\n")
+        f.write(f"{Dataset},{run_id},{train_loss:.8f},{train_acc:.8f},,{test_acc:.8f},{Method}{flipCount}\n")
     
     Total_flips = np.sum(gurobi_train_preds != y_preds.reshape(-1)).item()
     with open(f"Stats/Log.txt", "a") as f:
@@ -321,23 +321,34 @@ if __name__ == "__main__":
 
             # ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=-1, flipCount=0, tol=1e-5, run_id=run, Method="B")
             
-            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=1, tol=1e-5, run_id=run, Method="F_A")
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=1, tol=1e-5, run_id=run, Method="F_A")
             if soultion_found:
-                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A50")
-            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=10, tol=1e-5, run_id=run, Method="F_C")
-            if soultion_found:
-                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C50")
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A1")
             
-            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=20, tol=1e-5, run_id=run, Method="F_C")
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=10, tol=1e-5, run_id=run, Method="F_A")
+            if soultion_found:
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A10")
+            
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=1, tol=1e-5, run_id=run, Method="F_C")
+            if soultion_found:
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C1")
+            
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=10, tol=1e-5, run_id=run, Method="F_C")
+            if soultion_found:
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C10")
+            
+            
+            
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=20, tol=1e-5, run_id=run, Method="F_C")
             if soultion_found:
                 TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C20")
-            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=30, tol=1e-5, run_id=run, Method="F_C")
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=30, tol=1e-5, run_id=run, Method="F_C")
             if soultion_found:
                 TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C30")
-            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=20, tol=1e-5, run_id=run, Method="F_A")
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=20, tol=1e-5, run_id=run, Method="F_A")
             if soultion_found:
                 TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A20")
-            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=30, tol=1e-5, run_id=run, Method="F_A")
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=30, tol=1e-5, run_id=run, Method="F_A")
             if soultion_found:
                 TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A30")
             
