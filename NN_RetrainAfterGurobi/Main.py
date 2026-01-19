@@ -44,7 +44,7 @@ def LoadDataset(name="adult", run_id=0):
         stratify=y
     )
 
-    X_train, y_train, X_val, y_val = train_test_split(
+    X_train, X_val, y_train, y_val = train_test_split(
         X_train,
         y_train,
         test_size=0.15,
