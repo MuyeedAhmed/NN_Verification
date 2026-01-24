@@ -8,6 +8,7 @@ import numpy as np
 import os
 import sys
 import pandas as pd
+import copy
 
 from Utils.Networks import TabularMLP, TabularMLP_Mult
 from Utils.RunGurobi_Tabular import FlipBinary_A, FlipBinary_C, FlipMulticlass_A, FlipMulticlass_C, BorderBinary, BorderMulticlass
@@ -43,14 +44,24 @@ def LoadDataset(name="adult", run_id=0):
         stratify=y
     )
 
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_train,
+        y_train,
+        test_size=0.15,
+        random_state=42*run_id,
+        stratify=y_train
+    )
+
     X_train = torch.tensor(X_train)
     y_train = torch.tensor(y_train)
+    X_val = torch.tensor(X_val)
+    y_val = torch.tensor(y_val)
     X_test = torch.tensor(X_test)
     y_test = torch.tensor(y_test)
 
     num_classes = len(np.unique(y_train.numpy()))
 
-    return X_train, y_train, X_test, y_test, num_classes
+    return X_train, y_train, X_val, y_val, X_test, y_test, num_classes
 
 
 def accuracy_binary(logits, labels):
@@ -61,18 +72,17 @@ def accuracy_multiclass(logits, labels):
     preds = torch.argmax(logits, dim=1)
     return (preds == labels).float().mean().item()
 
-def TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=2, patience=3, max_epochs=100, preset_weights_path=None, run_id=0, Method=None):
+def TrainNN(Dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=2, patience=3, max_epochs=100, preset_weights_path=None, run_id=0, Method=None):
     IntermediateStatsFile = f"Stats/Intermediate/{Dataset}_{run_id}_Epochs.csv"
     AllFileStats = f"Stats/Summary.csv"
     os.makedirs(os.path.dirname(IntermediateStatsFile), exist_ok=True)
     if os.path.exists(IntermediateStatsFile) == False:
         with open(IntermediateStatsFile, "w") as f:
-            f.write("Epoch,Train Loss,Train Acc,Test Acc,Method\n")
+            f.write("Epoch,Train Loss,Train Acc,Val Acc,Test Acc,Method\n")
     if os.path.exists(AllFileStats) == False:
         with open(AllFileStats, "w") as f:
-            f.write("Dataset,Run,Train Loss,Train Acc,Test Acc,Method\n")
+            f.write("Dataset,Run,Train Loss,Train Acc,Val Acc,Test Acc,Method\n")
     
-
     os.makedirs("checkpoints", exist_ok=True)
     checkpoint_path = f"checkpoints/{Dataset}_{run_id}_tabular_model_{Method}.pt"
     prediction_path = f"checkpoints/{Dataset}_{run_id}_tabular_preds_{Method}.npy"
@@ -93,6 +103,8 @@ def TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=2, patience=3
         model.load_state_dict(torch.load(preset_weights_path))
 
     best_loss = float('inf')
+    best_val_acc = 0.0
+    best_model_state = None
     patience_counter = 0
 
     for epoch in range(max_epochs):
@@ -111,29 +123,44 @@ def TrainNN(Dataset, X_train, y_train, X_test, y_test, num_classes=2, patience=3
         model.eval()
         with torch.no_grad():
             train_logits = model(X_train)
+            val_logits = model(X_val)
             test_logits = model(X_test)
 
             if num_classes == 2:
                 train_acc = accuracy_binary(train_logits.squeeze(), y_train)
+                val_acc = accuracy_binary(val_logits.squeeze(), y_val)
                 test_acc = accuracy_binary(test_logits.squeeze(), y_test)
             else:
                 train_acc = accuracy_multiclass(train_logits, y_train)
+                val_acc = accuracy_multiclass(val_logits, y_val)
                 test_acc = accuracy_multiclass(test_logits, y_test)
 
-        print(f"Epoch {epoch+1} | Train Loss: {loss.item():.8f} | Train Acc: {train_acc:.8f} | Test Acc: {test_acc:.8f}")
+        print(f"Epoch {epoch+1} | Train Loss: {loss.item():.8f} | Train Acc: {train_acc:.8f} | Val Acc: {val_acc:.8f} | Test Acc: {test_acc:.8f}")
         with open(IntermediateStatsFile, "a") as f:
-            f.write(f"{epoch+1},{loss.item():.8f},{train_acc:.8f},{test_acc:.8f},{Method}\n")
-        if loss.item() < best_loss - 1e-4:
-            best_loss = loss.item()
+            f.write(f"{epoch+1},{loss.item():.8f},{train_acc:.8f},{val_acc:.8f},{test_acc:.8f},{Method}\n")
+        # if loss.item() < best_loss - 1e-4:
+        #     best_loss = loss.item()
+        #     patience_counter = 0
+        # else:
+        #     patience_counter += 1
+        #     if patience_counter >= patience:
+        #         print("Early stopping triggered (train loss did not improve).")
+        #         break
+        if val_acc > best_val_acc + 1e-4:
+            best_val_acc = val_acc
+            best_state_dict = copy.deepcopy(model.state_dict())
+            best_model_state = model.state_dict()
             patience_counter = 0
         else:
             patience_counter += 1
             if patience_counter >= patience:
-                print("Early stopping triggered (train loss did not improve).")
+                print("Early stopping triggered (val accuracy did not improve).")
                 break
+        if best_model_state is not None:
+            model.load_state_dict(best_model_state)
 
     with open(AllFileStats, "a") as f:
-        f.write(f"{Dataset},{run_id},{loss.item():.8f},{train_acc:.8f},{test_acc:.8f},{Method}\n")
+        f.write(f"{Dataset},{run_id},{loss.item():.8f},{train_acc:.8f},{val_acc:.8f},{test_acc:.8f},{Method}\n")
             
     
     torch.save(model.state_dict(), checkpoint_path)
@@ -232,7 +259,7 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
     test_loss, test_acc, gurobi_test_preds = evaluate_tensors(model, X_test, y_test, num_classes)
 
     with open(AllFileStats, "a") as f:
-        f.write(f"{Dataset},{run_id},{train_loss:.8f},{train_acc:.8f},{test_acc:.8f},{Method}{flipCount}\n")
+        f.write(f"{Dataset},{run_id},{train_loss:.8f},{train_acc:.8f},,{test_acc:.8f},{Method}{flipCount}\n")
     
     Total_flips = np.sum(gurobi_train_preds != y_preds.reshape(-1)).item()
     with open(f"Stats/Log.txt", "a") as f:
@@ -246,60 +273,84 @@ def ModifyWeights(Dataset, X_train, y_train, X_test, y_test, num_classes=2, n_sa
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python Main.py <Dataset_Name> <Method> <Misclassification_Count> <Misclassification_Type>")
+    # if len(sys.argv) < 3:
+    #     print("Usage: python Main.py <Dataset_Name> <Method> <Misclassification_Count> <Misclassification_Type>")
 
-    dataset_name = sys.argv[1]
-    method = sys.argv[2]
-    misclassification_count = int(sys.argv[3]) if len(sys.argv) > 3 else 1
-    misc_type = sys.argv[4] if len(sys.argv) > 4 else "A"
-    subset_size = 1000
-    X_train, y_train, X_test, y_test, num_classes = LoadDataset(dataset_name, run_id=1)
+    # dataset_name = sys.argv[1]
+    # method = sys.argv[2]
+    # misclassification_count = int(sys.argv[3]) if len(sys.argv) > 3 else 1
+    # misc_type = sys.argv[4] if len(sys.argv) > 4 else "A"
+    # subset_size = 1000
+    # X_train, y_train, X_test, y_test, num_classes = LoadDataset(dataset_name, run_id=1)
 
-    TrainNN(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=None, run_id=1, Method="Train")
+    # TrainNN(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=None, run_id=1, Method="Train")
 
-    if method == "CMC":
-        if misc_type == "A":
-            Solution, checkpoint_path = ModifyWeights(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=subset_size, flipCount=misclassification_count, tol=1e-5, run_id=1, Method="F_A")
-        elif misc_type == "C":
-            Solution, checkpoint_path = ModifyWeights(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=subset_size, flipCount=misclassification_count, tol=1e-5, run_id=1, Method="F_C")
+    # if method == "CMC":
+    #     if misc_type == "A":
+    #         Solution, checkpoint_path = ModifyWeights(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=subset_size, flipCount=misclassification_count, tol=1e-5, run_id=1, Method="F_A")
+    #     elif misc_type == "C":
+    #         Solution, checkpoint_path = ModifyWeights(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=subset_size, flipCount=misclassification_count, tol=1e-5, run_id=1, Method="F_C")
 
-    elif method == "TAGD":
-        Solution, checkpoint_path = ModifyWeights(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=-1, flipCount=0, tol=1e-5, run_id=1, Method="B")
+    # elif method == "TAGD":
+    #     Solution, checkpoint_path = ModifyWeights(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=-1, flipCount=0, tol=1e-5, run_id=1, Method="B")
 
-    if Solution:
-        if method == "CMC":
-            method_suffix = f"F_{misc_type}"
-            TrainNN(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=1, Method=f"RA{method}_{misc_type}{misclassification_count}")
-        else:
-            method_suffix = "B"
+    # if Solution:
+    #     if method == "CMC":
+    #         method_suffix = f"F_{misc_type}"
+    #         TrainNN(dataset_name, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=1, Method=f"RA{method}_{misc_type}{misclassification_count}")
+    #     else:
+    #         method_suffix = "B"
 
-        print(f"Successfully modified weights for dataset \"{dataset_name}\" using method \"{method}\".")
-        print(f"Path to model_G: checkpoints/{dataset_name}_1_tabular_model_{method_suffix}.pt")
-        if method == "CMC":
-            print(f"Path to model_RT (Retrain after misclassification): checkpoints/{dataset_name}_1_tabular_model_RA{method_suffix}{misclassification_count}.pt")
+    #     print(f"Successfully modified weights for dataset \"{dataset_name}\" using method \"{method}\".")
+    #     print(f"Path to model_G: checkpoints/{dataset_name}_1_tabular_model_{method_suffix}.pt")
+    #     if method == "CMC":
+    #         print(f"Path to model_RT (Retrain after misclassification): checkpoints/{dataset_name}_1_tabular_model_RA{method_suffix}{misclassification_count}.pt")
 
-    else:
-        print(f"Failed to modify weights for dataset \"{dataset_name}\" using method \"{method}\".")
+    # else:
+    #     print(f"Failed to modify weights for dataset \"{dataset_name}\" using method \"{method}\".")
 
 
     # ### For testing all datasets and runs    
-    # Datasets = ["Adult", "higgs", "GiveMeSomeCredit", "bank-marketing", "santander", "kddcup98"]
+    Datasets = ["Adult", "higgs", "GiveMeSomeCredit", "bank-marketing", "santander", "kddcup98"]
 
-    # for dataset in Datasets:
-    #     for run in range(5):
-    #         X_train, y_train, X_test, y_test, num_classes = LoadDataset(dataset, run_id=run)
+    for dataset in Datasets:
+        for run in range(3):
+            X_train, y_train, X_val, y_val, X_test, y_test, num_classes = LoadDataset(dataset, run_id=run)
             
+            TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=None, run_id=run, Method="Train")
 
-    #         # ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=-1, flipCount=0, tol=1e-5, run_id=run, Method="B")
-    #         checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=20, tol=1e-5, run_id=run, Method="F_C")
-    #         TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RA{"F_C"}{20}")
-    #         checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=30, tol=1e-5, run_id=run, Method="F_C")
-    #         TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RA{"F_C"}{30}")
-    #         checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=20, tol=1e-5, run_id=run, Method="F_A")
-    #         TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RA{"F_A"}{20}")
-    #         checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=5000, flipCount=30, tol=1e-5, run_id=run, Method="F_A")
-    #         TrainNN(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RA{"F_A"}{30}")
+            # ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=-1, flipCount=0, tol=1e-5, run_id=run, Method="B")
+            
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=1, tol=1e-5, run_id=run, Method="F_A")
+            if soultion_found:
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A1")
+            
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=10, tol=1e-5, run_id=run, Method="F_A")
+            if soultion_found:
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A10")
+            
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=1, tol=1e-5, run_id=run, Method="F_C")
+            if soultion_found:
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C1")
+            
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=10, tol=1e-5, run_id=run, Method="F_C")
+            if soultion_found:
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C10")
+            
+            
+            
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=20, tol=1e-5, run_id=run, Method="F_C")
+            if soultion_found:
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C20")
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=1000, flipCount=30, tol=1e-5, run_id=run, Method="F_C")
+            if soultion_found:
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_C30")
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=20, tol=1e-5, run_id=run, Method="F_A")
+            if soultion_found:
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A20")
+            soultion_found, checkpoint_path = ModifyWeights(dataset, X_train, y_train, X_test, y_test, num_classes=num_classes, n_samples=500, flipCount=30, tol=1e-5, run_id=run, Method="F_A")
+            if soultion_found:
+                TrainNN(dataset, X_train, y_train, X_val, y_val, X_test, y_test, num_classes=num_classes, patience=25, max_epochs=200000, preset_weights_path=checkpoint_path, run_id=run, Method=f"RAF_A30")
             
 
 
