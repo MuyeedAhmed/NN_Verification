@@ -214,12 +214,12 @@ if __name__ == "__main__":
             writer.writerow(row)
         
     timeLimit = 600.0
-    misclassification_count = 20
+    misclassification_count = 15
     for candidate in range(1, total_candidates+1):
         time0 = time.time()
         # misclassification_count = misclassification_counts[candidate % len(misclassification_counts)]
 
-        milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi)
+        milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, candidate=candidate, timeLimit=timeLimit)
         Gurobi_output = milp_instance.Optimize(Method="Swap", optimization_direction="minimize")
     
         # if candidate % 3 == 0:
