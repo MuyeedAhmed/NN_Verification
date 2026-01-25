@@ -260,7 +260,7 @@ class MILP:
                 self.gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) >= misclassified_flags_negative[s])
                 self.gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) <= (layer_size - 1) * misclassified_flags_negative[s])
 
-                self.gurobi_model.addConstr(misclassified_flags_positive[s] == 0)
+                self.gurobi_model.addConstr(misclassified_flags_positive[s] == 0, name=f"misclassified_flag_pos_{s}")
             else:
                 violations = self.gurobi_model.addVars(layer_size, vtype=GRB.BINARY, name=f"violations_{s}")
                 for k in range(layer_size):
@@ -272,8 +272,7 @@ class MILP:
                 self.gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) >= misclassified_flags_positive[s])
                 self.gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) <= (layer_size - 1) * misclassified_flags_positive[s])
         
-                self.gurobi_model.addConstr(misclassified_flags_negative[s] == 0)
-                
+                self.gurobi_model.addConstr(misclassified_flags_negative[s] == 0, name=f"misclassified_flag_neg_{s}")
         self.gurobi_model.addConstr(gp.quicksum(misclassified_flags_negative[s] for s in range(n_samples)) == self.misclassification_count, name="exactly_m_misclassified_to_negative")
         self.gurobi_model.addConstr(gp.quicksum(misclassified_flags_positive[s] for s in range(n_samples)) == self.misclassification_count, name="exactly_m_misclassified_to_positive")
 
