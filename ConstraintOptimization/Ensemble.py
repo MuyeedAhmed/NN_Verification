@@ -84,7 +84,7 @@ if __name__ == "__main__":
     n_samples_gurobi = 1000
     timeLimit = 600.0
     misclassification_count = 10
-    
+
     if len(sys.argv) < 3:
         print("Usage: python Ensemble.py <DatasetName> <Method> [<Retrain Y/N>]")
         sys.exit(1)
@@ -195,6 +195,7 @@ if __name__ == "__main__":
     
     results.append({
         "Dataset": dataset_name,
+        "Retrain": retrain,
         "Candidate": -1,
         "Checkpoint": checkpoint_dir,
         "Train_loss": float(S1_Train_loss),
@@ -208,7 +209,7 @@ if __name__ == "__main__":
     csv_path = "Stats_Ensemble/Summary.csv"
     write_header = not os.path.exists(csv_path)
     with open(csv_path, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Dataset","Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
+        writer = csv.DictWriter(f, fieldnames=["Dataset","Retrain","Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
         if write_header:
             writer.writeheader()
         for row in results:
@@ -276,6 +277,7 @@ if __name__ == "__main__":
         results.append({
             "Dataset": dataset_name,
             "Candidate": candidate,
+            "Retrain": retrain,
             "Checkpoint": gurobi_checkpoint_dir,
             "Train_loss": float(train_loss),
             "Train_acc": float(train_acc),
@@ -290,7 +292,7 @@ if __name__ == "__main__":
     TM_after_g.delete_fc_inputs()
     
     with open(csv_path, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Dataset","Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
+        writer = csv.DictWriter(f, fieldnames=["Dataset","Retrain","Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
         for row in results:
             writer.writerow(row)
 
@@ -314,4 +316,4 @@ if __name__ == "__main__":
     with open(TM_after_g.log_file, "a") as f:
         f.write(f"Ensemble of top {top_k} models Test Accuracy: {ensemble_acc:.4f}\n")
     with open(csv_path, "a", newline="") as f:
-        f.write(f"{dataset_name},Ensemble,,,,,,,{ensemble_acc:.4f},\n")
+        f.write(f"{dataset_name},{retrain},Ensemble,,,,,,,{ensemble_acc:.4f},\n")
