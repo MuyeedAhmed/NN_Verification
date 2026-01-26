@@ -251,7 +251,7 @@ if __name__ == "__main__":
             TM_after_g.model.classifier.bias.copy_(new_b)
         
         if retrain == "N":
-            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{candidate}.pth"
+            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
             torch.save({
                 'epoch': TM_after_g.num_epochs,
                 'model_state_dict': TM_after_g.model.state_dict(),
@@ -261,7 +261,7 @@ if __name__ == "__main__":
         else:
             TM_after_g.run()
             old_path = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"
-            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{candidate}.pth"
+            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
             
             os.rename(old_path, gurobi_checkpoint_dir)
 
