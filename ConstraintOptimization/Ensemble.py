@@ -38,7 +38,7 @@ def ensemble_test_accuracy(models, test_loader, device):
         correct += (pred == y).sum().item()
         total += y.numel()
 
-    return loss,(correct / total) * 100.0
+    return (correct / total) * 100.0
 
 
 def load_models(checkpoint_paths, dataset_name, device):
