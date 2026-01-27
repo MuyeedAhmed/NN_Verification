@@ -15,7 +15,7 @@ import numpy as np
 
 
 class MILP:
-    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 1e-5, misclassification_count=0, timeLimit=10800, loaded_inputs=None, candidate=0):
+    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 3e-5, misclassification_count=0, timeLimit=10800, loaded_inputs=None, candidate=0):
         self.dataset_name = dataset_name
         self.store_file_name = store_file_name
         self.run_id = run_id
@@ -64,7 +64,7 @@ class MILP:
 
     
     
-    def Optimize(self, Method = "MisCls_Correct"):
+    def Optimize(self, Method = "MisCls_Correct", optimization_direction = "minimize"):
         milp_log_file = f"Stats/MILP_log.csv" if self.candidate == 0 else f"Stats_Ensemble/MILP_log.csv"
         self.LoadInputs()
         self.PrintShapes()
@@ -82,6 +82,9 @@ class MILP:
             self.AddConstraints_MisCls(samples="Any")
         elif Method == "LowerConf":
             self.AddConstraints_LowerConf()
+        elif Method == "Swap":
+            print("Using Swap Method")
+            self.AddConstraints_Swap(optim_direction=optimization_direction)
 
 
         self.gurobi_model.optimize()
@@ -95,6 +98,9 @@ class MILP:
             
             Z2_pred_gurobi = self.X @ W_new.T + b_new
             predictions_gurobi = np.argmax(Z2_pred_gurobi, axis=1)
+            print("Ground Truth Labels:\n", self.labels_gt)
+            print("Original Predictions:\n", self.pred_checkpoint)
+            print("Gurobi Predictions:\n", predictions_gurobi)
             misclassified_mask = predictions_gurobi != self.pred_checkpoint
             misclassified = np.sum(misclassified_mask)
             accuracy_gurobi = np.sum(predictions_gurobi == self.labels_gt) / len(self.labels_gt) * 100
@@ -223,3 +229,71 @@ class MILP:
         objective = gp.quicksum(max_min_diff)
         self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
 
+    def AddConstraints_Swap(self, optim_direction = "minimize"):
+        n_samples = len(self.X)
+        l1_size = self.W.shape[1]
+        layer_size = self.W.shape[0]
+    
+        misclassified_flags_negative = self.gurobi_model.addVars(n_samples, vtype=GRB.BINARY, name="misclassified_flags_negative")
+        misclassified_flags_positive = self.gurobi_model.addVars(n_samples, vtype=GRB.BINARY, name="misclassified_flags_positive")
+        for s in range(n_samples):
+            label_max = int(np.argmax(self.Z_target[s]))
+            label_min = int(np.argmin(self.Z_target[s]))
+            A1_fixed = self.X[s]
+            Z = self.gurobi_model.addVars(layer_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z_{s}")
+            for j in range(layer_size):
+                expr = gp.LinExpr()
+                for i in range(l1_size):
+                    expr += (self.W[j, i] + self.W_offset[j, i]) * A1_fixed[i]
+                expr += self.b[j] + self.b_offset[j]
+                self.gurobi_model.addConstr(Z[j] == expr)
+            
+            if self.labels_gt[s] == label_max:
+                violations = self.gurobi_model.addVars(layer_size, vtype=GRB.BINARY, name=f"violations_{s}")
+                for k in range(layer_size):
+                    if k != label_max:
+                        self.gurobi_model.addConstr((violations[k] == 1) >> (Z[label_max] <= Z[k] - self.tol), name=f"violation_1flip_{s}_{k}")
+                        self.gurobi_model.addConstr((violations[k] == 0) >> (Z[label_max] >= Z[k] + self.tol), name=f"violation_0flip_{s}_{k}")
+                    else:
+                        self.gurobi_model.addConstr(violations[k] == 0, name=f"violation_0_{s}_{k}")
+
+                self.gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) >= misclassified_flags_negative[s])
+                self.gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) <= (layer_size - 1) * misclassified_flags_negative[s])
+
+                self.gurobi_model.addConstr(misclassified_flags_positive[s] == 0, name=f"misclassified_flag_pos_{s}")
+            else:
+                violations = self.gurobi_model.addVars(layer_size, vtype=GRB.BINARY, name=f"violations_{s}")
+                for k in range(layer_size):
+                    if k != label_max:
+                        self.gurobi_model.addConstr((violations[k] == 1) >> (Z[label_max] <= Z[k] - self.tol), name=f"violation_1flip_{s}_{k}")
+                        self.gurobi_model.addConstr((violations[k] == 0) >> (Z[label_max] >= Z[k] + self.tol), name=f"violation_0flip_{s}_{k}")
+                    else:
+                        self.gurobi_model.addConstr(violations[k] == 0, name=f"violation_0_{s}_{k}")
+                self.gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) >= misclassified_flags_positive[s])
+                self.gurobi_model.addConstr(gp.quicksum(violations[k] for k in range(layer_size)) <= (layer_size - 1) * misclassified_flags_positive[s])
+        
+                self.gurobi_model.addConstr(misclassified_flags_negative[s] == 0, name=f"misclassified_flag_neg_{s}")
+        self.gurobi_model.addConstr(gp.quicksum(misclassified_flags_negative[s] for s in range(n_samples)) == self.misclassification_count, name="exactly_m_misclassified_to_negative")
+        self.gurobi_model.addConstr(gp.quicksum(misclassified_flags_positive[s] for s in range(n_samples)) == self.misclassification_count, name="exactly_m_misclassified_to_positive")
+
+        abs_W = self.gurobi_model.addVars(*self.W.shape, lb=0, name="abs_W")
+        abs_b = self.gurobi_model.addVars(layer_size, lb=0, name="abs_b")
+
+        for i in range(self.W.shape[0]):
+            for j in range(self.W.shape[1]):
+                self.gurobi_model.addConstr(abs_W[i, j] >= self.W_offset[i, j])
+                self.gurobi_model.addConstr(abs_W[i, j] >= -self.W_offset[i, j])
+        for i in range(layer_size):
+            self.gurobi_model.addConstr(abs_b[i] >= self.b_offset[i])
+            self.gurobi_model.addConstr(abs_b[i] >= -self.b_offset[i])
+        
+        objective = (
+            gp.quicksum(abs_W[i, j] for i in range(self.W.shape[0]) for j in range(self.W.shape[1])) +
+            gp.quicksum(abs_b[i] for i in range(layer_size))
+        )
+        if optim_direction == "minimize":
+            self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
+        else:
+            self.gurobi_model.setObjective(objective, GRB.MAXIMIZE)
+        self.gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
+   

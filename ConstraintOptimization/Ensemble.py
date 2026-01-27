@@ -15,7 +15,7 @@ import random
 import numpy as np
 from Utils.TrainModel import TrainModel
 from Utils.GetModelsDatasets import GetDataset, GetModel
-
+from Utils.RunGurobi import MILP
 
 @torch.no_grad()
 def ensemble_test_accuracy(models, test_loader, device):
@@ -38,7 +38,7 @@ def ensemble_test_accuracy(models, test_loader, device):
         correct += (pred == y).sum().item()
         total += y.numel()
 
-    return correct / total
+    return (correct / total) * 100.0
 
 
 def load_models(checkpoint_paths, dataset_name, device):
@@ -70,7 +70,7 @@ def evaluate_loader(model, loader, device):
         preds = logits.argmax(dim=1)
         correct += (preds == y).sum().item()
         total += y.numel()
-    return loss_sum / total, correct / total
+    return loss_sum / total, (correct / total) * 100.0
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -78,19 +78,22 @@ if __name__ == "__main__":
     initEpoch = 300
     G_epoch = 50
     
-    misclassification_counts = [1, 5, 10, 20]
+    # misclassification_counts = [1, 5, 10, 20]
     top_k = 10
-    total_candidates = 20
+    total_candidates = 15
+    n_samples_gurobi = 1000
+    timeLimit = 600.0
+    misclassification_count = 10
 
-    method = sys.argv[1] if len(sys.argv) > 1 else "RAB"
-    dataset_name = sys.argv[2] if len(sys.argv) > 2 else "MNIST"
-    save_checkpoint = sys.argv[3] if len(sys.argv) > 3 else "N"
-    if save_checkpoint == "N":
-        from Utils.RunGurobi import MILP
+    if len(sys.argv) < 3:
+        print("Usage: python Ensemble.py <DatasetName> <Method> [<Retrain Y/N>]")
+        sys.exit(1)
+    dataset_name = sys.argv[1]
+    method = sys.argv[2]
+    retrain = sys.argv[3] if len(sys.argv) > 3 else "N"        
 
     os.makedirs(f"Stats_Ensemble/", exist_ok=True)
 
-    n_samples_gurobi = 1000
     
     if dataset_name == "CIFAR10":
         BatchSize = 128
@@ -132,9 +135,6 @@ if __name__ == "__main__":
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
         TM.log_file = f"Stats_Ensemble/{dataset_name}_nn_run_log.csv"
         TM.run()
-    
-    if save_checkpoint == "Y":
-        sys.exit()
 
     results = []
 
@@ -194,6 +194,8 @@ if __name__ == "__main__":
     S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
     
     results.append({
+        "Dataset": dataset_name,
+        "Retrain": retrain,
         "Candidate": -1,
         "Checkpoint": checkpoint_dir,
         "Train_loss": float(S1_Train_loss),
@@ -207,32 +209,36 @@ if __name__ == "__main__":
     csv_path = "Stats_Ensemble/Summary.csv"
     write_header = not os.path.exists(csv_path)
     with open(csv_path, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
+        writer = csv.DictWriter(f, fieldnames=["Dataset","Retrain","Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
         if write_header:
             writer.writeheader()
         for row in results:
             writer.writerow(row)
         
-    timeLimit = 600.0
     for candidate in range(1, total_candidates+1):
         time0 = time.time()
-        misclassification_count = misclassification_counts[candidate % len(misclassification_counts)]
-        if candidate % 3 == 0:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-            Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
-        elif candidate % 3 == 1:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-            Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
-        elif candidate % 3 == 2:
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-            Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
-        # else:
-        #     milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-        #     Gurobi_output = milp_instance.Optimize(Method="LowerConf")
+        if method == "Swap":
+            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, candidate=candidate, timeLimit=timeLimit)
+            Gurobi_output = milp_instance.Optimize(Method="Swap", optimization_direction="minimize")
+        elif method == "All":
+            misclassification_count = misclassification_counts[candidate % len(misclassification_counts)]
+            if candidate % 3 == 0:
+                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
+                Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
+            elif candidate % 3 == 1:
+                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
+                Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
+            elif candidate % 3 == 2:
+                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
+                Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
+            else:
+                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
+                Gurobi_output = milp_instance.Optimize(Method="LowerConf")
 
         time1 = time.time()
         
         if Gurobi_output is None:
+            misclassification_count = misclassification_count - 1
             print("Gurobi did not find a solution.")
             continue
 
@@ -243,37 +249,35 @@ if __name__ == "__main__":
         with torch.no_grad():
             TM_after_g.model.classifier.weight.copy_(new_W)
             TM_after_g.model.classifier.bias.copy_(new_b)
-
-        # gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{candidate}.pth"
-        # torch.save({
-        #     'epoch': TM_after_g.num_epochs,
-        #     'model_state_dict': TM_after_g.model.state_dict(),
-        #     'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
-        #     'scheduler_state_dict': TM_after_g.scheduler.state_dict()
-        # }, gurobi_checkpoint_dir)
         
-        # train_loss, train_acc = TM_after_g.evaluate("Train")
-        # val_loss, val_acc = TM_after_g.evaluate("Val")
-        # test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+        if retrain == "N":
+            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
+            torch.save({
+                'epoch': TM_after_g.num_epochs,
+                'model_state_dict': TM_after_g.model.state_dict(),
+                'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
+                'scheduler_state_dict': TM_after_g.scheduler.state_dict()
+            }, gurobi_checkpoint_dir)
+        else:
+            TM_after_g.run()
+            old_path = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"
+            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
+            
+            os.rename(old_path, gurobi_checkpoint_dir)
 
         # with open(TM_after_g.log_file, "a") as f:
         #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
         #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Val,-1,{val_loss},{val_acc}\n")
         #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
         
-        TM_after_g.run()
-
-        old_path = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_RAF.pth"
-        gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{candidate}.pth"
-        
-        os.rename(old_path, gurobi_checkpoint_dir)
-
         train_loss, train_acc = TM_after_g.evaluate("Train")
         val_loss, val_acc = TM_after_g.evaluate("Val")
         test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
 
         results.append({
+            "Dataset": dataset_name,
             "Candidate": candidate,
+            "Retrain": retrain,
             "Checkpoint": gurobi_checkpoint_dir,
             "Train_loss": float(train_loss),
             "Train_acc": float(train_acc),
@@ -288,7 +292,7 @@ if __name__ == "__main__":
     TM_after_g.delete_fc_inputs()
     
     with open(csv_path, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
+        writer = csv.DictWriter(f, fieldnames=["Dataset","Retrain","Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
         for row in results:
             writer.writerow(row)
 
@@ -297,7 +301,7 @@ if __name__ == "__main__":
         key=lambda r: r["Val_acc"],
         reverse=True
     )
-
+    top_k = min(top_k, len(results_sorted))
     top_k_paths = [r["Checkpoint"] for r in results_sorted[:top_k]]
 
     models = load_models(top_k_paths, dataset_name, device)
@@ -309,3 +313,7 @@ if __name__ == "__main__":
     )
 
     print(f"Ensemble Test Accuracy: {ensemble_acc:.4f}")
+    with open(TM_after_g.log_file, "a") as f:
+        f.write(f"Ensemble of top {top_k} models Test Accuracy: {ensemble_acc:.4f}\n")
+    with open(csv_path, "a", newline="") as f:
+        f.write(f"{dataset_name},{retrain},Ensemble,,,,,,,{ensemble_acc:.4f},\n")
