@@ -29,7 +29,7 @@ class MILP:
         if loaded_inputs is not None:
             self.X_full, self.labels_full, self.pred_full = loaded_inputs['X_full'], loaded_inputs['labels_full'], loaded_inputs['pred_full'] 
             self.X_val, self.labels_val, self.pred_val = loaded_inputs['X_val'], loaded_inputs['labels_val'], loaded_inputs['pred_val']
-            self.X_full_edited = loaded_inputs['X_full_edited']
+            self.X_full_edited = loaded_inputs['X_full_edited'] if 'X_full_edited' in loaded_inputs else None
         
         self.gurobi_model = gp.Model()
         self.gurobi_model.setParam('TimeLimit', timeLimit)
@@ -102,10 +102,10 @@ class MILP:
             Z2_pred_gurobi = self.X @ W_new.T + b_new
             predictions_gurobi = np.argmax(Z2_pred_gurobi, axis=1)
 
-            print("Old wieghts with noise added X\n", np.argmax(self.X @ self.W.T + self.b, axis=1))
-            print("Ground Truth Labels:\n", self.labels_gt)
-            print("Original Predictions:\n", self.pred_checkpoint)
-            print("Gurobi Predictions:\n", predictions_gurobi)
+            # print("Old wieghts with noise added X\n", np.argmax(self.X @ self.W.T + self.b, axis=1))
+            # print("Ground Truth Labels:\n", self.labels_gt)
+            # print("Original Predictions:\n", self.pred_checkpoint)
+            # print("Gurobi Predictions:\n", predictions_gurobi)
             misclassified_mask = predictions_gurobi != self.pred_checkpoint
             misclassified = np.sum(misclassified_mask)
             accuracy_gurobi = np.sum(predictions_gurobi == self.labels_gt) / len(self.labels_gt) * 100

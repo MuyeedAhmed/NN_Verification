@@ -54,6 +54,15 @@ def load_models(checkpoint_paths, dataset_name, device):
     return models
 
 
+def add_relative_weight_noise_(model, rel=0.01, include_bias=False, eps=1e-12):
+    with torch.no_grad():
+        for name, p in model.named_parameters():
+            if not p.requires_grad:
+                continue
+            if (not include_bias) and (name.endswith(".bias") or name == "bias"):
+                continue
+            s = p.std().clamp_min(eps)
+            p.add_(rel * s * torch.randn_like(p))
 
 @torch.no_grad()
 def evaluate_loader(model, loader, device):
@@ -152,11 +161,20 @@ if __name__ == "__main__":
     print(f"Loaded model for run {i} from checkpoint.")
 
     TM_after_g.save_fc_inputs("Train")
+    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
+    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
+    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
+    
+    TM_after_g.model.eval()
+    add_relative_weight_noise_(TM_after_g.model, rel=0.1, include_bias=True)
+    print("Added small weight noise to the model.")
+
+    TM_after_g.save_fc_inputs("Train")
     TM_after_g.save_fc_inputs("Val")
 
     print(f"Saved FC inputs for run {i}.")
 
-    convertVal = True
+    convertVal = False
     if convertVal:
         X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
         labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
@@ -171,15 +189,16 @@ if __name__ == "__main__":
             "pred_val": pred_val,
         }
     else:
-        X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-        labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-        pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
+        X_full_edited = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
+        # labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
+        # pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
         X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
         labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
         pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
 
         loaded_inputs_gurobi = {
             "X_full": X_full,
+            "X_full_edited": X_full_edited,
             "labels_full": labels_full,
             "pred_full": pred_full,
             "X_val": X_val,
