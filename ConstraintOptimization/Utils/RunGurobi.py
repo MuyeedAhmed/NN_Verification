@@ -24,10 +24,12 @@ class MILP:
         self.misclassification_count = misclassification_count
         self.candidate = candidate
         self.X_full, self.labels_full, self.pred_full, self.X_val, self.labels_val, self.pred_val = None, None, None, None, None, None
+        self.X_full_edited = None
 
         if loaded_inputs is not None:
             self.X_full, self.labels_full, self.pred_full = loaded_inputs['X_full'], loaded_inputs['labels_full'], loaded_inputs['pred_full'] 
             self.X_val, self.labels_val, self.pred_val = loaded_inputs['X_val'], loaded_inputs['labels_val'], loaded_inputs['pred_val']
+            self.X_full_edited = loaded_inputs['X_full_edited']
         
         self.gurobi_model = gp.Model()
         self.gurobi_model.setParam('TimeLimit', timeLimit)
@@ -45,14 +47,15 @@ class MILP:
         else:
             np.random.seed(self.candidate*42)
             idx = np.random.choice(X_full_size, size=self.n, replace=False)
-            self.X = self.X_full[idx]
+            self.X_org = self.X_full[idx]
+            self.X = self.X_full_edited[idx]
             self.labels_gt = self.labels_full[idx]
             self.pred_checkpoint = self.pred_full[idx]
 
         self.W = torch.load(f"checkpoints/{self.dataset_name}/Run{self.run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
         self.b = torch.load(f"checkpoints/{self.dataset_name}/Run{self.run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()
 
-        self.Z_target = self.X @ self.W.T + self.b
+        self.Z_target = self.X_org @ self.W.T + self.b
     
     def PrintShapes(self):
         pred_target = np.argmax(self.Z_target, axis=1)
@@ -98,6 +101,8 @@ class MILP:
             
             Z2_pred_gurobi = self.X @ W_new.T + b_new
             predictions_gurobi = np.argmax(Z2_pred_gurobi, axis=1)
+
+            print("Old wieghts with noise added X\n", np.argmax(self.X @ self.W.T + self.b, axis=1))
             print("Ground Truth Labels:\n", self.labels_gt)
             print("Original Predictions:\n", self.pred_checkpoint)
             print("Gurobi Predictions:\n", predictions_gurobi)
