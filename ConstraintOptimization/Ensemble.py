@@ -84,24 +84,33 @@ def evaluate_loader(model, loader, device):
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
+    os.makedirs(f"Stats_Ensemble/", exist_ok=True)
+
     initEpoch = 300
     G_epoch = 50
     
-    # misclassification_counts = [1, 5, 10, 20]
     top_k = 10
     total_candidates = 15
-    n_samples_gurobi = 1000
-    timeLimit = 600.0
-    misclassification_count = 10
+    # n_samples_gurobi = 1000
+    # timeLimit = 60.0
+    # misclassification_count = 10
 
     if len(sys.argv) < 3:
-        print("Usage: python Ensemble.py <DatasetName> <Method> [<Retrain Y/N>]")
+        print("Usage: python Ensemble.py <DatasetName> <Method> [<Retrain Y/N>] [<Misclassification Count>] [<N Samples Gurobi>] [<Time Limit>]")
         sys.exit(1)
     dataset_name = sys.argv[1]
     method = sys.argv[2]
-    retrain = sys.argv[3] if len(sys.argv) > 3 else "N"        
+    retrain = sys.argv[3] if len(sys.argv) > 3 else "N"
+    misclassification_count = int(sys.argv[4]) if len(sys.argv) > 4 else 10
+    n_samples_gurobi = int(sys.argv[5]) if len(sys.argv) > 5 else 1000
+    timeLimit = float(sys.argv[6]) if len(sys.argv) > 6 else 600.0
 
-    os.makedirs(f"Stats_Ensemble/", exist_ok=True)
+    # if method == "LowerConf":
+    #     # n_samples_gurobi = -1
+    #     misclassification_count = 0
+    # elif method == "Converge":
+    #     # n_samples_gurobi = 100
+    #     misclassification_count = 0
 
     
     if dataset_name == "CIFAR10":
@@ -236,23 +245,20 @@ if __name__ == "__main__":
         
     for candidate in range(1, total_candidates+1):
         time0 = time.time()
+        milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, candidate=candidate, timeLimit=timeLimit)
+
         if method == "Swap":
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, candidate=candidate, timeLimit=timeLimit)
             Gurobi_output = milp_instance.Optimize(Method="Swap", optimization_direction="minimize")
-        elif method == "All":
-            misclassification_count = misclassification_counts[candidate % len(misclassification_counts)]
-            if candidate % 3 == 0:
-                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-                Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
-            elif candidate % 3 == 1:
-                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-                Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
-            elif candidate % 3 == 2:
-                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-                Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
-            else:
-                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-                Gurobi_output = milp_instance.Optimize(Method="LowerConf")
+        elif method == "Converge":
+            Gurobi_output = milp_instance.Optimize(Method="Converge", optimization_direction="minimize")
+        elif method == "LowerConf":
+            Gurobi_output = milp_instance.Optimize(Method="LowerConf")
+        elif method == "MisCls_Correct":
+            Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
+        elif method == "MisCls_Incorrect":
+            Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
+        elif method == "MisCls_Any":
+            Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
 
         time1 = time.time()
         
