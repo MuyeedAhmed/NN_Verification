@@ -100,7 +100,7 @@ class MILP:
             W_new = (self.W + W_off)
             b_new = (self.b + b_off)
             
-            Z2_pred_gurobi = self.X @ W_new.T + b_new
+            Z2_pred_gurobi = self.X_org @ W_new.T + b_new
             predictions_gurobi = np.argmax(Z2_pred_gurobi, axis=1)
 
             # print("Old wieghts with noise added X\n", np.argmax(self.X @ self.W.T + self.b, axis=1))
@@ -260,6 +260,8 @@ class MILP:
                     max_min_diff.append(Z[label_max] - Z[k])
 
         objective = gp.quicksum(max_min_diff)
+        self.gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
+        self.gurobi_model.addConstr(objective <= 1000*n_samples*layer_size, "ObjectiveUpperBound")
         self.gurobi_model.setObjective(objective, GRB.MAXIMIZE)
 
 
