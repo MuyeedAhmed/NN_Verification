@@ -89,14 +89,10 @@ if __name__ == "__main__":
     initEpoch = 300
     G_epoch = 50
     
-    top_k = 10
-    total_candidates = 15
-    # n_samples_gurobi = 1000
-    # timeLimit = 60.0
-    # misclassification_count = 10
+    # total_candidates = 30
 
     if len(sys.argv) < 3:
-        print("Usage: python Ensemble.py <DatasetName> <Method> [<Retrain Y/N>] [<Misclassification Count>] [<N Samples Gurobi>] [<Time Limit>]")
+        print("Usage: python Ensemble.py <DatasetName> <Method> [<Retrain Y/N>] [<Misclassification Count>] [<N Samples Gurobi>] [<Time Limit>] [Noise Level] [Total Candidates]")
         sys.exit(1)
     dataset_name = sys.argv[1]
     method = sys.argv[2]
@@ -104,15 +100,11 @@ if __name__ == "__main__":
     misclassification_count = int(sys.argv[4]) if len(sys.argv) > 4 else 10
     n_samples_gurobi = int(sys.argv[5]) if len(sys.argv) > 5 else 1000
     timeLimit = float(sys.argv[6]) if len(sys.argv) > 6 else 600.0
-
-    # if method == "LowerConf":
-    #     # n_samples_gurobi = -1
-    #     misclassification_count = 0
-    # elif method == "Converge":
-    #     # n_samples_gurobi = 100
-    #     misclassification_count = 0
-
+    noise_level = float(sys.argv[7]) if len(sys.argv) > 7 else 0.1
+    total_candidates = int(sys.argv[8]) if len(sys.argv) > 8 else total_candidates
     
+    top_k = 20
+
     if dataset_name == "CIFAR10":
         BatchSize = 128
         optimize = "SGD"
@@ -175,7 +167,7 @@ if __name__ == "__main__":
     pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
     
     TM_after_g.model.eval()
-    add_relative_weight_noise_(TM_after_g.model, rel=0.1, include_bias=True)
+    add_relative_weight_noise_(TM_after_g.model, rel=noise_level, include_bias=True)
     print("Added small weight noise to the model.")
 
     TM_after_g.save_fc_inputs("Train")
@@ -221,28 +213,7 @@ if __name__ == "__main__":
     S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
     S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
     
-    results.append({
-        "Dataset": dataset_name,
-        "Retrain": retrain,
-        "Candidate": -1,
-        "Checkpoint": checkpoint_dir,
-        "Train_loss": float(S1_Train_loss),
-        "Train_acc": float(S1_Train_acc),
-        "Val_loss": float(S1_Val_loss),
-        "Val_acc": float(S1_Val_acc),
-        "Test_loss": float(S1_Test_loss),
-        "Test_acc": float(S1_Test_acc),
-        "Solve_Time": -1.0,
-    })
-    csv_path = "Stats_Ensemble/Summary.csv"
-    write_header = not os.path.exists(csv_path)
-    with open(csv_path, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Dataset","Retrain","Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
-        if write_header:
-            writer.writeheader()
-        for row in results:
-            writer.writerow(row)
-        
+    
     for candidate in range(1, total_candidates+1):
         time0 = time.time()
         milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, candidate=candidate, timeLimit=timeLimit)
@@ -299,10 +270,8 @@ if __name__ == "__main__":
         val_loss, val_acc = TM_after_g.evaluate("Val")
         test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
 
-        results.append({
-            "Dataset": dataset_name,
+        result = {
             "Candidate": candidate,
-            "Retrain": retrain,
             "Checkpoint": gurobi_checkpoint_dir,
             "Train_loss": float(train_loss),
             "Train_acc": float(train_acc),
@@ -311,15 +280,19 @@ if __name__ == "__main__":
             "Test_loss": float(test_loss),
             "Test_acc": float(test_acc),
             "Solve_Time": float(time1 - time0),
-        })
+        }
+        csv_path = f"Stats_Ensemble/Candidates_{dataset_name}.csv"
+        write_header = not os.path.exists(csv_path)
+        with open(csv_path, "a", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=result.keys())
+            if write_header:
+                writer.writeheader()
+            writer.writerow(result)
+        
+        results.append(result)
         print(f"[Run {i} cand {candidate}] val_acc={val_acc:.4f} test_acc={test_acc:.4f} time={time1 - time0:.1f}s")
     
     TM_after_g.delete_fc_inputs()
-    
-    with open(csv_path, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Dataset","Retrain","Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
-        for row in results:
-            writer.writerow(row)
 
     results_sorted = sorted(
         results,
@@ -340,5 +313,29 @@ if __name__ == "__main__":
     print(f"Ensemble Test Accuracy: {ensemble_acc:.4f}")
     with open(TM_after_g.log_file, "a") as f:
         f.write(f"Ensemble of top {top_k} models Test Accuracy: {ensemble_acc:.4f}\n")
-    with open(csv_path, "a", newline="") as f:
-        f.write(f"{dataset_name},{retrain},Ensemble,,,,,,,{ensemble_acc:.4f},\n")
+    
+    summary_results ={
+        "Dataset": dataset_name,
+        "Retrain": retrain,
+        "Noise_Level": noise_level,
+        "N_Samples_Gurobi": n_samples_gurobi,
+        "Time_Limit": timeLimit,
+        "Method": method,
+        "Misclassification_Count": misclassification_count,
+        "Train_loss": float(S1_Train_loss),
+        "Train_acc": float(S1_Train_acc),
+        "Val_loss": float(S1_Val_loss),
+        "Val_acc": float(S1_Val_acc),
+        "Test_loss": float(S1_Test_loss),
+        "Test_acc": float(S1_Test_acc),
+        "Ensemble_Test_acc": float(ensemble_acc),
+    }
+    summary_path = "Stats_Ensemble/Summary.csv"
+
+    write_header = not os.path.exists(summary_path)
+    with open(summary_path, "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=summary_results.keys())
+        if write_header:
+            writer.writeheader()
+        writer.writerow(summary_results)
+
