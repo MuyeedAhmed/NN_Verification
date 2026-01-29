@@ -86,8 +86,9 @@ class MILP:
         elif Method == "LowerConf":
             self.AddConstraints_LowerConf()
         elif Method == "Swap":
-            print("Using Swap Method")
             self.AddConstraints_Swap(optim_direction=optimization_direction)
+        elif Method == "Converge":
+            self.AddConstraints_ConvergeBackToOriginal(optim_direction=optimization_direction)
 
 
         self.gurobi_model.optimize()
@@ -209,7 +210,7 @@ class MILP:
         self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
         self.gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
         
-    def AddConstraints_LowerConf(self):
+    def AddConstraints_LowerConf(self, optim_direction = "minimize"):
         n_samples = len(self.X)
         l1_size = self.W.shape[1]
         layer_size = self.W.shape[0]
@@ -232,7 +233,35 @@ class MILP:
 
             max_min_diff.append(Z[label_max] - Z[label_min])
         objective = gp.quicksum(max_min_diff)
-        self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
+        if optim_direction == "minimize":
+            self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
+        else:
+            self.gurobi_model.setObjective(objective, GRB.MAXIMIZE)
+
+    def AddConstraints_ConvergeBackToOriginal(self, optim_direction = "minimize"):
+        n_samples = len(self.X)
+        l1_size = self.W.shape[1]
+        layer_size = self.W.shape[0]
+    
+        max_min_diff = []
+        for s in range(n_samples):
+            label_max = int(np.argmax(self.Z_target[s]))
+            label_min = int(np.argmin(self.Z_target[s]))
+            A1_fixed = self.X[s]
+            Z = self.gurobi_model.addVars(layer_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z_{s}")
+            for j in range(layer_size):
+                expr = gp.LinExpr()
+                for i in range(l1_size):
+                    expr += (self.W[j, i] + self.W_offset[j, i]) * A1_fixed[i]
+                expr += self.b[j] + self.b_offset[j]
+                self.gurobi_model.addConstr(Z[j] == expr)
+            for k in range(layer_size):
+                if k != label_max:
+                    max_min_diff.append(Z[label_max] - Z[k])
+
+        objective = gp.quicksum(max_min_diff)
+        self.gurobi_model.setObjective(objective, GRB.MAXIMIZE)
+
 
     def AddConstraints_Swap(self, optim_direction = "minimize"):
         n_samples = len(self.X)
