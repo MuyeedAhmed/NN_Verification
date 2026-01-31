@@ -85,6 +85,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
     os.makedirs(f"Stats_Ensemble/", exist_ok=True)
+    os.makedirs(f"./checkpoints/{dataset_name}_Candidates/", exist_ok=True)
     ''' 
     Initialize parameters 
     '''
@@ -184,10 +185,10 @@ if __name__ == "__main__":
     print("Added small weight noise to the model.")
 
 
-    S1_Train_loss, S1_Train_acc = TM_after_g.evaluate("Train")
-    S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
-    S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
-    print(f"LOGG:\n After noise - Train Acc: {S1_Train_acc:.4f}, Val Acc: {S1_Val_acc:.4f}, Test Acc: {S1_Test_acc:.4f}")
+    NoiseAdded_Train_loss, NoiseAdded_Train_acc = TM_after_g.evaluate("Train")
+    NoiseAdded_Val_loss, NoiseAdded_Val_acc = TM_after_g.evaluate("Val")
+    NoiseAdded_Test_loss, NoiseAdded_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+    print(f"LOGG:\n After noise - Train Acc: {NoiseAdded_Train_acc:.4f}, Val Acc: {NoiseAdded_Val_acc:.4f}, Test Acc: {NoiseAdded_Test_acc:.4f}")
 
     TM_after_g.save_fc_inputs("Train")
     TM_after_g.save_fc_inputs("Val")
@@ -248,19 +249,19 @@ if __name__ == "__main__":
             TM_after_g.model.classifier.bias.copy_(new_b)
         
         if retrain == "N":
-            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
+            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}_Candidates/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
             torch.save({
                 'epoch': TM_after_g.num_epochs,
                 'model_state_dict': TM_after_g.model.state_dict(),
                 'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
                 'scheduler_state_dict': TM_after_g.scheduler.state_dict()
             }, gurobi_checkpoint_dir)
-        else:
-            TM_after_g.run()
-            old_path = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"
-            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
+        # else:
+        #     TM_after_g.run()
+        #     old_path = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth" Need to fix checkpoint path
+        #     gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
             
-            os.rename(old_path, gurobi_checkpoint_dir)
+        #     os.rename(old_path, gurobi_checkpoint_dir)
 
         # with open(TM_after_g.log_file, "a") as f:
         #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
@@ -339,4 +340,22 @@ if __name__ == "__main__":
         if write_header:
             writer.writeheader()
         writer.writerow(summary_results)
+
+    noiseed_results ={
+        "Dataset": dataset_name,
+        "Noise_Level": noise_level,
+        "Train_loss": float(NoiseAdded_Train_loss),
+        "Train_acc": float(NoiseAdded_Train_acc),
+        "Val_loss": float(NoiseAdded_Val_loss),
+        "Val_acc": float(NoiseAdded_Val_acc),
+        "Test_loss": float(NoiseAdded_Test_loss),
+        "Test_acc": float(NoiseAdded_Test_acc),
+    }
+    noise_summary_path = "Stats_Ensemble/NoiseAdded_Summary.csv"
+    write_header = not os.path.exists(noise_summary_path)
+    with open(noise_summary_path, "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=noiseed_results.keys())
+        if write_header:
+            writer.writeheader()
+        writer.writerow(noiseed_results)
 
