@@ -85,7 +85,6 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
     os.makedirs(f"Stats_Ensemble/", exist_ok=True)
-    os.makedirs(f"./checkpoints/{dataset_name}_Candidates/", exist_ok=True)
     ''' 
     Initialize parameters 
     '''
@@ -108,6 +107,7 @@ if __name__ == "__main__":
     i = int(sys.argv[9]) if len(sys.argv) > 9 else 2
 
     top_k = 20
+    os.makedirs(f"./checkpoints/{dataset_name}_Candidates/", exist_ok=True)
 
     if dataset_name == "CIFAR10":
         BatchSize = 128
