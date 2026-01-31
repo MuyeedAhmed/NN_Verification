@@ -85,14 +85,16 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
     os.makedirs(f"Stats_Ensemble/", exist_ok=True)
-
+    ''' 
+    Initialize parameters 
+    '''
     initEpoch = 300
     G_epoch = 50
     
     # total_candidates = 30
 
     if len(sys.argv) < 3:
-        print("Usage: python Ensemble.py <DatasetName> <Method> [<Retrain Y/N>] [<Misclassification Count>] [<N Samples Gurobi>] [<Time Limit>] [Noise Level] [Total Candidates]")
+        print("Usage: python Ensemble.py <DatasetName> <Method> [<Retrain Y/N>] [<Misclassification Count>] [<N Samples Gurobi>] [<Time Limit>] [Noise Level] [Total Candidates] [Run ID]")
         sys.exit(1)
     dataset_name = sys.argv[1]
     method = sys.argv[2]
@@ -102,7 +104,8 @@ if __name__ == "__main__":
     timeLimit = float(sys.argv[6]) if len(sys.argv) > 6 else 600.0
     noise_level = float(sys.argv[7]) if len(sys.argv) > 7 else 0.1
     total_candidates = int(sys.argv[8]) if len(sys.argv) > 8 else total_candidates
-    
+    i = int(sys.argv[9]) if len(sys.argv) > 9 else 2
+
     top_k = 20
 
     if dataset_name == "CIFAR10":
@@ -116,14 +119,15 @@ if __name__ == "__main__":
         learningRate = 0.01
         scheduler_type = "CosineAnnealingLR"
     
-    
+    ''' 
+    DataLoader and Model 
+    '''
     train_dataset, test_dataset = GetDataset(dataset_name)
 
     train_size = int(len(train_dataset) * 0.8)
     val_size = int(len(train_dataset) * 0.2)
     total_size = train_size + val_size
 
-    i = 2
     model_t, model_g = GetModel(dataset_name, device=device)
 
     rng = np.random.default_rng(seed=i*42)
@@ -139,14 +143,18 @@ if __name__ == "__main__":
     val_loader = DataLoader(val_subset, batch_size=BatchSize, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
     
+    '''
+    Run NN Training
+    '''
     checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
-
     if os.path.exists(checkpoint_dir) == False:
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
         TM.log_file = f"Stats_Ensemble/{dataset_name}_nn_run_log.csv"
         TM.run()
 
-    results = []
+    '''
+    Run Gurobi Optimization and Evaluate Candidates
+    '''
 
     TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
     TM_after_g.log_file = f"Stats_Ensemble/{dataset_name}_nn_run_log.csv"
@@ -161,59 +169,52 @@ if __name__ == "__main__":
     TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
     print(f"Loaded model for run {i} from checkpoint.")
 
+    S1_Train_loss, S1_Train_acc = TM_after_g.evaluate("Train")
+    S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
+    S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+
     TM_after_g.save_fc_inputs("Train")
     X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
     labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
     pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
     
+    # Add small weight noise
     TM_after_g.model.eval()
     add_relative_weight_noise_(TM_after_g.model, rel=noise_level, include_bias=True)
     print("Added small weight noise to the model.")
+
+
+    S1_Train_loss, S1_Train_acc = TM_after_g.evaluate("Train")
+    S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
+    S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+    print(f"LOGG:\n After noise - Train Acc: {S1_Train_acc:.4f}, Val Acc: {S1_Val_acc:.4f}, Test Acc: {S1_Test_acc:.4f}")
 
     TM_after_g.save_fc_inputs("Train")
     TM_after_g.save_fc_inputs("Val")
 
     print(f"Saved FC inputs for run {i}.")
 
-    convertVal = False
-    if convertVal:
-        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
 
-        loaded_inputs_gurobi = {
-            "X_full": X_val,
-            "labels_full": labels_val,
-            "pred_full": pred_val,
-            "X_val": X_val,
-            "labels_val": labels_val,
-            "pred_val": pred_val,
-        }
-    else:
-        X_full_edited = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-        # labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-        # pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
-        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
+    X_full_edited = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
+    # labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
+    # pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
+    X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
+    labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
+    pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
 
-        loaded_inputs_gurobi = {
-            "X_full": X_full,
-            "X_full_edited": X_full_edited,
-            "labels_full": labels_full,
-            "pred_full": pred_full,
-            "X_val": X_val,
-            "labels_val": labels_val,
-            "pred_val": pred_val,
-        }
+    loaded_inputs_gurobi = {
+        "X_full": X_full,
+        "X_full_edited": X_full_edited,
+        "labels_full": labels_full,
+        "pred_full": pred_full,
+        "X_val": X_val,
+        "labels_val": labels_val,
+        "pred_val": pred_val,
+    }
 
     print("Loaded inputs for Gurobi optimization.")
-    
-    S1_Train_loss, S1_Train_acc = TM_after_g.evaluate("Train")
-    S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
-    S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
-    
-    
+
+    results = []        
     for candidate in range(1, total_candidates+1):
         time0 = time.time()
         milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, candidate=candidate, timeLimit=timeLimit)

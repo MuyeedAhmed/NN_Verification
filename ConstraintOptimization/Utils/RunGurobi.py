@@ -113,8 +113,9 @@ class MILP:
             
             if misclassified != self.misclassification_count:
                 with open(f"Error_{self.dataset_name}_gurobi_log_tol.csv", "a") as f:
-                    f.write(f"Tol:{self.tol}\nMisclassified: {misclassified}\nMetohd: {Method}\nMisclassification Count: {self.misclassification_count}\nRunID: {self.run_id}\nCandidate: {self.candidate}\n\n")
-                # GurobiFlip_Correct(self.dataset_name, self.store_file_name, self.run_id, n=self.n, tol=self.tol+5e-6, misclassification_count=self.misclassification_count)
+                    if not os.path.exists(f"Error_{self.dataset_name}_gurobi_log_tol.csv"):
+                        f.write("RunID,Candidate,Tol,Misclassified,Method,Misclassification Count\n")
+                    f.write(f"{self.run_id},{self.candidate},{self.tol},{misclassified},{Method},{self.misclassification_count}\n")
 
             print(f"Total misclassified samples: {misclassified}")
             
@@ -246,6 +247,7 @@ class MILP:
         max_min_diff = []
         for s in range(n_samples):
             label_max = int(np.argmax(self.Z_target[s]))
+            label_max_gt = self.labels_gt[s]
             label_min = int(np.argmin(self.Z_target[s]))
             A1_fixed = self.X[s]
             Z = self.gurobi_model.addVars(layer_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z_{s}")
@@ -256,12 +258,12 @@ class MILP:
                 expr += self.b[j] + self.b_offset[j]
                 self.gurobi_model.addConstr(Z[j] == expr)
             for k in range(layer_size):
-                if k != label_max:
-                    max_min_diff.append(Z[label_max] - Z[k])
+                if k != label_max_gt:
+                    max_min_diff.append(Z[label_max_gt] - Z[k])
 
         objective = gp.quicksum(max_min_diff)
         self.gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
-        self.gurobi_model.addConstr(objective <= 1000*n_samples*layer_size, "ObjectiveUpperBound")
+        self.gurobi_model.addConstr(objective <= 10000*n_samples*layer_size, "ObjectiveUpperBound")
         self.gurobi_model.setObjective(objective, GRB.MAXIMIZE)
 
 
