@@ -85,10 +85,12 @@ class MILP:
             self.AddConstraints_MisCls(samples="Any")
         elif Method == "LowerConf":
             self.AddConstraints_LowerConf()
+        elif Method == "HigherConf":
+            self.AddConstraints_LowerConf(optim_direction="maximize")
         elif Method == "Swap":
-            self.AddConstraints_Swap(optim_direction=optimization_direction)
+            self.AddConstraints_Swap(optim_direction="minimize")
         elif Method == "Converge":
-            self.AddConstraints_ConvergeBackToOriginal(optim_direction=optimization_direction)
+            self.AddConstraints_ConvergeBackToOriginal(optim_direction="minimize")
 
 
         self.gurobi_model.optimize()

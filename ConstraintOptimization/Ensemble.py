@@ -156,7 +156,7 @@ if __name__ == "__main__":
     '''
     Run Gurobi Optimization and Evaluate Candidates
     '''
-
+    TotalTime0 = time.time()
     TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
     TM_after_g.log_file = f"Stats_Ensemble/{dataset_name}_nn_run_log.csv"
     
@@ -219,20 +219,7 @@ if __name__ == "__main__":
     for candidate in range(1, total_candidates+1):
         time0 = time.time()
         milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, candidate=candidate, timeLimit=timeLimit)
-
-        if method == "Swap":
-            Gurobi_output = milp_instance.Optimize(Method="Swap", optimization_direction="minimize")
-        elif method == "Converge":
-            Gurobi_output = milp_instance.Optimize(Method="Converge", optimization_direction="minimize")
-        elif method == "LowerConf":
-            Gurobi_output = milp_instance.Optimize(Method="LowerConf")
-        elif method == "MisCls_Correct":
-            Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
-        elif method == "MisCls_Incorrect":
-            Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
-        elif method == "MisCls_Any":
-            Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
-
+        Gurobi_output = milp_instance.Optimize(Method=method, optimization_direction="minimize")
         time1 = time.time()
         
         if Gurobi_output is None:
@@ -260,7 +247,7 @@ if __name__ == "__main__":
         #     TM_after_g.run()
         #     old_path = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth" Need to fix checkpoint path
         #     gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
-            
+        
         #     os.rename(old_path, gurobi_checkpoint_dir)
 
         # with open(TM_after_g.log_file, "a") as f:
@@ -275,13 +262,13 @@ if __name__ == "__main__":
         result = {
             "Candidate": candidate,
             "Checkpoint": gurobi_checkpoint_dir,
+            "Solve_Time": float(time1 - time0),
             "Train_loss": float(train_loss),
             "Train_acc": float(train_acc),
             "Val_loss": float(val_loss),
             "Val_acc": float(val_acc),
             "Test_loss": float(test_loss),
             "Test_acc": float(test_acc),
-            "Solve_Time": float(time1 - time0),
         }
         csv_path = f"Stats_Ensemble/Candidates_{dataset_name}.csv"
         write_header = not os.path.exists(csv_path)
@@ -324,6 +311,7 @@ if __name__ == "__main__":
         "Time_Limit": timeLimit,
         "Method": method,
         "Misclassification_Count": misclassification_count,
+        "Time_Taken": float(time.time() - TotalTime0),
         "Train_loss": float(S1_Train_loss),
         "Train_acc": float(S1_Train_acc),
         "Val_loss": float(S1_Val_loss),
