@@ -14,8 +14,10 @@ import time
 import random
 import numpy as np
 from Utils.TrainModel import TrainModel
-from Utils.GetModelsDatasets import GetDataset, GetModel
+from Utils.GetModelsDatasets import GetDataset, GetModel, GetHparams
 from Utils.RunGurobi import MILP
+
+
 
 @torch.no_grad()
 def ensemble_test_accuracy(models, test_loader, device):
@@ -109,16 +111,7 @@ if __name__ == "__main__":
     top_k = 20
     os.makedirs(f"./checkpoints/{dataset_name}_Candidates/", exist_ok=True)
 
-    if dataset_name == "CIFAR10":
-        BatchSize = 128
-        optimize = "SGD"
-        learningRate = 0.1
-        scheduler_type = "MultiStepLR"
-    else:
-        BatchSize = 64
-        optimize = "Adam"
-        learningRate = 0.01
-        scheduler_type = "CosineAnnealingLR"
+    BatchSize, optimize, learningRate, scheduler_type = GetHparams(dataset_name)
     
     ''' 
     DataLoader and Model 

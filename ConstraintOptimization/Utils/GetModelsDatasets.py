@@ -46,6 +46,44 @@ def GetModel(dataset_name, num_classes=10, device=None, extra_conv_layers=0):
 
     return model_t, model_g
 
+def GetHparams(dataset_name):
+    BatchSize = 128
+    optimize = "SGD"
+    learningRate = 0.1
+    scheduler_type = "CosineAnnealingLR"
+
+    if dataset_name == "CIFAR10":
+        BatchSize = 128
+        optimize = "SGD"
+        learningRate = 0.1
+        scheduler_type = "MultiStepLR"
+
+    elif dataset_name == "SVHN":
+        BatchSize = 128
+        optimize = "SGD"
+        learningRate = 0.1
+        scheduler_type = "CosineAnnealingLR"
+
+    elif dataset_name in ["FashionMNIST", "KMNIST", "EMNIST"]:
+        BatchSize = 128
+        optimize = "AdamW"
+        learningRate = 1e-3
+        scheduler_type = "CosineAnnealingLR"
+
+    elif dataset_name == "USPS":
+        BatchSize = 64
+        optimize = "AdamW"
+        learningRate = 5e-4
+        scheduler_type = "CosineAnnealingLR"
+
+    else:
+        BatchSize = 128
+        optimize = "AdamW"
+        learningRate = 1e-3
+        scheduler_type = "CosineAnnealingLR"
+
+    return BatchSize, optimize, learningRate, scheduler_type
+
 
 def GetDataset(dataset_name, root_dir='./data', device=None, classCount=None):
     if dataset_name == "MNIST":
