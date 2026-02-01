@@ -220,7 +220,8 @@ class MILP:
     
         max_min_diff = []
         for s in range(n_samples):
-            label_max = int(np.argmax(self.Z_target[s]))
+            # label_max = int(np.argmax(self.Z_target[s]))
+            label_max_gt = self.labels_gt[s]
             label_min = int(np.argmin(self.Z_target[s]))
             A1_fixed = self.X[s]
             Z = self.gurobi_model.addVars(layer_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z_{s}")
@@ -231,10 +232,10 @@ class MILP:
                 expr += self.b[j] + self.b_offset[j]
                 self.gurobi_model.addConstr(Z[j] == expr)
             for k in range(layer_size):
-                if k != label_max:
-                    self.gurobi_model.addConstr(Z[label_max] >= Z[k] + self.tol, f"Z2_max_{s}_{k}")
-
-            max_min_diff.append(Z[label_max] - Z[label_min])
+                if k != label_max_gt:
+                    self.gurobi_model.addConstr(Z[label_max_gt] >= Z[k] + self.tol, f"Z2_max_{s}_{k}")
+            if label_min != label_max_gt:
+                max_min_diff.append(Z[label_max_gt] - Z[label_min])
         objective = gp.quicksum(max_min_diff)
         if optim_direction == "minimize":
             self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
