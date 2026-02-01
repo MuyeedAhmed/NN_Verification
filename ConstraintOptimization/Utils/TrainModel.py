@@ -31,9 +31,12 @@ class TrainModel:
         if optimizer_type == "SGD":
             self.optimizer = optim.SGD(self.model.parameters(), lr=self.learning_rate, momentum=0.9, weight_decay=5e-4)
         elif optimizer_type == "Adam":
-            self.optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=5e-4)
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate, weight_decay=5e-4)
+        elif optimizer_type == "AdamW":
+            self.optimizer = optim.AdamW(self.model.parameters(), lr=self.learning_rate, weight_decay=1e-2)
         else:
-            raise ValueError("Unsupported optimizer type. Use 'SGD' or 'Adam'.")
+            raise ValueError("Unsupported optimizer type. Use 'SGD', 'Adam', or 'AdamW'.")
+
         if scheduler_type == "CosineAnnealingLR":
             self.scheduler = CosineAnnealingLR(self.optimizer, T_max=self.num_epochs)
         elif scheduler_type == "MultiStepLR":
