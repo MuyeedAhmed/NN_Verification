@@ -275,7 +275,35 @@ if __name__ == "__main__":
         print(f"[Run {i} cand {candidate}] val_acc={val_acc:.4f} test_acc={test_acc:.4f} time={time1 - time0:.1f}s")
     
     TM_after_g.delete_fc_inputs()
+    if len(results) == 0:
+        print("No candidates were successfully optimized by Gurobi.")
+        summary_results ={
+            "Dataset": dataset_name,
+            "Retrain": retrain,
+            "Noise_Level": noise_level,
+            "N_Samples_Gurobi": n_samples_gurobi,
+            "Time_Limit": timeLimit,
+            "Method": method,
+            "Misclassification_Count": misclassification_count,
+            "Time_Taken": float(time.time() - TotalTime0),
+            "Train_loss": float(S1_Train_loss),
+            "Train_acc": float(S1_Train_acc),
+            "Val_loss": float(S1_Val_loss),
+            "Val_acc": float(S1_Val_acc),
+            "Test_loss": float(S1_Test_loss),
+            "Test_acc": float(S1_Test_acc),
+            "Ensemble_Test_acc": float(-1),
+        }
+        summary_path = "Stats_Ensemble/Summary.csv"
 
+        write_header = not os.path.exists(summary_path)
+        with open(summary_path, "a", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=summary_results.keys())
+            if write_header:
+                writer.writeheader()
+            writer.writerow(summary_results)
+        sys.exit(1)
+    
     results_sorted = sorted(
         results,
         key=lambda r: r["Val_acc"],
@@ -293,8 +321,8 @@ if __name__ == "__main__":
     )
 
     print(f"Ensemble Test Accuracy: {ensemble_acc:.4f}")
-    with open(TM_after_g.log_file, "a") as f:
-        f.write(f"Ensemble of top {top_k} models Test Accuracy: {ensemble_acc:.4f}\n")
+    # with open(TM_after_g.log_file, "a") as f:
+    #     f.write(f"Ensemble of top {top_k} models Test Accuracy: {ensemble_acc:.4f}\n")
     
     summary_results ={
         "Dataset": dataset_name,
