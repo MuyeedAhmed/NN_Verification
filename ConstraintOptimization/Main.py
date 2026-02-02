@@ -14,7 +14,7 @@ import time
 import random
 import numpy as np
 from Utils.TrainModel import TrainModel
-from Utils.GetModelsDatasets import GetDataset, GetModel
+from Utils.GetModelsDatasets import GetDataset, GetModel, GetHparams
 
 
 @torch.no_grad()
@@ -42,13 +42,14 @@ if __name__ == "__main__":
     G_epoch = 100
     
     if len(sys.argv) <= 3:
-        print("Usage: python Main.py <Dataset_Name> <Method> <Save_Checkpoint(Y/N)> <Misclassification_Count> <Misclassification_Type>")
+        print("Usage: python Main.py <Dataset_Name> <Method> <Save_Checkpoint(Y/N)> <Misclassification_Count> <Misclassification_Type> <Run ID>")
         sys.exit(1)
     dataset_name = sys.argv[1]
     method = sys.argv[2]
     save_checkpoint = sys.argv[3] if len(sys.argv) > 3 else "N"
     misclassification_count = int(sys.argv[4]) if len(sys.argv) > 4 else 1
     cmc_type = sys.argv[5] if len(sys.argv) > 5 else "Any"
+    i = int(sys.argv[6]) if len(sys.argv) > 6 else 2
 
     os.makedirs(f"Stats/{method}", exist_ok=True)    
     
@@ -64,20 +65,9 @@ if __name__ == "__main__":
             n_samples_gurobi = 5000
     elif method == "RAF":
         n_samples_gurobi = 1000
-        
-    
-    if dataset_name == "CIFAR10":
-        BatchSize = 128
-        optimize = "SGD"
-        learningRate = 0.1
-        scheduler_type = "MultiStepLR"
-    else:
-        BatchSize = 64
-        optimize = "Adam"
-        learningRate = 0.01
-        scheduler_type = "CosineAnnealingLR"
-    
-    
+            
+    BatchSize, optimize, learningRate, scheduler_type = GetHparams(dataset_name)
+
     train_dataset, test_dataset = GetDataset(dataset_name)
     
     # full_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
@@ -86,8 +76,6 @@ if __name__ == "__main__":
     total_size = train_size + val_size
     total_run = 5
 
-    # for i in range(1, total_run + 1):
-    i = 2
     model_t, model_g = GetModel(dataset_name, device=device)
 
     rng = np.random.default_rng(seed=i*42)
@@ -115,7 +103,6 @@ if __name__ == "__main__":
     ##
     if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
         print(f"Checkpoint for run {i} already exists. Skipping Gurobi edit.")
-        #loop ## continue
     
     results = []
 
@@ -185,8 +172,7 @@ if __name__ == "__main__":
 
     if Gurobi_output is None:
         print("Gurobi did not find a solution.")
-        # loop # continue
-
+        sys.exit(1)
     W_new, b_new = Gurobi_output
     TM_after_g.delete_fc_inputs()
     new_W = torch.tensor(W_new).to(model_g.classifier.weight.device)
@@ -260,11 +246,7 @@ if __name__ == "__main__":
     write_header = not os.path.exists(csv_path)
 
     with open(csv_path, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Dataset","Run","Checkpoint","Method","RAF_Type","Misclassification_Count",
-                                    "S1_Train_loss","S1_Train_acc","S1_Val_loss","S1_Val_acc","S1_Test_loss","S1_Test_acc",
-                                    "S2_Train_loss","S2_Train_acc","S2_Val_loss","S2_Val_acc","S2_Test_loss","S2_Test_acc",
-                                    "S3_Train_loss","S3_Train_acc","S3_Val_loss","S3_Val_acc","S3_Test_loss","S3_Test_acc",
-                                    "Solve_Time"])
+        writer = csv.DictWriter(f, fieldnames=results[0].keys())
         if write_header:
             writer.writeheader()
         for row in results:

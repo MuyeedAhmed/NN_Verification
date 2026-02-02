@@ -15,6 +15,7 @@ import random
 import numpy as np
 from Utils.TrainModel import TrainModel
 from Utils.GetModelsDatasets import GetDataset, GetModel
+from Utils.RunGurobi import MILP
 
 
 @torch.no_grad()
@@ -35,6 +36,18 @@ def evaluate_loader(model, loader, device):
     return loss_sum / total, 100. * correct / total
 
 
+
+def add_relative_weight_noise_(model, rel=0.01, include_bias=False, eps=1e-12):
+    with torch.no_grad():
+        for name, p in model.named_parameters():
+            if not p.requires_grad:
+                continue
+            if (not include_bias) and (name.endswith(".bias") or name == "bias"):
+                continue
+            s = p.std().clamp_min(eps)
+            p.add_(rel * s * torch.randn_like(p))
+
+
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
@@ -42,18 +55,10 @@ if __name__ == "__main__":
     G_epoch = 100
     n_samples_gurobi = 40
 
-
     dataset_name = sys.argv[1]
     method = sys.argv[2]
     misclassification_count = 1
 
-    # os.makedirs(f"Stats/{method}", exist_ok=True)    
-    
-    from Utils.RunGurobi import MILP
-
-        
-        
-    
     if dataset_name == "CIFAR10":
         BatchSize = 128
         optimize = "SGD"
@@ -67,12 +72,10 @@ if __name__ == "__main__":
         
     train_dataset, test_dataset = GetDataset(dataset_name)
 
-    train_size = int(len(train_dataset) * 0.8)
-    val_size = int(len(train_dataset) * 0.2)
+    train_size = int(len(train_dataset) * 0.2)
+    val_size = int(len(train_dataset) * 0.8)
     total_size = train_size + val_size
-    total_run = 5
 
-    # for i in range(1, total_run + 1):
     i = 2
     model_t, model_g = GetModel(dataset_name, device=device)
 
@@ -112,19 +115,33 @@ if __name__ == "__main__":
     print(f"Loaded model for run {i} from checkpoint.")
 
     TM_after_g.save_fc_inputs("Train")
+    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
+    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
+    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
+    
+    TM_after_g.model.eval()
+    add_relative_weight_noise_(TM_after_g.model, rel=0.1, include_bias=True)
+    print("Added small weight noise to the model.")
+
+
+    TM_after_g.save_fc_inputs("Train")
     TM_after_g.save_fc_inputs("Val")
 
     print(f"Saved FC inputs for run {i}.")
 
-    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
+    X_full_edited = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
+    # labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
+    # pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
+    
     X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
     labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
     pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
 
+    
+
     loaded_inputs_gurobi = {
         "X_full": X_full,
+        "X_full_edited": X_full_edited,
         "labels_full": labels_full,
         "pred_full": pred_full,
         "X_val": X_val,
@@ -140,8 +157,7 @@ if __name__ == "__main__":
            np.mean(loaded_inputs_gurobi["pred_val"] == loaded_inputs_gurobi["labels_val"])))
 
     print("Loaded inputs for Gurobi optimization.")
-    # with open(TM_after_g.log_file, "a") as f:
-    #     f.write(f"{method}_{cmc_type}_{misclassification_count},,,,,,,\n")
+    
     time0 = time.time()
 
     milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi)

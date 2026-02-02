@@ -8,7 +8,8 @@ from torch.utils.data import random_split, DataLoader, Subset
 import random
 import numpy as np
 
-from Utils.CNNetworks import ResNet18, NIN_MNIST, NIN_EMNIST, VGG, CNN_USPS, VGG_office31
+from Utils.CNNetworks import ResNet18, Net_SVHN, NIN_MNIST, Net_EMNIST, VGG, Net_USPS, VGG_office31, Net_KMNIST, Net_FashionMNIST
+# from Utils.CNNetworks import ResNet18, Net_SVHN, NIN_MNIST, NIN_EMNIST, VGG, CNN_USPS, VGG_office31
 
 def GetModel(dataset_name, num_classes=10, device=None, extra_conv_layers=0):
     if dataset_name == "MNIST":
@@ -19,23 +20,23 @@ def GetModel(dataset_name, num_classes=10, device=None, extra_conv_layers=0):
         model_g = ResNet18(num_classes=num_classes).to(device)
 
     elif dataset_name == "FashionMNIST":
-        model_t = NIN_MNIST(num_classes=10).to(device)
-        model_g = NIN_MNIST(num_classes=10).to(device)
+        model_t = Net_FashionMNIST(num_classes=10).to(device)
+        model_g = Net_FashionMNIST(num_classes=10).to(device)
     elif dataset_name == "KMNIST":
-        model_t = NIN_MNIST(num_classes=10).to(device)
-        model_g = NIN_MNIST(num_classes=10).to(device)
+        model_t = Net_KMNIST(num_classes=10).to(device)
+        model_g = Net_KMNIST(num_classes=10).to(device)
     elif dataset_name == "EMNIST":
-        model_t = NIN_EMNIST(num_classes=26).to(device)
-        model_g = NIN_EMNIST(num_classes=26).to(device)
+        model_t = Net_EMNIST(num_classes=26).to(device)
+        model_g = Net_EMNIST(num_classes=26).to(device)
     elif dataset_name == "SVHN":
-        model_t = VGG(num_classes=10).to(device)
-        model_g = VGG(num_classes=10).to(device)
+        model_t = Net_SVHN(num_classes=10).to(device)
+        model_g = Net_SVHN(num_classes=10).to(device)
     elif dataset_name == "Food101":
             model_t = VGG(num_classes=10).to(device)
             model_g = VGG(num_classes=10).to(device)
     elif dataset_name == "USPS":
-        model_t = CNN_USPS(num_classes=10).to(device)
-        model_g = CNN_USPS(num_classes=10).to(device)
+        model_t = Net_USPS(num_classes=10).to(device)
+        model_g = Net_USPS(num_classes=10).to(device)
     elif dataset_name == "Caltech101":
         model_t = VGG(num_classes=101).to(device)
         model_g = VGG(num_classes=101).to(device)
@@ -44,6 +45,44 @@ def GetModel(dataset_name, num_classes=10, device=None, extra_conv_layers=0):
         model_g = VGG_office31(num_classes=31).to(device)
 
     return model_t, model_g
+
+def GetHparams(dataset_name):
+    BatchSize = 128
+    optimize = "SGD"
+    learningRate = 0.1
+    scheduler_type = "CosineAnnealingLR"
+
+    if dataset_name == "CIFAR10":
+        BatchSize = 128
+        optimize = "SGD"
+        learningRate = 0.1
+        scheduler_type = "MultiStepLR"
+
+    elif dataset_name == "SVHN":
+        BatchSize = 128
+        optimize = "SGD"
+        learningRate = 0.1
+        scheduler_type = "CosineAnnealingLR"
+
+    elif dataset_name in ["FashionMNIST", "KMNIST", "EMNIST"]:
+        BatchSize = 128
+        optimize = "AdamW"
+        learningRate = 1e-3
+        scheduler_type = "CosineAnnealingLR"
+
+    elif dataset_name == "USPS":
+        BatchSize = 64
+        optimize = "AdamW"
+        learningRate = 5e-4
+        scheduler_type = "CosineAnnealingLR"
+
+    else:
+        BatchSize = 128
+        optimize = "AdamW"
+        learningRate = 1e-3
+        scheduler_type = "CosineAnnealingLR"
+
+    return BatchSize, optimize, learningRate, scheduler_type
 
 
 def GetDataset(dataset_name, root_dir='./data', device=None, classCount=None):

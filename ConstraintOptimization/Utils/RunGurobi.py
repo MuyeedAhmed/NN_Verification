@@ -24,11 +24,14 @@ class MILP:
         self.misclassification_count = misclassification_count
         self.candidate = candidate
         self.X_full, self.labels_full, self.pred_full, self.X_val, self.labels_val, self.pred_val = None, None, None, None, None, None
-
+        self.X_full_edited = None
+        self.AddedNoise = False
         if loaded_inputs is not None:
             self.X_full, self.labels_full, self.pred_full = loaded_inputs['X_full'], loaded_inputs['labels_full'], loaded_inputs['pred_full'] 
             self.X_val, self.labels_val, self.pred_val = loaded_inputs['X_val'], loaded_inputs['labels_val'], loaded_inputs['pred_val']
-        
+            self.X_full_edited = loaded_inputs['X_full_edited'] if 'X_full_edited' in loaded_inputs else None
+        if self.X_full_edited is not None:
+            self.AddedNoise = True
         self.gurobi_model = gp.Model()
         self.gurobi_model.setParam('TimeLimit', timeLimit)
 
@@ -39,20 +42,28 @@ class MILP:
             self.pred_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_train.pt").numpy()
         X_full_size = self.X_full.shape[0]
         if self.n == -1:
-            self.X = self.X_full
+            self.X_org = self.X_full
+            if self.AddedNoise:
+                self.X = self.X_full_edited
+            else:
+                self.X = self.X_full
             self.labels_gt = self.labels_full
             self.pred_checkpoint = self.pred_full
         else:
             np.random.seed(self.candidate*42)
             idx = np.random.choice(X_full_size, size=self.n, replace=False)
-            self.X = self.X_full[idx]
+            self.X_org = self.X_full[idx]
+            if self.AddedNoise:
+                self.X = self.X_full_edited[idx]
+            else:
+                self.X = self.X_full[idx]
             self.labels_gt = self.labels_full[idx]
             self.pred_checkpoint = self.pred_full[idx]
 
         self.W = torch.load(f"checkpoints/{self.dataset_name}/Run{self.run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
         self.b = torch.load(f"checkpoints/{self.dataset_name}/Run{self.run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()
 
-        self.Z_target = self.X @ self.W.T + self.b
+        self.Z_target = self.X_org @ self.W.T + self.b
     
     def PrintShapes(self):
         pred_target = np.argmax(self.Z_target, axis=1)
@@ -82,9 +93,12 @@ class MILP:
             self.AddConstraints_MisCls(samples="Any")
         elif Method == "LowerConf":
             self.AddConstraints_LowerConf()
+        elif Method == "HigherConf":
+            self.AddConstraints_LowerConf(optim_direction="maximize")
         elif Method == "Swap":
-            print("Using Swap Method")
-            self.AddConstraints_Swap(optim_direction=optimization_direction)
+            self.AddConstraints_Swap(optim_direction="minimize")
+        elif Method == "Converge":
+            self.AddConstraints_ConvergeBackToOriginal(optim_direction="minimize")
 
 
         self.gurobi_model.optimize()
@@ -96,19 +110,22 @@ class MILP:
             W_new = (self.W + W_off)
             b_new = (self.b + b_off)
             
-            Z2_pred_gurobi = self.X @ W_new.T + b_new
+            Z2_pred_gurobi = self.X_org @ W_new.T + b_new
             predictions_gurobi = np.argmax(Z2_pred_gurobi, axis=1)
-            print("Ground Truth Labels:\n", self.labels_gt)
-            print("Original Predictions:\n", self.pred_checkpoint)
-            print("Gurobi Predictions:\n", predictions_gurobi)
+
+            # print("Old wieghts with noise added X\n", np.argmax(self.X @ self.W.T + self.b, axis=1))
+            # print("Ground Truth Labels:\n", self.labels_gt)
+            # print("Original Predictions:\n", self.pred_checkpoint)
+            # print("Gurobi Predictions:\n", predictions_gurobi)
             misclassified_mask = predictions_gurobi != self.pred_checkpoint
             misclassified = np.sum(misclassified_mask)
             accuracy_gurobi = np.sum(predictions_gurobi == self.labels_gt) / len(self.labels_gt) * 100
             
             if misclassified != self.misclassification_count:
                 with open(f"Error_{self.dataset_name}_gurobi_log_tol.csv", "a") as f:
-                    f.write(f"Tol:{self.tol}\nMisclassified: {misclassified}\nMetohd: {Method}\nMisclassification Count: {self.misclassification_count}\nRunID: {self.run_id}\nCandidate: {self.candidate}\n\n")
-                # GurobiFlip_Correct(self.dataset_name, self.store_file_name, self.run_id, n=self.n, tol=self.tol+5e-6, misclassification_count=self.misclassification_count)
+                    if not os.path.exists(f"Error_{self.dataset_name}_gurobi_log_tol.csv"):
+                        f.write("RunID,Candidate,Tol,Misclassified,Method,Misclassification Count\n")
+                    f.write(f"{self.run_id},{self.candidate},{self.tol},{misclassified},{Method},{self.misclassification_count}\n")
 
             print(f"Total misclassified samples: {misclassified}")
             
@@ -204,7 +221,7 @@ class MILP:
         self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
         self.gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
         
-    def AddConstraints_LowerConf(self):
+    def AddConstraints_LowerConf(self, optim_direction = "minimize"):
         n_samples = len(self.X)
         l1_size = self.W.shape[1]
         layer_size = self.W.shape[0]
@@ -212,6 +229,7 @@ class MILP:
         max_min_diff = []
         for s in range(n_samples):
             label_max = int(np.argmax(self.Z_target[s]))
+            label_max_gt = self.labels_gt[s]
             label_min = int(np.argmin(self.Z_target[s]))
             A1_fixed = self.X[s]
             Z = self.gurobi_model.addVars(layer_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z_{s}")
@@ -224,10 +242,37 @@ class MILP:
             for k in range(layer_size):
                 if k != label_max:
                     self.gurobi_model.addConstr(Z[label_max] >= Z[k] + self.tol, f"Z2_max_{s}_{k}")
-
             max_min_diff.append(Z[label_max] - Z[label_min])
         objective = gp.quicksum(max_min_diff)
         self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
+
+    def AddConstraints_ConvergeBackToOriginal(self, optim_direction = "minimize"):
+        n_samples = len(self.X)
+        l1_size = self.W.shape[1]
+        layer_size = self.W.shape[0]
+    
+        max_min_diff = []
+        for s in range(n_samples):
+            label_max = int(np.argmax(self.Z_target[s]))
+            label_max_gt = self.labels_gt[s]
+            label_min = int(np.argmin(self.Z_target[s]))
+            A1_fixed = self.X[s]
+            Z = self.gurobi_model.addVars(layer_size, lb=-GRB.INFINITY, ub=GRB.INFINITY, name=f"Z_{s}")
+            for j in range(layer_size):
+                expr = gp.LinExpr()
+                for i in range(l1_size):
+                    expr += (self.W[j, i] + self.W_offset[j, i]) * A1_fixed[i]
+                expr += self.b[j] + self.b_offset[j]
+                self.gurobi_model.addConstr(Z[j] == expr)
+            for k in range(layer_size):
+                if k != label_max_gt:
+                    max_min_diff.append(Z[label_max_gt] - Z[k])
+
+        objective = gp.quicksum(max_min_diff)
+        self.gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
+        self.gurobi_model.addConstr(objective <= 10000*n_samples*layer_size, "ObjectiveUpperBound")
+        self.gurobi_model.setObjective(objective, GRB.MAXIMIZE)
+
 
     def AddConstraints_Swap(self, optim_direction = "minimize"):
         n_samples = len(self.X)

@@ -14,8 +14,10 @@ import time
 import random
 import numpy as np
 from Utils.TrainModel import TrainModel
-from Utils.GetModelsDatasets import GetDataset, GetModel
+from Utils.GetModelsDatasets import GetDataset, GetModel, GetHparams
 from Utils.RunGurobi import MILP
+
+
 
 @torch.no_grad()
 def ensemble_test_accuracy(models, test_loader, device):
@@ -54,6 +56,15 @@ def load_models(checkpoint_paths, dataset_name, device):
     return models
 
 
+def add_relative_weight_noise_(model, rel=0.01, include_bias=False, eps=1e-12):
+    with torch.no_grad():
+        for name, p in model.named_parameters():
+            if not p.requires_grad:
+                continue
+            if (not include_bias) and (name.endswith(".bias") or name == "bias"):
+                continue
+            s = p.std().clamp_min(eps)
+            p.add_(rel * s * torch.randn_like(p))
 
 @torch.no_grad()
 def evaluate_loader(model, loader, device):
@@ -75,45 +86,42 @@ def evaluate_loader(model, loader, device):
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
+    os.makedirs(f"Stats_Ensemble/", exist_ok=True)
+    ''' 
+    Initialize parameters 
+    '''
     initEpoch = 300
     G_epoch = 50
     
-    # misclassification_counts = [1, 5, 10, 20]
-    top_k = 10
-    total_candidates = 15
-    n_samples_gurobi = 1000
-    timeLimit = 600.0
-    misclassification_count = 10
+    # total_candidates = 30
 
     if len(sys.argv) < 3:
-        print("Usage: python Ensemble.py <DatasetName> <Method> [<Retrain Y/N>]")
+        print("Usage: python Ensemble.py <DatasetName> <Method> [<Retrain Y/N>] [<Misclassification Count>] [<N Samples Gurobi>] [<Time Limit>] [Noise Level] [Total Candidates] [Run ID]")
         sys.exit(1)
     dataset_name = sys.argv[1]
     method = sys.argv[2]
-    retrain = sys.argv[3] if len(sys.argv) > 3 else "N"        
+    retrain = sys.argv[3] if len(sys.argv) > 3 else "N"
+    misclassification_count = int(sys.argv[4]) if len(sys.argv) > 4 else 10
+    n_samples_gurobi = int(sys.argv[5]) if len(sys.argv) > 5 else 1000
+    timeLimit = float(sys.argv[6]) if len(sys.argv) > 6 else 600.0
+    noise_level = float(sys.argv[7]) if len(sys.argv) > 7 else 0.1
+    total_candidates = int(sys.argv[8]) if len(sys.argv) > 8 else total_candidates
+    i = int(sys.argv[9]) if len(sys.argv) > 9 else 2
 
-    os.makedirs(f"Stats_Ensemble/", exist_ok=True)
+    top_k = 20
+    os.makedirs(f"./checkpoints/{dataset_name}_Candidates/", exist_ok=True)
 
+    BatchSize, optimize, learningRate, scheduler_type = GetHparams(dataset_name)
     
-    if dataset_name == "CIFAR10":
-        BatchSize = 128
-        optimize = "SGD"
-        learningRate = 0.1
-        scheduler_type = "MultiStepLR"
-    else:
-        BatchSize = 64
-        optimize = "Adam"
-        learningRate = 0.01
-        scheduler_type = "CosineAnnealingLR"
-    
-    
+    ''' 
+    DataLoader and Model 
+    '''
     train_dataset, test_dataset = GetDataset(dataset_name)
 
     train_size = int(len(train_dataset) * 0.8)
     val_size = int(len(train_dataset) * 0.2)
     total_size = train_size + val_size
 
-    i = 2
     model_t, model_g = GetModel(dataset_name, device=device)
 
     rng = np.random.default_rng(seed=i*42)
@@ -129,15 +137,19 @@ if __name__ == "__main__":
     val_loader = DataLoader(val_subset, batch_size=BatchSize, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
     
+    '''
+    Run NN Training
+    '''
     checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
-
     if os.path.exists(checkpoint_dir) == False:
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
         TM.log_file = f"Stats_Ensemble/{dataset_name}_nn_run_log.csv"
         TM.run()
 
-    results = []
-
+    '''
+    Run Gurobi Optimization and Evaluate Candidates
+    '''
+    TotalTime0 = time.time()
     TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
     TM_after_g.log_file = f"Stats_Ensemble/{dataset_name}_nn_run_log.csv"
     
@@ -151,90 +163,56 @@ if __name__ == "__main__":
     TM_after_g.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
     print(f"Loaded model for run {i} from checkpoint.")
 
+    S1_Train_loss, S1_Train_acc = TM_after_g.evaluate("Train")
+    S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
+    S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+
+    TM_after_g.save_fc_inputs("Train")
+    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
+    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
+    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
+    
+    # Add small weight noise
+    TM_after_g.model.eval()
+    add_relative_weight_noise_(TM_after_g.model, rel=noise_level, include_bias=True)
+    print("Added small weight noise to the model.")
+
+
+    NoiseAdded_Train_loss, NoiseAdded_Train_acc = TM_after_g.evaluate("Train")
+    NoiseAdded_Val_loss, NoiseAdded_Val_acc = TM_after_g.evaluate("Val")
+    NoiseAdded_Test_loss, NoiseAdded_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+    print(f"LOGG:\n After noise - Train Acc: {NoiseAdded_Train_acc:.4f}, Val Acc: {NoiseAdded_Val_acc:.4f}, Test Acc: {NoiseAdded_Test_acc:.4f}")
+
     TM_after_g.save_fc_inputs("Train")
     TM_after_g.save_fc_inputs("Val")
 
     print(f"Saved FC inputs for run {i}.")
 
-    convertVal = True
-    if convertVal:
-        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
 
-        loaded_inputs_gurobi = {
-            "X_full": X_val,
-            "labels_full": labels_val,
-            "pred_full": pred_val,
-            "X_val": X_val,
-            "labels_val": labels_val,
-            "pred_val": pred_val,
-        }
-    else:
-        X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-        labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-        pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
-        X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-        labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-        pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
+    X_full_edited = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
+    # labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
+    # pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
+    X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
+    labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
+    pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
 
-        loaded_inputs_gurobi = {
-            "X_full": X_full,
-            "labels_full": labels_full,
-            "pred_full": pred_full,
-            "X_val": X_val,
-            "labels_val": labels_val,
-            "pred_val": pred_val,
-        }
+    loaded_inputs_gurobi = {
+        "X_full": X_full,
+        "X_full_edited": X_full_edited,
+        "labels_full": labels_full,
+        "pred_full": pred_full,
+        "X_val": X_val,
+        "labels_val": labels_val,
+        "pred_val": pred_val,
+    }
 
     print("Loaded inputs for Gurobi optimization.")
-    
-    S1_Train_loss, S1_Train_acc = TM_after_g.evaluate("Train")
-    S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
-    S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
-    
-    results.append({
-        "Dataset": dataset_name,
-        "Retrain": retrain,
-        "Candidate": -1,
-        "Checkpoint": checkpoint_dir,
-        "Train_loss": float(S1_Train_loss),
-        "Train_acc": float(S1_Train_acc),
-        "Val_loss": float(S1_Val_loss),
-        "Val_acc": float(S1_Val_acc),
-        "Test_loss": float(S1_Test_loss),
-        "Test_acc": float(S1_Test_acc),
-        "Solve_Time": -1.0,
-    })
-    csv_path = "Stats_Ensemble/Summary.csv"
-    write_header = not os.path.exists(csv_path)
-    with open(csv_path, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Dataset","Retrain","Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
-        if write_header:
-            writer.writeheader()
-        for row in results:
-            writer.writerow(row)
-        
+
+    results = []        
     for candidate in range(1, total_candidates+1):
         time0 = time.time()
-        if method == "Swap":
-            milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, candidate=candidate, timeLimit=timeLimit)
-            Gurobi_output = milp_instance.Optimize(Method="Swap", optimization_direction="minimize")
-        elif method == "All":
-            misclassification_count = misclassification_counts[candidate % len(misclassification_counts)]
-            if candidate % 3 == 0:
-                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-                Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
-            elif candidate % 3 == 1:
-                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-                Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
-            elif candidate % 3 == 2:
-                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-                Gurobi_output = milp_instance.Optimize(Method="MisCls_Any")
-            else:
-                milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=-1, tol=1e-5, candidate=candidate, loaded_inputs=loaded_inputs_gurobi, timeLimit=timeLimit)
-                Gurobi_output = milp_instance.Optimize(Method="LowerConf")
-
+        milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, candidate=candidate, timeLimit=timeLimit)
+        Gurobi_output = milp_instance.Optimize(Method=method, optimization_direction="minimize")
         time1 = time.time()
         
         if Gurobi_output is None:
@@ -251,19 +229,19 @@ if __name__ == "__main__":
             TM_after_g.model.classifier.bias.copy_(new_b)
         
         if retrain == "N":
-            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
+            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}_Candidates/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
             torch.save({
                 'epoch': TM_after_g.num_epochs,
                 'model_state_dict': TM_after_g.model.state_dict(),
                 'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
                 'scheduler_state_dict': TM_after_g.scheduler.state_dict()
             }, gurobi_checkpoint_dir)
-        else:
-            TM_after_g.run()
-            old_path = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"
-            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
-            
-            os.rename(old_path, gurobi_checkpoint_dir)
+        # else:
+        #     TM_after_g.run()
+        #     old_path = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth" Need to fix checkpoint path
+        #     gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
+        
+        #     os.rename(old_path, gurobi_checkpoint_dir)
 
         # with open(TM_after_g.log_file, "a") as f:
         #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")
@@ -274,27 +252,29 @@ if __name__ == "__main__":
         val_loss, val_acc = TM_after_g.evaluate("Val")
         test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
 
-        results.append({
-            "Dataset": dataset_name,
+        result = {
             "Candidate": candidate,
-            "Retrain": retrain,
             "Checkpoint": gurobi_checkpoint_dir,
+            "Solve_Time": float(time1 - time0),
             "Train_loss": float(train_loss),
             "Train_acc": float(train_acc),
             "Val_loss": float(val_loss),
             "Val_acc": float(val_acc),
             "Test_loss": float(test_loss),
             "Test_acc": float(test_acc),
-            "Solve_Time": float(time1 - time0),
-        })
+        }
+        csv_path = f"Stats_Ensemble/Candidates_{dataset_name}.csv"
+        write_header = not os.path.exists(csv_path)
+        with open(csv_path, "a", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=result.keys())
+            if write_header:
+                writer.writeheader()
+            writer.writerow(result)
+        
+        results.append(result)
         print(f"[Run {i} cand {candidate}] val_acc={val_acc:.4f} test_acc={test_acc:.4f} time={time1 - time0:.1f}s")
     
     TM_after_g.delete_fc_inputs()
-    
-    with open(csv_path, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Dataset","Retrain","Candidate","Checkpoint","Train_loss","Train_acc","Val_loss","Val_acc","Test_loss","Test_acc","Solve_Time",])
-        for row in results:
-            writer.writerow(row)
 
     results_sorted = sorted(
         results,
@@ -315,5 +295,48 @@ if __name__ == "__main__":
     print(f"Ensemble Test Accuracy: {ensemble_acc:.4f}")
     with open(TM_after_g.log_file, "a") as f:
         f.write(f"Ensemble of top {top_k} models Test Accuracy: {ensemble_acc:.4f}\n")
-    with open(csv_path, "a", newline="") as f:
-        f.write(f"{dataset_name},{retrain},Ensemble,,,,,,,{ensemble_acc:.4f},\n")
+    
+    summary_results ={
+        "Dataset": dataset_name,
+        "Retrain": retrain,
+        "Noise_Level": noise_level,
+        "N_Samples_Gurobi": n_samples_gurobi,
+        "Time_Limit": timeLimit,
+        "Method": method,
+        "Misclassification_Count": misclassification_count,
+        "Time_Taken": float(time.time() - TotalTime0),
+        "Train_loss": float(S1_Train_loss),
+        "Train_acc": float(S1_Train_acc),
+        "Val_loss": float(S1_Val_loss),
+        "Val_acc": float(S1_Val_acc),
+        "Test_loss": float(S1_Test_loss),
+        "Test_acc": float(S1_Test_acc),
+        "Ensemble_Test_acc": float(ensemble_acc),
+    }
+    summary_path = "Stats_Ensemble/Summary.csv"
+
+    write_header = not os.path.exists(summary_path)
+    with open(summary_path, "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=summary_results.keys())
+        if write_header:
+            writer.writeheader()
+        writer.writerow(summary_results)
+
+    noiseed_results ={
+        "Dataset": dataset_name,
+        "Noise_Level": noise_level,
+        "Train_loss": float(NoiseAdded_Train_loss),
+        "Train_acc": float(NoiseAdded_Train_acc),
+        "Val_loss": float(NoiseAdded_Val_loss),
+        "Val_acc": float(NoiseAdded_Val_acc),
+        "Test_loss": float(NoiseAdded_Test_loss),
+        "Test_acc": float(NoiseAdded_Test_acc),
+    }
+    noise_summary_path = "Stats_Ensemble/NoiseAdded_Summary.csv"
+    write_header = not os.path.exists(noise_summary_path)
+    with open(noise_summary_path, "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=noiseed_results.keys())
+        if write_header:
+            writer.writeheader()
+        writer.writerow(noiseed_results)
+
