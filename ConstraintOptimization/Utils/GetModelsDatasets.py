@@ -76,7 +76,7 @@ def GetHparams(dataset_name):
         learningRate = 5e-4
         scheduler_type = "CosineAnnealingLR"
     
-    elif dataset_name == "Office31":
+    elif dataset_name == "office31":
         BatchSize = 32
         optimize = "SGD"
         learningRate = 0.01
@@ -88,16 +88,16 @@ def GetHparams(dataset_name):
         learningRate = 0.05
         scheduler_type = "CosineAnnealingLR"
 
-    else:
-        BatchSize = 128
-        optimize = "AdamW"
-        learningRate = 1e-3
-        scheduler_type = "CosineAnnealingLR"
-
     elif dataset_name == "Caltech101":
         BatchSize = 32
         optimize = "SGD"
         learningRate = 0.01
+        scheduler_type = "CosineAnnealingLR"
+
+    else:
+        BatchSize = 128
+        optimize = "AdamW"
+        learningRate = 1e-3
         scheduler_type = "CosineAnnealingLR"
 
 
