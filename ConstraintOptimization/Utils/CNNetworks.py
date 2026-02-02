@@ -5,6 +5,7 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from tqdm import tqdm
+from torchvision import models
 
 import torch.nn.functional as F
 
@@ -239,6 +240,36 @@ class WideResNet(nn.Module):
         return self.fc(feats)
 
 
+class ResNet50_BottleneckHead(nn.Module):
+    def __init__(self, num_classes: int, bottleneck_dim: int = 256, pretrained: bool = True):
+        super().__init__()
+
+        weights = models.ResNet50_Weights.DEFAULT if pretrained else None
+        self.backbone = models.resnet50(weights=weights)
+
+        backbone_dim = self.backbone.fc.in_features  # 2048
+        self.backbone.fc = nn.Identity()
+
+        self.fc_hidden = nn.Sequential(
+            nn.Linear(backbone_dim, bottleneck_dim),
+            nn.BatchNorm1d(bottleneck_dim),
+            nn.ReLU(inplace=True),
+        )
+
+        self.classifier = nn.Linear(bottleneck_dim, num_classes)
+
+    def _features(self, x):
+        x = self.backbone(x)
+        x = self.fc_hidden(x)
+        return x
+
+    def forward(self, x, extract_fc_input: bool = False):
+        feats = self._features(x)
+        if extract_fc_input:
+            return feats.clone().detach(), None
+        return self.classifier(feats)
+
+
 def Net_SVHN(num_classes: int = 10):
     return WideResNet(num_classes=num_classes, in_ch=3, depth=28, widen_factor=10, drop_rate=0.0)
 
@@ -253,6 +284,19 @@ def Net_FashionMNIST(num_classes: int = 10):
 
 def Net_USPS(num_classes: int = 10):
     return ResNet18_Small(num_classes=num_classes, in_ch=1)
+
+def Net_Office31(pretrained: bool = True):
+    return ResNet50_BottleneckHead(num_classes=31, pretrained=pretrained)
+
+def Net_Food10(pretrained: bool = True):
+    return ResNet50_BottleneckHead(num_classes=10, pretrained=pretrained)
+
+def Net_Food101(pretrained: bool = True):
+    return ResNet50_BottleneckHead(num_classes=101, pretrained=pretrained)
+
+def Net_Caltech101(num_classes: int = 101, pretrained: bool = True, bottleneck_dim: int = 256):
+    return ResNet50_BottleneckHead(num_classes=num_classes, bottleneck_dim=bottleneck_dim, pretrained=pretrained)
+
 
 class NIN_MNIST(nn.Module):
     def __init__(self, num_classes=10, output_layer_size=16):

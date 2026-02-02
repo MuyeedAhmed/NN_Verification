@@ -8,7 +8,7 @@ from torch.utils.data import random_split, DataLoader, Subset
 import random
 import numpy as np
 
-from Utils.CNNetworks import ResNet18, Net_SVHN, NIN_MNIST, Net_EMNIST, VGG, Net_USPS, VGG_office31, Net_KMNIST, Net_FashionMNIST
+from Utils.CNNetworks import ResNet18, Net_SVHN, NIN_MNIST, Net_EMNIST, VGG, Net_USPS, Net_Office31, Net_Food10, Net_Food101, Net_KMNIST, Net_FashionMNIST
 # from Utils.CNNetworks import ResNet18, Net_SVHN, NIN_MNIST, NIN_EMNIST, VGG, CNN_USPS, VGG_office31
 
 def GetModel(dataset_name, num_classes=10, device=None, extra_conv_layers=0):
@@ -32,8 +32,8 @@ def GetModel(dataset_name, num_classes=10, device=None, extra_conv_layers=0):
         model_t = Net_SVHN(num_classes=10).to(device)
         model_g = Net_SVHN(num_classes=10).to(device)
     elif dataset_name == "Food101":
-            model_t = VGG(num_classes=10).to(device)
-            model_g = VGG(num_classes=10).to(device)
+            model_t = Net_Food10(num_classes=10).to(device)
+            model_g = Net_Food10(num_classes=10).to(device)
     elif dataset_name == "USPS":
         model_t = Net_USPS(num_classes=10).to(device)
         model_g = Net_USPS(num_classes=10).to(device)
@@ -41,8 +41,8 @@ def GetModel(dataset_name, num_classes=10, device=None, extra_conv_layers=0):
         model_t = VGG(num_classes=101).to(device)
         model_g = VGG(num_classes=101).to(device)
     elif dataset_name == "office31":
-        model_t = VGG_office31(num_classes=31).to(device)
-        model_g = VGG_office31(num_classes=31).to(device)
+        model_t = Net_Office31(num_classes=31).to(device)
+        model_g = Net_Office31(num_classes=31).to(device)
 
     return model_t, model_g
 
@@ -75,12 +75,31 @@ def GetHparams(dataset_name):
         optimize = "AdamW"
         learningRate = 5e-4
         scheduler_type = "CosineAnnealingLR"
+    
+    elif dataset_name == "Office31":
+        BatchSize = 32
+        optimize = "SGD"
+        learningRate = 0.01
+        scheduler_type = "CosineAnnealingLR"
+    
+    elif dataset_name == "Food101":
+        BatchSize = 64
+        optimize = "SGD"
+        learningRate = 0.05
+        scheduler_type = "CosineAnnealingLR"
 
     else:
         BatchSize = 128
         optimize = "AdamW"
         learningRate = 1e-3
         scheduler_type = "CosineAnnealingLR"
+
+    elif dataset_name == "Caltech101":
+        BatchSize = 32
+        optimize = "SGD"
+        learningRate = 0.01
+        scheduler_type = "CosineAnnealingLR"
+
 
     return BatchSize, optimize, learningRate, scheduler_type
 
