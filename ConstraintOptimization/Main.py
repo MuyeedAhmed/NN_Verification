@@ -51,7 +51,8 @@ if __name__ == "__main__":
     cmc_type = sys.argv[5] if len(sys.argv) > 5 else "Any"
     i = int(sys.argv[6]) if len(sys.argv) > 6 else 2
 
-    os.makedirs(f"Stats/{method}", exist_ok=True)    
+    # os.makedirs(f"Stats/{method}", exist_ok=True)
+    os.makedirs(f"./checkpoints/{dataset_name}_CO", exist_ok=True)
     
     if save_checkpoint == "N":
         from Utils.RunGurobi import MILP
@@ -74,7 +75,6 @@ if __name__ == "__main__":
     train_size = int(len(train_dataset) * 0.8)
     val_size = int(len(train_dataset) * 0.2)
     total_size = train_size + val_size
-    total_run = 5
 
     model_t, model_g = GetModel(dataset_name, device=device)
 
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
     
     checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
-    gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{cmc_type}_{misclassification_count}.pth"
+    gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}_CO/Run{i}_checkpoint_{method}_{cmc_type}_{misclassification_count}.pth"
 
     if os.path.exists(checkpoint_dir) == False:
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
@@ -100,9 +100,9 @@ if __name__ == "__main__":
     
     if save_checkpoint == "Y":
         sys.exit()
-    ##
-    if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
-        print(f"Checkpoint for run {i} already exists. Skipping Gurobi edit.")
+
+    # if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
+    #     print(f"Checkpoint for run {i} already exists. Skipping Gurobi edit.")
     
     results = []
 
