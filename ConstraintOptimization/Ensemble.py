@@ -143,7 +143,7 @@ if __name__ == "__main__":
     checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
     if os.path.exists(checkpoint_dir) == False:
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
-        TM.log_file = f"Stats_Ensemble/{dataset_name}_nn_run_log.csv"
+        TM.log_file = f"NNRunLog/{dataset_name}_Ensemble.csv"
         TM.run()
 
     '''
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     '''
     TotalTime0 = time.time()
     TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
-    TM_after_g.log_file = f"Stats_Ensemble/{dataset_name}_nn_run_log.csv"
+    TM_after_g.log_file = f"NNRunLog/{dataset_name}_Ensemble.csv"
     
     if device.type == 'cuda':
         checkpoint = torch.load(checkpoint_dir)

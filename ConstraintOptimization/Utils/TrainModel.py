@@ -43,7 +43,8 @@ class TrainModel:
             self.scheduler = optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[int(0.5*self.num_epochs), int(0.75*self.num_epochs)], gamma=0.1)
        
         self.criterion = nn.CrossEntropyLoss()
-        self.log_file = f"Stats/{self.dataset_name}_nn_run_log.csv"
+        os.makedirs("NNRunLog", exist_ok=True)
+        self.log_file = f"NNRunLog/{self.dataset_name}.csv"
         
         if start_experiment == True:
             with open(self.log_file, "w") as f:
@@ -160,7 +161,10 @@ class TrainModel:
         return accuracy
 
     def save_model(self, loss, save_suffix=""):
-        checkpoint_dir = f"./checkpoints/{self.dataset_name}"
+        if save_suffix == "" or save_suffix == "_Resume":
+            checkpoint_dir = f"./checkpoints/{self.dataset_name}"
+        else:
+            checkpoint_dir = f"./checkpoints/{self.dataset_name}_CO"
         os.makedirs(checkpoint_dir, exist_ok=True)
         
         # torch.save(self.model.fc_hidden.weight.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_fc_hidden_weight{save_suffix}.pt")
