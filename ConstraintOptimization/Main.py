@@ -39,7 +39,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using device: {device}')
     initEpoch = 300
-    G_epoch = 2
+    G_epoch = 100
     
     if len(sys.argv) <= 3:
         print("Usage: python Main.py <Dataset_Name> <Method> <Save_Checkpoint(Y/N)> <Misclassification_Count> <Misclassification_Type> <Run ID>")
