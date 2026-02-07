@@ -60,7 +60,7 @@ if __name__ == "__main__":
     if save_checkpoint == "N":
         from Utils.RunGurobi import MILP
 
-    if method == "RAB":
+    if method == "RAB" or method == "RAB2":
         n_samples_gurobi = -1
         G_epoch = 0
         misclassification_count = 0
