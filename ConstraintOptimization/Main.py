@@ -157,6 +157,8 @@ if __name__ == "__main__":
     milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi)
     if method == "RAB":
         Gurobi_output = milp_instance.Optimize(Method="LowerConf")
+    elif method == "RAB2":
+        Gurobi_output = milp_instance.Optimize(Method="MaxPerturbation")
     elif method == "RAF":
         if cmc_type == "Correct":
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")

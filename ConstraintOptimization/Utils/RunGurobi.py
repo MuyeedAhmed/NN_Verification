@@ -93,8 +93,10 @@ class MILP:
             self.AddConstraints_MisCls(samples="Any")
         elif Method == "LowerConf":
             self.AddConstraints_LowerConf()
-        elif Method == "HigherConf":
-            self.AddConstraints_LowerConf(optim_direction="maximize")
+        # elif Method == "HigherConf":
+        #     self.AddConstraints_LowerConf(optim_direction="maximize")
+        elif Method == "MaxPerturbation":
+            self.AddConstraints_LowerConf(rab_type=2)
         elif Method == "Swap":
             self.AddConstraints_Swap(optim_direction="minimize")
         elif Method == "Converge":
@@ -221,7 +223,7 @@ class MILP:
         self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
         self.gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
         
-    def AddConstraints_LowerConf(self, optim_direction = "minimize"):
+    def AddConstraints_LowerConf(self, optim_direction = "minimize", rab_type = 1):
         n_samples = len(self.X)
         l1_size = self.W.shape[1]
         layer_size = self.W.shape[0]
@@ -243,8 +245,26 @@ class MILP:
                 if k != label_max:
                     self.gurobi_model.addConstr(Z[label_max] >= Z[k] + self.tol, f"Z2_max_{s}_{k}")
             max_min_diff.append(Z[label_max] - Z[label_min])
-        objective = gp.quicksum(max_min_diff)
-        self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
+        if rab_type == 1:
+            objective = gp.quicksum(max_min_diff)
+            self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
+        elif rab_type == 2:
+            abs_W = self.gurobi_model.addVars(*self.W.shape, lb=0, name="abs_W")
+            abs_b = self.gurobi_model.addVars(layer_size, lb=0, name="abs_b")
+
+            for i in range(self.W.shape[0]):
+                for j in range(self.W.shape[1]):
+                    self.gurobi_model.addConstr(abs_W[i, j] >= self.W_offset[i, j])
+                    self.gurobi_model.addConstr(abs_W[i, j] >= -self.W_offset[i, j])
+            for i in range(layer_size):
+                self.gurobi_model.addConstr(abs_b[i] >= self.b_offset[i])
+                self.gurobi_model.addConstr(abs_b[i] >= -self.b_offset[i])
+            
+            objective = (
+                gp.quicksum(abs_W[i, j] for i in range(self.W.shape[0]) for j in range(self.W.shape[1])) +
+                gp.quicksum(abs_b[i] for i in range(layer_size))
+            )
+            self.gurobi_model.setObjective(objective, GRB.MAXIMIZE)
 
     def AddConstraints_ConvergeBackToOriginal(self, optim_direction = "minimize"):
         n_samples = len(self.X)
