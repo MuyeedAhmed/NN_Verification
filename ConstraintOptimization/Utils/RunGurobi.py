@@ -254,11 +254,13 @@ class MILP:
 
             for i in range(self.W.shape[0]):
                 for j in range(self.W.shape[1]):
-                    self.gurobi_model.addConstr(abs_W[i, j] >= self.W_offset[i, j])
-                    self.gurobi_model.addConstr(abs_W[i, j] >= -self.W_offset[i, j])
+                    # self.gurobi_model.addConstr(abs_W[i, j] >= self.W_offset[i, j])
+                    # self.gurobi_model.addConstr(abs_W[i, j] >= -self.W_offset[i, j])
+                    self.gurobi_model.addGenConstrAbs(abs_W[i,j], self.W_offset[i,j], name=f"absW_{i}_{j}")
             for i in range(layer_size):
-                self.gurobi_model.addConstr(abs_b[i] >= self.b_offset[i])
-                self.gurobi_model.addConstr(abs_b[i] >= -self.b_offset[i])
+                # self.gurobi_model.addConstr(abs_b[i] >= self.b_offset[i])
+                # self.gurobi_model.addConstr(abs_b[i] >= -self.b_offset[i])
+                self.gurobi_model.addGenConstrAbs(abs_b[i], self.b_offset[i], name=f"absb_{i}")
             
             objective = (
                 gp.quicksum(abs_W[i, j] for i in range(self.W.shape[0]) for j in range(self.W.shape[1])) +
