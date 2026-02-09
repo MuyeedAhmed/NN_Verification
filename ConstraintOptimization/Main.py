@@ -61,6 +61,7 @@ if __name__ == "__main__":
         from Utils.RunGurobi import MILP
 
     if method == "RAB" or method == "RAB2":
+        torch.set_default_dtype(torch.float64)
         n_samples_gurobi = -1
         G_epoch = 0
         misclassification_count = 0
