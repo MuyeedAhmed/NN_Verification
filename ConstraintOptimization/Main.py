@@ -26,14 +26,19 @@ def evaluate_loader(dataset_name, model, loader, device):
     for x, y in loader:
         x = x.to(device)
         y = y.to(device)
-        labels_for_loss = y - 1 if dataset_name == "EMNIST" else y
+
+        y_eval = y - 1 if dataset_name == "EMNIST" else y
+        y_eval = y_eval.long()
+
         logits = model(x)
-        loss = F.cross_entropy(logits, labels_for_loss, reduction="sum")
+        loss = F.cross_entropy(logits, y_eval, reduction="sum")
         loss_sum += loss.item()
+
         preds = logits.argmax(dim=1)
-        correct += (preds == y).sum().item()
-        total += y.numel()
-    return loss_sum / total, 100. * correct / total
+        correct += (preds == y_eval).sum().item()
+        total += y_eval.numel()
+
+    return loss_sum / total, 100.0 * correct / total
 
 
 if __name__ == "__main__":
@@ -146,7 +151,7 @@ if __name__ == "__main__":
     S1_Train_loss, S1_Train_acc = TM_after_g.evaluate("Train")
     S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
     S1_Test_loss, S1_Test_acc = evaluate_loader(dataset_name, TM_after_g.model, test_loader, device)
-    print("Training and Validation Accuracy before Gurobi optimization:", S1_Train_acc, S1_Val_acc)
+    print("Training and Validation Accuracy before Gurobi optimization:", S1_Train_acc, S1_Val_acc, "Test Accuracy:", S1_Test_acc)
     print("Training and Validation Accuracy of loaded inputs:", 
           (np.mean(loaded_inputs_gurobi["pred_full"] == loaded_inputs_gurobi["labels_full"]),
            np.mean(loaded_inputs_gurobi["pred_val"] == loaded_inputs_gurobi["labels_val"])))
