@@ -40,7 +40,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type == 'cpu':
         device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-    print(f'Using device: {device}')
+    
     initEpoch = 300
     G_epoch = 100
     
@@ -69,7 +69,9 @@ if __name__ == "__main__":
         cmc_type = ""
     elif method == "CMC":
         n_samples_gurobi = 1000
-            
+        
+    print(f'Using device: {device}, dataset: {dataset_name}')
+
     BatchSize, optimize, learningRate, scheduler_type = GetHparams(dataset_name)
 
     train_dataset, test_dataset = GetDataset(dataset_name)
