@@ -227,10 +227,19 @@ class WideResNet(nn.Module):
         self.flatten = nn.Flatten()
 
         feat_dim = n_channels[3]
-        self.fc = nn.Linear(feat_dim, num_classes)
+        
+        if bottleneck_dim is None:
+            self.fc_hidden = nn.Identity()
+            self.classifier = nn.Linear(feat_dim, num_classes)
+        else:
+            self.fc_hidden = nn.Sequential(
+                nn.Linear(feat_dim, bottleneck_dim),
+                nn.BatchNorm1d(bottleneck_dim),
+                nn.ReLU(inplace=True),
+            )
+            self.classifier = nn.Linear(bottleneck_dim, num_classes)
 
-        self.fc_hidden = nn.Identity()
-        self.classifier = self.fc
+        self.fc = self.classifier
 
     def _features(self, x):
         x = self.conv1(x)
@@ -244,9 +253,11 @@ class WideResNet(nn.Module):
 
     def forward(self, x, extract_fc_input: bool = False):
         feats = self._features(x)
+        z = self.fc_hidden(feats)
+
         if extract_fc_input:
-            return feats.clone().detach(), None
-        return self.fc(feats)
+            return z.clone().detach(), None
+        return self.classifier(z)
 
 
 class ResNet50_BottleneckHead(nn.Module):
@@ -280,7 +291,7 @@ class ResNet50_BottleneckHead(nn.Module):
 
 
 def Net_SVHN(num_classes: int = 10):
-    return WideResNet(num_classes=num_classes, in_ch=3, depth=28, widen_factor=10, drop_rate=0.0)
+    return WideResNet(num_classes=num_classes, in_ch=3, depth=28, widen_factor=10, drop_rate=0.0, bottleneck_dim=256)
 
 def Net_EMNIST(num_classes: int, bottleneck_dim: int = 128):
     return ResNet18_Small(num_classes=num_classes,in_ch=1,bottleneck_dim=bottleneck_dim)
