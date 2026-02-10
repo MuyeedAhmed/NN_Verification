@@ -60,15 +60,14 @@ if __name__ == "__main__":
     if save_checkpoint == "N":
         from Utils.RunGurobi import MILP
 
-    if method == "RAB" or method == "RAB2":
+    if method == "TAGD" or method == "TAGDW" or method == "HTA":
         torch.set_default_dtype(torch.float64)
+        device = torch.device("cpu")
         n_samples_gurobi = -1
         G_epoch = 0
         misclassification_count = 0
         cmc_type = ""
-        if dataset_name == "EMNIST":
-            n_samples_gurobi = 5000
-    elif method == "RAF":
+    elif method == "CMC":
         n_samples_gurobi = 1000
             
     BatchSize, optimize, learningRate, scheduler_type = GetHparams(dataset_name)
@@ -156,11 +155,13 @@ if __name__ == "__main__":
     time0 = time.time()
 
     milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi)
-    if method == "RAB":
+    if method == "TAGD":
         Gurobi_output = milp_instance.Optimize(Method="LowerConf")
-    elif method == "RAB2":
+    elif method == "TAGDW":
         Gurobi_output = milp_instance.Optimize(Method="MaxPerturbation")
-    elif method == "RAF":
+    elif method == "HTA":
+        Gurobi_output = milp_instance.Optimize(Method="HTA")
+    elif method == "CMC":
         if cmc_type == "Correct":
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
         elif cmc_type == "Any":
@@ -168,7 +169,7 @@ if __name__ == "__main__":
         elif cmc_type == "Incorrect":
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
         else:
-            print(f"Unknown RAF type: {cmc_type}. Exiting.")
+            print(f"Unknown CMC type: {cmc_type}. Exiting.")
             sys.exit(1)
     else:
         print(f"Unknown method: {method}. Exiting.")
@@ -206,7 +207,7 @@ if __name__ == "__main__":
         f.write(f"{i},{method},{cmc_type},{misclassification_count},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
     
     
-    if method == "RAF":
+    if method == "CMC":
         TM_after_g.run()
     
         S3_Train_loss, S3_Train_acc = TM_after_g.evaluate("Train")
@@ -223,7 +224,7 @@ if __name__ == "__main__":
         "Run": i,
         "Checkpoint": gurobi_checkpoint_dir,
         "Method": method,
-        "RAF_Type": cmc_type,
+        "CMC_Type": cmc_type,
         "Misclassification_Count": int(misclassification_count),
         "S1_Train_loss": float(S1_Train_loss),
         "S1_Train_acc": float(S1_Train_acc),
