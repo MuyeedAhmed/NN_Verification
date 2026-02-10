@@ -269,7 +269,8 @@ class MILP:
                 gp.quicksum(abs_b[i] for i in range(layer_size))
             )
             self.gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound")
-            self.gurobi_model.addConstr(objective <= n_samples*layer_size*l1_size, "ObjectiveUpperBound")
+            self.gurobi_model.addConstr(objective <= n_samples*layer_size, "ObjectiveUpperBound")
+            # self.gurobi_model.addConstr(objective <= n_samples*layer_size*l1_size, "ObjectiveUpperBound")
             self.gurobi_model.setObjective(objective, GRB.MAXIMIZE)
 
 
@@ -302,7 +303,7 @@ class MILP:
                     else:
                         obj += Z[k]
         
-        self.gurobi_model.addConstr(obj <= n_samples*layer_size*1000000, "ObjectiveUpperBound")
+        self.gurobi_model.addConstr(obj <= n_samples*layer_size*1000, "ObjectiveUpperBound")
         self.gurobi_model.setObjective(obj, GRB.MAXIMIZE)
 
     def AddConstraints_ConvergeBackToOriginal(self, optim_direction = "minimize"):
