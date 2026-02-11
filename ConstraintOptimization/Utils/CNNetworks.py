@@ -108,7 +108,55 @@ class BasicBlock(nn.Module):
 
 class ResNet18_Small(nn.Module):
     def __init__(self, num_classes: int, in_ch: int = 3, block=BasicBlock, num_blocks=(2,2,2,2),
-                 widths=(64, 128, 256, 256), bottleneck_dim: int | None = None):
+                 widths=(64, 128, 256, 256)):
+        super().__init__()
+        self.in_planes = widths[0]
+
+        self.conv1 = nn.Conv2d(in_ch, widths[0], 3, stride=1, padding=1, bias=False)
+        self.bn1   = nn.BatchNorm2d(widths[0])
+
+        self.layer1 = self._make_layer(block, widths[0], num_blocks[0], stride=1)
+        self.layer2 = self._make_layer(block, widths[1], num_blocks[1], stride=2)
+        self.layer3 = self._make_layer(block, widths[2], num_blocks[2], stride=2)
+        self.layer4 = self._make_layer(block, widths[3], num_blocks[3], stride=2)
+
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.flatten = nn.Flatten()
+
+        feat_dim = widths[3] * block.expansion
+        self.fc = nn.Linear(feat_dim, num_classes)
+
+        self.fc_hidden = nn.Identity()
+        self.classifier = self.fc
+
+    def _make_layer(self, block, planes, nblocks, stride):
+        strides = [stride] + [1]*(nblocks-1)
+        layers = []
+        for s in strides:
+            layers.append(block(self.in_planes, planes, s))
+            self.in_planes = planes * block.expansion
+        return nn.Sequential(*layers)
+
+    def _features(self, x):
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = self.layer1(out)
+        out = self.layer2(out)
+        out = self.layer3(out)
+        out = self.layer4(out)
+        out = self.avgpool(out)
+        out = self.flatten(out)
+        return out
+
+    def forward(self, x, extract_fc_input: bool = False):
+        feats = self._features(x)
+        if extract_fc_input:
+            return feats.clone().detach(), None
+        return self.fc(feats)
+
+
+class ResNet18_Small_EMNIST(nn.Module):
+    def __init__(self, num_classes: int, in_ch: int = 3, block=BasicBlock, num_blocks=(2,2,2,2),
+                 widths=(64, 128, 256, 256), bottleneck_dim= None):
         super().__init__()
         self.in_planes = widths[0]
 
@@ -161,7 +209,6 @@ class ResNet18_Small(nn.Module):
         if extract_fc_input:
             return z.clone().detach(), None
         return self.classifier(z)
-
 
 class WRNBasicBlock(nn.Module):
     def __init__(self, in_planes, out_planes, stride, drop_rate=0.0):
@@ -294,7 +341,7 @@ def Net_SVHN(num_classes: int = 10):
     return WideResNet(num_classes=num_classes, in_ch=3, depth=28, widen_factor=10, drop_rate=0.0, bottleneck_dim=256)
 
 def Net_EMNIST(num_classes: int, bottleneck_dim: int = 128):
-    return ResNet18_Small(num_classes=num_classes,in_ch=1,bottleneck_dim=bottleneck_dim)
+    return ResNet18_Small_EMNIST(num_classes=num_classes,in_ch=1,bottleneck_dim=bottleneck_dim)
 
 def Net_KMNIST(num_classes: int = 10):
     return ResNet18_Small(num_classes=num_classes, in_ch=1)
