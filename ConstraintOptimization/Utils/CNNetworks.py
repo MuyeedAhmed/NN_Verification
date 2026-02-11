@@ -254,7 +254,7 @@ class WRNNetworkBlock(nn.Module):
 
 
 class WideResNet(nn.Module):
-    def __init__(self, num_classes: int, in_ch: int = 3, depth: int = 28, widen_factor: int = 10, drop_rate: float = 0.0, bottleneck_dim: int | None = None):
+    def __init__(self, num_classes: int, in_ch: int = 3, depth: int = 28, widen_factor: int = 10, drop_rate: float = 0.0, bottleneck_dim = None):
         super().__init__()
         assert (depth - 4) % 6 == 0
         n = (depth - 4) // 6
