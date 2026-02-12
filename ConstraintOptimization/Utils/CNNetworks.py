@@ -338,9 +338,9 @@ class ResNet50_BottleneckHead(nn.Module):
 
 
 def Net_SVHN(num_classes: int = 10):
-    return WideResNet(num_classes=num_classes, in_ch=3, depth=28, widen_factor=10, drop_rate=0.0, bottleneck_dim=256)
+    return WideResNet(num_classes=num_classes, in_ch=3, depth=28, widen_factor=10, drop_rate=0.0, bottleneck_dim=128)
 
-def Net_EMNIST(num_classes: int, bottleneck_dim: int = 128):
+def Net_EMNIST(num_classes: int, bottleneck_dim: int = 64):
     return ResNet18_Small_EMNIST(num_classes=num_classes,in_ch=1,bottleneck_dim=bottleneck_dim)
 
 def Net_KMNIST(num_classes: int = 10):
@@ -361,7 +361,7 @@ def Net_Food10(pretrained: bool = True):
 def Net_Food101(pretrained: bool = True):
     return ResNet50_BottleneckHead(num_classes=101, pretrained=pretrained)
 
-def Net_Caltech101(num_classes: int = 101, pretrained: bool = True, bottleneck_dim: int = 256):
+def Net_Caltech101(num_classes: int = 101, pretrained: bool = True, bottleneck_dim: int = 128):
     return ResNet50_BottleneckHead(num_classes=num_classes, bottleneck_dim=bottleneck_dim, pretrained=pretrained)
 
 
