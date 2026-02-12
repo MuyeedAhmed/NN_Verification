@@ -361,7 +361,7 @@ def Net_Food10(pretrained: bool = True):
 def Net_Food101(pretrained: bool = True):
     return ResNet50_BottleneckHead(num_classes=101, pretrained=pretrained)
 
-def Net_Caltech101(num_classes: int = 101, pretrained: bool = True, bottleneck_dim: int = 128):
+def Net_Caltech101(num_classes: int = 101, pretrained: bool = True, bottleneck_dim: int = 64):
     return ResNet50_BottleneckHead(num_classes=num_classes, bottleneck_dim=bottleneck_dim, pretrained=pretrained)
 
 
