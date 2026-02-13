@@ -133,12 +133,12 @@ if __name__ == "__main__":
 
     print(f"Saved FC inputs for run {i}.")
 
-    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
-    X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-    labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-    pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
+    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt", weights_only=True).numpy()
+    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt", weights_only=True).numpy()
+    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt", weights_only=True).numpy()
+    X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt", weights_only=True).numpy()
+    labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt", weights_only=True).numpy()
+    pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt", weights_only=True).numpy()
 
     loaded_inputs_gurobi = {
         "X_full": X_full,
