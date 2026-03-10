@@ -260,12 +260,48 @@ def SummarizeAllFiles_NoReTraining(Test):
     plt.savefig(f"Figures/Boxplot_{Test}_NoReTraining.pdf")
     plt.close()
 
+def GetSummaryStats():
+    summary = pd.read_csv(f"Stats/Summary.csv")
+    raf_types = ["Any", "Correct"]
+    count = [1, 10]
+
+    results = pd.DataFrame(columns=['Dataset', 'Any1', 'Any10', 'Correct1', 'Correct10'])
+
+    for dataset in summary['Dataset'].unique():
+        dataset_summary = summary[summary['Dataset'] == dataset]
+        dataset_result = {
+            'Dataset': dataset,
+            'Any1': pd.NA,
+            'Any10': pd.NA,
+            'Correct1': pd.NA,
+            'Correct10': pd.NA
+        }
+        # print(dataset_summary)
+        for raf_type in raf_types:
+            for c in count:
+                filtered_summary = dataset_summary[(dataset_summary['RAF_Type'] == raf_type) & (dataset_summary['Misclassification_Count'] == c)]
+                if not filtered_summary.empty:
+                    avgTestAccGain = filtered_summary['S3_Test_acc'].mean() - filtered_summary['S1_Test_acc'].mean()
+                    dataset_result[f'{raf_type}{c}'] = avgTestAccGain
+
+        results.loc[len(results)] = dataset_result
+    # print(results)
+
+    def fmt(v):
+        s = f"{v:.2f}"
+        return f"{{\\bf {s}}}" if v > 0 else s
+
+    '''Print Table 4'''
+    for index, row in results.iterrows():
+        print(f"{row['Dataset']} & {fmt(row['Any1'])} & {fmt(row['Any10'])} & {fmt(row['Correct1'])} & {fmt(row['Correct10'])} \\\\")
+    
 if __name__ == "__main__":
     # FillStatsFileWithTrain()
-    ResultAllFile("RAF_C10")
+    # ResultAllFile("RAF_C10")
 
-    SummarizeAllFiles("RAF_C10")
+    # SummarizeAllFiles("RAF_C10")
 
     # SummarizeAllFiles_NoReTraining("RAF")
 
+    GetSummaryStats()
 
