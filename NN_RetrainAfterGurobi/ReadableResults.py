@@ -40,5 +40,8 @@ def Summarize(df):
 if __name__ == "__main__":
     df = pd.read_csv("Stats/Summary.csv")
     summary = Summarize(df)
-    print(summary)
+    for row in summary.itertuples():
+        print(f"{row.Dataset} & {row.RAF_A1:.2f} & {row.RAF_A10:.2f} & {row.RAF_C1:.2f} & {row.RAF_C10:.2f} \\\\")
+
+    # print(summary)
     
