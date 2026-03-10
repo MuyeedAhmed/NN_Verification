@@ -18,7 +18,7 @@ from Utils.GetModelsDatasets import GetDataset, GetModel, GetHparams
 
 
 @torch.no_grad()
-def evaluate_loader(model, loader, device):
+def evaluate_loader(dataset_name, model, loader, device):
     model.eval()
     correct = 0
     total = 0
@@ -26,18 +26,26 @@ def evaluate_loader(model, loader, device):
     for x, y in loader:
         x = x.to(device)
         y = y.to(device)
+
+        y_eval = y - 1 if dataset_name == "EMNIST" else y
+        y_eval = y_eval.long()
+
         logits = model(x)
-        loss = F.cross_entropy(logits, y, reduction="sum")
+        loss = F.cross_entropy(logits, y_eval, reduction="sum")
         loss_sum += loss.item()
+
         preds = logits.argmax(dim=1)
-        correct += (preds == y).sum().item()
-        total += y.numel()
-    return loss_sum / total, 100. * correct / total
+        correct += (preds == y_eval).sum().item()
+        total += y_eval.numel()
+
+    return loss_sum / total, 100.0 * correct / total
 
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f'Using device: {device}')
+    if device.type == 'cpu':
+        device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+    
     initEpoch = 300
     G_epoch = 100
     
@@ -57,16 +65,18 @@ if __name__ == "__main__":
     if save_checkpoint == "N":
         from Utils.RunGurobi import MILP
 
-    if method == "RAB":
+    if method == "TAGD" or method == "TAGDW" or method == "HTA":
+        torch.set_default_dtype(torch.float64)
+        device = torch.device("cpu")
         n_samples_gurobi = -1
         G_epoch = 0
         misclassification_count = 0
         cmc_type = ""
-        if dataset_name == "EMNIST":
-            n_samples_gurobi = 5000
-    elif method == "RAF":
+    elif method == "CMC":
         n_samples_gurobi = 1000
-            
+        
+    print(f'Using device: {device}, dataset: {dataset_name}')
+
     BatchSize, optimize, learningRate, scheduler_type = GetHparams(dataset_name)
 
     train_dataset, test_dataset = GetDataset(dataset_name)
@@ -95,7 +105,7 @@ if __name__ == "__main__":
     gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}_CO/Run{i}_checkpoint_{method}_{cmc_type}_{misclassification_count}.pth"
 
     if os.path.exists(checkpoint_dir) == False:
-        TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
+        TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i)
         TM.run()
     
     if save_checkpoint == "Y":
@@ -123,12 +133,12 @@ if __name__ == "__main__":
 
     print(f"Saved FC inputs for run {i}.")
 
-    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
-    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
-    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
-    X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-    labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-    pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
+    X_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt", weights_only=True).numpy()
+    labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt", weights_only=True).numpy()
+    pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt", weights_only=True).numpy()
+    X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt", weights_only=True).numpy()
+    labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt", weights_only=True).numpy()
+    pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt", weights_only=True).numpy()
 
     loaded_inputs_gurobi = {
         "X_full": X_full,
@@ -140,8 +150,8 @@ if __name__ == "__main__":
     }
     S1_Train_loss, S1_Train_acc = TM_after_g.evaluate("Train")
     S1_Val_loss, S1_Val_acc = TM_after_g.evaluate("Val")
-    S1_Test_loss, S1_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
-    print("Training and Validation Accuracy before Gurobi optimization:", S1_Train_acc, S1_Val_acc)
+    S1_Test_loss, S1_Test_acc = evaluate_loader(dataset_name, TM_after_g.model, test_loader, device)
+    print("Training and Validation Accuracy before Gurobi optimization:", S1_Train_acc, S1_Val_acc, "Test Accuracy:", S1_Test_acc)
     print("Training and Validation Accuracy of loaded inputs:", 
           (np.mean(loaded_inputs_gurobi["pred_full"] == loaded_inputs_gurobi["labels_full"]),
            np.mean(loaded_inputs_gurobi["pred_val"] == loaded_inputs_gurobi["labels_val"])))
@@ -152,9 +162,13 @@ if __name__ == "__main__":
     time0 = time.time()
 
     milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi)
-    if method == "RAB":
+    if method == "TAGD":
         Gurobi_output = milp_instance.Optimize(Method="LowerConf")
-    elif method == "RAF":
+    elif method == "TAGDW":
+        Gurobi_output = milp_instance.Optimize(Method="MaxPerturbation")
+    elif method == "HTA":
+        Gurobi_output = milp_instance.Optimize(Method="HTA")
+    elif method == "CMC":
         if cmc_type == "Correct":
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Correct")
         elif cmc_type == "Any":
@@ -162,7 +176,7 @@ if __name__ == "__main__":
         elif cmc_type == "Incorrect":
             Gurobi_output = milp_instance.Optimize(Method="MisCls_Incorrect")
         else:
-            print(f"Unknown RAF type: {cmc_type}. Exiting.")
+            print(f"Unknown CMC type: {cmc_type}. Exiting.")
             sys.exit(1)
     else:
         print(f"Unknown method: {method}. Exiting.")
@@ -191,7 +205,7 @@ if __name__ == "__main__":
     
     train_loss, train_acc = TM_after_g.evaluate("Train")
     val_loss, val_acc = TM_after_g.evaluate("Val")
-    test_loss, test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+    test_loss, test_acc = evaluate_loader(dataset_name, TM_after_g.model, test_loader, device)
 
 
     with open(TM_after_g.log_file, "a") as f:
@@ -200,12 +214,12 @@ if __name__ == "__main__":
         f.write(f"{i},{method},{cmc_type},{misclassification_count},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
     
     
-    if method == "RAF":
+    if method == "CMC":
         TM_after_g.run()
     
         S3_Train_loss, S3_Train_acc = TM_after_g.evaluate("Train")
         S3_Val_loss, S3_Val_acc = TM_after_g.evaluate("Val")
-        S3_Test_loss, S3_Test_acc = evaluate_loader(TM_after_g.model, test_loader, device)
+        S3_Test_loss, S3_Test_acc = evaluate_loader(dataset_name, TM_after_g.model, test_loader, device)
 
     else:
         S3_Train_loss, S3_Train_acc = -1, -1
@@ -217,7 +231,7 @@ if __name__ == "__main__":
         "Run": i,
         "Checkpoint": gurobi_checkpoint_dir,
         "Method": method,
-        "RAF_Type": cmc_type,
+        "CMC_Type": cmc_type,
         "Misclassification_Count": int(misclassification_count),
         "S1_Train_loss": float(S1_Train_loss),
         "S1_Train_acc": float(S1_Train_acc),

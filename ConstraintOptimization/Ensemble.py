@@ -16,6 +16,7 @@ import numpy as np
 from Utils.TrainModel import TrainModel
 from Utils.GetModelsDatasets import GetDataset, GetModel, GetHparams
 from Utils.RunGurobi import MILP
+import shutil
 
 
 
@@ -85,6 +86,8 @@ def evaluate_loader(model, loader, device):
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if device.type == 'cpu':
+        device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
     print(f'Using device: {device}')
     os.makedirs(f"Stats_Ensemble/", exist_ok=True)
     ''' 
@@ -145,7 +148,7 @@ if __name__ == "__main__":
         TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i, start_experiment=True)
         TM.log_file = f"NNRunLog/{dataset_name}_Ensemble.csv"
         TM.run()
-
+    # shutil.copyfile(checkpoint_dir, f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_backup.pth")
     '''
     Run Gurobi Optimization and Evaluate Candidates
     '''
@@ -153,10 +156,7 @@ if __name__ == "__main__":
     TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
     TM_after_g.log_file = f"NNRunLog/{dataset_name}_Ensemble.csv"
     
-    if device.type == 'cuda':
-        checkpoint = torch.load(checkpoint_dir)
-    else:
-        checkpoint = torch.load(checkpoint_dir, map_location=torch.device('cpu'))
+    checkpoint = torch.load(checkpoint_dir, map_location=device)
     
     TM_after_g.model.load_state_dict(checkpoint['model_state_dict'])
     TM_after_g.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -176,7 +176,8 @@ if __name__ == "__main__":
     TM_after_g.model.eval()
     add_relative_weight_noise_(TM_after_g.model, rel=noise_level, include_bias=True)
     print("Added small weight noise to the model.")
-
+    noise_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_with_noise.pth"
+    torch.save({"model_state_dict": TM_after_g.model.state_dict()}, noise_checkpoint_dir)
 
     NoiseAdded_Train_loss, NoiseAdded_Train_acc = TM_after_g.evaluate("Train")
     NoiseAdded_Val_loss, NoiseAdded_Val_acc = TM_after_g.evaluate("Val")
@@ -192,9 +193,12 @@ if __name__ == "__main__":
     X_full_edited = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_train.pt").numpy()
     # labels_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_train.pt").numpy()
     # pred_full = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_train.pt").numpy()
-    X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
-    labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
-    pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
+    # X_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_inputs_val.pt").numpy()
+    # labels_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_labels_val.pt").numpy()
+    # pred_val = torch.load(f"checkpoints_inputs/{dataset_name}/fc_preds_val.pt").numpy()
+    X_val = None
+    labels_val = None
+    pred_val = None
 
     loaded_inputs_gurobi = {
         "X_full": X_full,
@@ -210,6 +214,11 @@ if __name__ == "__main__":
 
     results = []        
     for candidate in range(1, total_candidates+1):
+        if retrain == "Y":
+            noise_checkpoint = torch.load(noise_checkpoint_dir, map_location=device)
+            TM_after_g.model.load_state_dict(noise_checkpoint['model_state_dict'])
+            TM_after_g.model.eval()
+
         time0 = time.time()
         milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, candidate=candidate, timeLimit=timeLimit)
         Gurobi_output = milp_instance.Optimize(Method=method, optimization_direction="minimize")
@@ -222,8 +231,14 @@ if __name__ == "__main__":
 
         W2_new, b2_new = Gurobi_output
         # TM_after_g.delete_fc_inputs()
-        new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
-        new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
+        if device.type == 'mps':
+            dev = TM_after_g.model.classifier.weight.device
+            dtype = TM_after_g.model.classifier.weight.dtype
+            new_W = torch.from_numpy(np.asarray(W2_new, dtype=np.float32)).to(dev)
+            new_b = torch.from_numpy(np.asarray(b2_new, dtype=np.float32)).to(dev)
+        else:
+            new_W = torch.tensor(W2_new).to(model_g.classifier.weight.device)
+            new_b = torch.tensor(b2_new).to(model_g.classifier.bias.device)
         with torch.no_grad():
             TM_after_g.model.classifier.weight.copy_(new_W)
             TM_after_g.model.classifier.bias.copy_(new_b)
@@ -236,12 +251,11 @@ if __name__ == "__main__":
                 'optimizer_state_dict': TM_after_g.optimizer.state_dict(),
                 'scheduler_state_dict': TM_after_g.scheduler.state_dict()
             }, gurobi_checkpoint_dir)
-        # else:
-        #     TM_after_g.run()
-        #     old_path = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth" Need to fix checkpoint path
-        #     gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
-        
-        #     os.rename(old_path, gurobi_checkpoint_dir)
+        else:
+            TM_after_g.run()
+            old_path = f"./checkpoints/{dataset_name}_CO/Run{i}_full_checkpoint_GE_{method}.pth"
+            gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}_Candidates/Run{i}_checkpoint_{method}_{retrain}_{candidate}.pth"
+            shutil.move(old_path, gurobi_checkpoint_dir)
 
         # with open(TM_after_g.log_file, "a") as f:
         #     f.write(f"{i},{candidate},Gurobi_Complete_Eval_Train,-1,{train_loss},{train_acc}\n")

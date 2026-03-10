@@ -15,7 +15,7 @@ import numpy as np
 
 
 class TrainModel:
-    def __init__(self, method, dataset_name, model, train_loader, val_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0, start_experiment=False):
+    def __init__(self, method, dataset_name, model, train_loader, val_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0):
         self.method = method
         self.run_id = run_id
         self.dataset_name = dataset_name
@@ -46,7 +46,7 @@ class TrainModel:
         os.makedirs("NNRunLog", exist_ok=True)
         self.log_file = f"NNRunLog/{self.dataset_name}.csv"
         
-        if start_experiment == True:
+        if os.path.exists(self.log_file) == False:
             with open(self.log_file, "w") as f:
                 f.write("Run,Phase,Method,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
 

@@ -154,6 +154,62 @@ class ResNet18_Small(nn.Module):
         return self.fc(feats)
 
 
+class ResNet18_Small_EMNIST(nn.Module):
+    def __init__(self, num_classes: int, in_ch: int = 3, block=BasicBlock, num_blocks=(2,2,2,2),
+                 widths=(64, 128, 256, 256), bottleneck_dim= None):
+        super().__init__()
+        self.in_planes = widths[0]
+
+        self.conv1 = nn.Conv2d(in_ch, widths[0], 3, stride=1, padding=1, bias=False)
+        self.bn1   = nn.BatchNorm2d(widths[0])
+
+        self.layer1 = self._make_layer(block, widths[0], num_blocks[0], stride=1)
+        self.layer2 = self._make_layer(block, widths[1], num_blocks[1], stride=2)
+        self.layer3 = self._make_layer(block, widths[2], num_blocks[2], stride=2)
+        self.layer4 = self._make_layer(block, widths[3], num_blocks[3], stride=2)
+
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.flatten = nn.Flatten()
+
+        feat_dim = widths[3] * block.expansion
+
+        if bottleneck_dim is None:
+            self.fc_hidden = nn.Identity()
+            self.classifier = nn.Linear(feat_dim, num_classes)
+        else:
+            self.fc_hidden = nn.Sequential(
+                nn.Linear(feat_dim, bottleneck_dim),
+                nn.BatchNorm1d(bottleneck_dim),
+                nn.ReLU(inplace=True),
+            )
+            self.classifier = nn.Linear(bottleneck_dim, num_classes)
+
+
+    def _make_layer(self, block, planes, nblocks, stride):
+        strides = [stride] + [1]*(nblocks-1)
+        layers = []
+        for s in strides:
+            layers.append(block(self.in_planes, planes, s))
+            self.in_planes = planes * block.expansion
+        return nn.Sequential(*layers)
+
+    def _features(self, x):
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = self.layer1(out)
+        out = self.layer2(out)
+        out = self.layer3(out)
+        out = self.layer4(out)
+        out = self.avgpool(out)
+        out = self.flatten(out)
+        return out
+
+    def forward(self, x, extract_fc_input: bool = False):
+        feats = self._features(x)
+        z = self.fc_hidden(feats)
+        if extract_fc_input:
+            return z.clone().detach(), None
+        return self.classifier(z)
+
 class WRNBasicBlock(nn.Module):
     def __init__(self, in_planes, out_planes, stride, drop_rate=0.0):
         super().__init__()
@@ -198,7 +254,7 @@ class WRNNetworkBlock(nn.Module):
 
 
 class WideResNet(nn.Module):
-    def __init__(self, num_classes: int, in_ch: int = 3, depth: int = 28, widen_factor: int = 10, drop_rate: float = 0.0):
+    def __init__(self, num_classes: int, in_ch: int = 3, depth: int = 28, widen_factor: int = 10, drop_rate: float = 0.0, bottleneck_dim = None):
         super().__init__()
         assert (depth - 4) % 6 == 0
         n = (depth - 4) // 6
@@ -218,10 +274,19 @@ class WideResNet(nn.Module):
         self.flatten = nn.Flatten()
 
         feat_dim = n_channels[3]
-        self.fc = nn.Linear(feat_dim, num_classes)
+        
+        if bottleneck_dim is None:
+            self.fc_hidden = nn.Identity()
+            self.classifier = nn.Linear(feat_dim, num_classes)
+        else:
+            self.fc_hidden = nn.Sequential(
+                nn.Linear(feat_dim, bottleneck_dim),
+                nn.BatchNorm1d(bottleneck_dim),
+                nn.ReLU(inplace=True),
+            )
+            self.classifier = nn.Linear(bottleneck_dim, num_classes)
 
-        self.fc_hidden = nn.Identity()
-        self.classifier = self.fc
+        self.fc = self.classifier
 
     def _features(self, x):
         x = self.conv1(x)
@@ -235,9 +300,11 @@ class WideResNet(nn.Module):
 
     def forward(self, x, extract_fc_input: bool = False):
         feats = self._features(x)
+        z = self.fc_hidden(feats)
+
         if extract_fc_input:
-            return feats.clone().detach(), None
-        return self.fc(feats)
+            return z.clone().detach(), None
+        return self.classifier(z)
 
 
 class ResNet50_BottleneckHead(nn.Module):
@@ -271,10 +338,10 @@ class ResNet50_BottleneckHead(nn.Module):
 
 
 def Net_SVHN(num_classes: int = 10):
-    return WideResNet(num_classes=num_classes, in_ch=3, depth=28, widen_factor=10, drop_rate=0.0)
+    return WideResNet(num_classes=num_classes, in_ch=3, depth=28, widen_factor=10, drop_rate=0.0, bottleneck_dim=128)
 
-def Net_EMNIST(num_classes: int):
-    return ResNet18_Small(num_classes=num_classes, in_ch=1)
+def Net_EMNIST(num_classes: int, bottleneck_dim: int = 64):
+    return ResNet18_Small_EMNIST(num_classes=num_classes,in_ch=1,bottleneck_dim=bottleneck_dim)
 
 def Net_KMNIST(num_classes: int = 10):
     return ResNet18_Small(num_classes=num_classes, in_ch=1)
@@ -294,7 +361,7 @@ def Net_Food10(pretrained: bool = True):
 def Net_Food101(pretrained: bool = True):
     return ResNet50_BottleneckHead(num_classes=101, pretrained=pretrained)
 
-def Net_Caltech101(num_classes: int = 101, pretrained: bool = True, bottleneck_dim: int = 256):
+def Net_Caltech101(num_classes: int = 101, pretrained: bool = True, bottleneck_dim: int = 64):
     return ResNet50_BottleneckHead(num_classes=num_classes, bottleneck_dim=bottleneck_dim, pretrained=pretrained)
 
 
