@@ -260,7 +260,7 @@ def SummarizeAllFiles_NoReTraining(Test):
     plt.savefig(f"Figures/Boxplot_{Test}_NoReTraining.pdf")
     plt.close()
 
-def GetSummaryStats():
+def GetSummaryStats_CMC():
     summary = pd.read_csv(f"Stats/Summary.csv")
     raf_types = ["Any", "Correct"]
     count = [1, 10]
@@ -285,7 +285,7 @@ def GetSummaryStats():
                     dataset_result[f'{raf_type}{c}'] = avgTestAccGain
 
         results.loc[len(results)] = dataset_result
-    # print(results)
+    results = results.sort_values(by='Dataset', ascending=True, key=lambda col: col.str.lower())
 
     def fmt(v):
         s = f"{v:.2f}"
@@ -294,7 +294,48 @@ def GetSummaryStats():
     '''Print Table 4'''
     for index, row in results.iterrows():
         print(f"{row['Dataset']} & {fmt(row['Any1'])} & {fmt(row['Any10'])} & {fmt(row['Correct1'])} & {fmt(row['Correct10'])} \\\\")
-    
+
+def GetSummaryStats_TAGD():
+    summary = pd.read_csv(f"Stats/Summary.csv")
+    summary = summary[summary['Method'] == "TAGD"]
+    results = pd.DataFrame(columns=['Dataset', 'TrainAcc_init', 'TrainLoss_init', 'TrainAcc_S2', 'TrainLoss_S2', 'TestAcc_init', 'TestAcc_S2', 'TestAccGain'])
+
+    for dataset in summary['Dataset'].unique():
+        dataset_summary = summary[summary['Dataset'] == dataset]
+        dataset_result = {
+            'Dataset': dataset,
+            'TrainAcc_init': pd.NA,
+            'TrainLoss_init': pd.NA,
+            'TrainAcc_S2': pd.NA,
+            'TrainLoss_S2': pd.NA,
+            'TestAcc_init': pd.NA,
+            'TestAcc_S2': pd.NA,
+            'TestAccGain': pd.NA
+        }
+        # print(dataset_summary)
+        if dataset_summary.empty:
+            print(f"No data for dataset {dataset}. Skipping.")
+            continue
+        dataset_result['TrainAcc_init'] = dataset_summary['S1_Train_acc'].mean()
+        dataset_result['TrainLoss_init'] = dataset_summary['S1_Train_loss'].mean()
+        dataset_result['TrainAcc_S2'] = dataset_summary['S2_Train_acc'].mean()
+        dataset_result['TrainLoss_S2'] = dataset_summary['S2_Train_loss'].mean()
+        dataset_result['TestAcc_init'] = dataset_summary['S1_Test_acc'].mean()
+        dataset_result['TestAcc_S2'] = dataset_summary['S2_Test_acc'].mean()
+        dataset_result['TestAccGain'] = dataset_summary['S2_Test_acc'].mean() - dataset_summary['S1_Test_acc'].mean()
+        results.loc[len(results)] = dataset_result
+    results = results.sort_values(by='Dataset', ascending=True, key=lambda col: col.str.lower())
+    # print(results)
+
+    def fmt(v):
+        s = f"{v:.2f}"
+        return f"{{\\bf {s}}}" if v < 0 else s
+
+    '''Print Table 3'''
+    for index, row in results.iterrows():
+        print(f"{row['Dataset']} & {fmt(row['TrainAcc_init'])} & {fmt(row['TrainLoss_init'])} & {fmt(row['TrainAcc_S2'])} & {fmt(row['TrainLoss_S2'])} & {fmt(row['TestAcc_init'])} & {fmt(row['TestAcc_S2'])} & {fmt(row['TestAccGain'])} \\\\")
+
+
 if __name__ == "__main__":
     # FillStatsFileWithTrain()
     # ResultAllFile("RAF_C10")
@@ -303,5 +344,7 @@ if __name__ == "__main__":
 
     # SummarizeAllFiles_NoReTraining("RAF")
 
-    GetSummaryStats()
+    GetSummaryStats_CMC()
+    print("\n\n")
+    GetSummaryStats_TAGD()
 
