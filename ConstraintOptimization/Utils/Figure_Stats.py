@@ -327,7 +327,7 @@ def GetSummaryStats_CMC_Individual(raf_type, count):
 
     '''Print Table 6'''
     for index, row in results.iterrows():
-        print(f"{row['Dataset']} & {fmt(row['TrainAcc_S1'])} & {fmt(row['TestAcc_S1'])} & {fmt(row['TrainAcc_S2'])} & {fmt(row['TestAcc_S2'])} & {fmt(row['TrainAcc_S3'])} & {fmt(row['TestAcc_S3'])} & {fmt(row['TrainS2-S1'])} & {fmt(row['TestS2-S1'])} & {fmt(row['TrainS3-S1'])} & {fmt(row['TestS3-S1'])} \\\\")
+        print(f"{row['Dataset']} & {(row['TrainAcc_S1']):.2f} & {(row['TestAcc_S1']):.2f} & {(row['TrainAcc_S2']):.2f} & {(row['TestAcc_S2']):.2f} & {(row['TrainAcc_S3']):.2f} & {(row['TestAcc_S3']):.2f} & {(row['TrainS2-S1']):.2f} & {(row['TestS2-S1']):.2f} & {(row['TrainS3-S1']):.2f} & {fmt(row['TestS3-S1'])} \\\\")
 
 
 

@@ -336,3 +336,15 @@ Dataset: bank-marketing, Method: F_C20, Run ID: 2, Total Flips: 869, Expected Fl
 Dataset: bank-marketing, Method: F_C30, Run ID: 2, Total Flips: 1149, Expected Flips: 30
 Dataset: bank-marketing, Method: F_A20, Run ID: 2, Total Flips: 1193, Expected Flips: 20
 Dataset: bank-marketing, Method: F_A30, Run ID: 2, Total Flips: 2007, Expected Flips: 30
+Dataset: Adult, Method: B0, Run ID: 0, Total Flips: 0, Expected Flips: 0
+Dataset: Adult, Method: B0, Run ID: 1, Total Flips: 0, Expected Flips: 0
+Dataset: Adult, Method: B0, Run ID: 2, Total Flips: 0, Expected Flips: 0
+Dataset: higgs, Method: B0, Run ID: 0, Total Flips: 0, Expected Flips: 0
+Dataset: higgs, Method: B0, Run ID: 1, Total Flips: 0, Expected Flips: 0
+Dataset: higgs, Method: B0, Run ID: 2, Total Flips: 0, Expected Flips: 0
+Dataset: GiveMeSomeCredit, Method: B0, Run ID: 0, Total Flips: 0, Expected Flips: 0
+Dataset: GiveMeSomeCredit, Method: B0, Run ID: 1, Total Flips: 0, Expected Flips: 0
+Dataset: GiveMeSomeCredit, Method: B0, Run ID: 2, Total Flips: 0, Expected Flips: 0
+Dataset: bank-marketing, Method: B0, Run ID: 0, Total Flips: 0, Expected Flips: 0
+Dataset: bank-marketing, Method: B0, Run ID: 1, Total Flips: 0, Expected Flips: 0
+Dataset: bank-marketing, Method: B0, Run ID: 2, Total Flips: 0, Expected Flips: 0
