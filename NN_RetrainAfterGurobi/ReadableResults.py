@@ -29,6 +29,38 @@ def Summarize_TAGD(df):
     return new_df
 
 
+def Summarize_CMC_Type(df, cmc_type):
+    datasets = df["Dataset"].unique()
+    new_df = pd.DataFrame()
+    for dataset in datasets:
+        grouped = (
+            df[df["Dataset"] == dataset]
+            .groupby("Method", as_index=False)
+            .agg(
+                # train_loss_mean=("Train Loss", "mean"),
+                train_acc_mean=("Train Acc", "mean"),
+                test_acc_mean=("Test Acc", "mean"),
+            )
+        )
+        dataset_result = {
+            "Dataset": dataset,
+            "Init_training_acc": grouped.loc[grouped["Method"] == "Train", "train_acc_mean"].iloc[0]* 100.0,
+            "Init_test_acc": grouped.loc[grouped["Method"] == "Train", "test_acc_mean"].iloc[0]* 100.0,
+            "CMC_Training_acc_BeforeRetraining": grouped.loc[grouped["Method"] == cmc_type, "train_acc_mean"].iloc[0]* 100.0,
+            "CMC_Test_acc_BeforeRetraining": grouped.loc[grouped["Method"] == cmc_type, "test_acc_mean"].iloc[0]* 100.0,            
+            "CMC_Training_acc": grouped.loc[grouped["Method"] == "RA" + cmc_type, "train_acc_mean"].iloc[0]* 100.0,
+            "CMC_test_acc": grouped.loc[grouped["Method"] == "RA" + cmc_type, "test_acc_mean"].iloc[0]* 100.0,
+
+            "CMC_Training_acc_delta_BeforeRetraining": (grouped.loc[grouped["Method"] == cmc_type, "train_acc_mean"].iloc[0] - grouped.loc[grouped["Method"] == "Train", "train_acc_mean"].iloc[0]) * 100.0,
+            "CMC_test_acc_delta_BeforeRetraining": (grouped.loc[grouped["Method"] == cmc_type, "test_acc_mean"].iloc[0] - grouped.loc[grouped["Method"] == "Train", "test_acc_mean"].iloc[0]) * 100.0,
+
+            "CMC_Training_acc_delta": (grouped.loc[grouped["Method"] == "RA" + cmc_type, "train_acc_mean"].iloc[0] - grouped.loc[grouped["Method"] == "Train", "train_acc_mean"].iloc[0]) * 100.0,
+            "CMC_test_acc_delta": (grouped.loc[grouped["Method"] == "RA" + cmc_type, "test_acc_mean"].iloc[0] - grouped.loc[grouped["Method"] == "Train", "test_acc_mean"].iloc[0]) * 100.0,
+        }
+        new_df = pd.concat([new_df, pd.DataFrame([dataset_result])], ignore_index=True)
+    return new_df
+
+
 def Summarize(df):
     datasets = df["Dataset"].unique()
     new_df = pd.DataFrame()
@@ -71,9 +103,10 @@ if __name__ == "__main__":
     # for row in summary.itertuples():
     #     print(f"{row.Dataset} & {row.RAF_A1:.2f} & {row.RAF_A10:.2f} & {row.RAF_C1:.2f} & {row.RAF_C10:.2f} \\\\")
 
-    summary = Summarize_TAGD(df)
-    for row in summary.itertuples():
-        print(f"{row.Dataset} & {row.Init_training_acc:.2f} & {row.Init_training_loss:.2f} & {row.TAGD_Training_acc:.2f} & {row.TAGD_Training_loss:.2f} & {row.Init_test_acc:.2f} & {row.TAGD_test_acc:.2f} & {row.TAGD_test_acc_delta:.2f} \\\\")
-
-    # print(summary)
+    # summary = Summarize_TAGD(df)
+    # for row in summary.itertuples():
+    #     print(f"{row.Dataset} & {row.Init_training_acc:.2f} & {row.Init_training_loss:.2f} & {row.TAGD_Training_acc:.2f} & {row.TAGD_Training_loss:.2f} & {row.Init_test_acc:.2f} & {row.TAGD_test_acc:.2f} & {row.TAGD_test_acc_delta:.2f} \\\\")
     
+    summary = Summarize_CMC_Type(df, "F_A1")
+    for row in summary.itertuples():
+        print(f"{row.Dataset} & {row.Init_training_acc:.2f} & {row.Init_test_acc:.2f} & {row.CMC_Training_acc_BeforeRetraining:.2f} & {row.CMC_Test_acc_BeforeRetraining:.2f} & {row.CMC_Training_acc:.2f} & {row.CMC_test_acc:.2f} & {row.CMC_Training_acc_delta_BeforeRetraining:.2f} & {row.CMC_test_acc_delta_BeforeRetraining:.2f} & {row.CMC_Training_acc_delta:.2f} & {row.CMC_test_acc_delta:.2f} \\\\")
