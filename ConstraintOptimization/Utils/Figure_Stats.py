@@ -260,12 +260,129 @@ def SummarizeAllFiles_NoReTraining(Test):
     plt.savefig(f"Figures/Boxplot_{Test}_NoReTraining.pdf")
     plt.close()
 
+def GetSummaryStats_CMC():
+    summary = pd.read_csv(f"Stats/Summary.csv")
+    raf_types = ["Any", "Correct"]
+    count = [1, 10]
+
+    results = pd.DataFrame(columns=['Dataset', 'Any1', 'Any10', 'Correct1', 'Correct10'])
+
+    for dataset in summary['Dataset'].unique():
+        dataset_summary = summary[summary['Dataset'] == dataset]
+        dataset_result = {
+            'Dataset': dataset,
+            'Any1': pd.NA,
+            'Any10': pd.NA,
+            'Correct1': pd.NA,
+            'Correct10': pd.NA
+        }
+        # print(dataset_summary)
+        for raf_type in raf_types:
+            for c in count:
+                filtered_summary = dataset_summary[(dataset_summary['RAF_Type'] == raf_type) & (dataset_summary['Misclassification_Count'] == c)]
+                if not filtered_summary.empty:
+                    avgTestAccGain = filtered_summary['S3_Test_acc'].mean() - filtered_summary['S1_Test_acc'].mean()
+                    dataset_result[f'{raf_type}{c}'] = avgTestAccGain
+
+        results.loc[len(results)] = dataset_result
+    results = results.sort_values(by='Dataset', ascending=True, key=lambda col: col.str.lower())
+
+    def fmt(v):
+        s = f"{v:.2f}"
+        return f"{{\\bf {s}}}" if v > 0 else s
+
+    '''Print Table 4'''
+    for index, row in results.iterrows():
+        print(f"{row['Dataset']} & {fmt(row['Any1'])} & {fmt(row['Any10'])} & {fmt(row['Correct1'])} & {fmt(row['Correct10'])} \\\\")
+
+def GetSummaryStats_CMC_Individual(raf_type, count):
+    summary = pd.read_csv(f"Stats/Summary.csv")
+    summary = summary[(summary['RAF_Type'] == raf_type) & (summary['Misclassification_Count'] == count)]
+
+    results = pd.DataFrame(columns=['Dataset', 'TrainAcc_S1', 'TestAcc_S1', 'TrainAcc_S2', 'TestAcc_S2', 'TrainAcc_S3', 'TestAcc_S3', 'TrainS2-S1', 'TestS2-S1', 'TrainS3-S1', 'TestS3-S1'])
+
+    for dataset in summary['Dataset'].unique():
+        dataset_summary = summary[summary['Dataset'] == dataset]
+        dataset_result = {
+            'Dataset': dataset,
+            'TrainAcc_S1': dataset_summary['S1_Train_acc'].mean(),
+            'TestAcc_S1': dataset_summary['S1_Test_acc'].mean(),
+            'TrainAcc_S2': dataset_summary['S2_Train_acc'].mean(),
+            'TestAcc_S2': dataset_summary['S2_Test_acc'].mean(),
+            'TrainAcc_S3': dataset_summary['S3_Train_acc'].mean(),
+            'TestAcc_S3': dataset_summary['S3_Test_acc'].mean(),
+            'TrainS2-S1': dataset_summary['S2_Train_acc'].mean() - dataset_summary['S1_Train_acc'].mean(),
+            'TestS2-S1': dataset_summary['S2_Test_acc'].mean() - dataset_summary['S1_Test_acc'].mean(),
+            'TrainS3-S1': dataset_summary['S3_Train_acc'].mean() - dataset_summary['S1_Train_acc'].mean(),
+            'TestS3-S1': dataset_summary['S3_Test_acc'].mean() - dataset_summary['S1_Test_acc'].mean()
+        }
+
+
+        results.loc[len(results)] = dataset_result
+    results = results.sort_values(by='Dataset', ascending=True, key=lambda col: col.str.lower())
+
+    def fmt(v):
+        s = f"{v:.2f}"
+        return f"{{\\bf {s}}}" if v > 0 else s
+
+    '''Print Table 6'''
+    for index, row in results.iterrows():
+        print(f"{row['Dataset']} & {fmt(row['TrainAcc_S1'])} & {fmt(row['TestAcc_S1'])} & {fmt(row['TrainAcc_S2'])} & {fmt(row['TestAcc_S2'])} & {fmt(row['TrainAcc_S3'])} & {fmt(row['TestAcc_S3'])} & {fmt(row['TrainS2-S1'])} & {fmt(row['TestS2-S1'])} & {fmt(row['TrainS3-S1'])} & {fmt(row['TestS3-S1'])} \\\\")
+
+
+
+def GetSummaryStats_TAGD():
+    summary = pd.read_csv(f"Stats/Summary.csv")
+    summary = summary[summary['Method'] == "TAGD"]
+    results = pd.DataFrame(columns=['Dataset', 'TrainAcc_init', 'TrainLoss_init', 'TrainAcc_S2', 'TrainLoss_S2', 'TestAcc_init', 'TestAcc_S2', 'TestAccGain'])
+
+    for dataset in summary['Dataset'].unique():
+        dataset_summary = summary[summary['Dataset'] == dataset]
+        dataset_result = {
+            'Dataset': dataset,
+            'TrainAcc_init': pd.NA,
+            'TrainLoss_init': pd.NA,
+            'TrainAcc_S2': pd.NA,
+            'TrainLoss_S2': pd.NA,
+            'TestAcc_init': pd.NA,
+            'TestAcc_S2': pd.NA,
+            'TestAccGain': pd.NA
+        }
+        # print(dataset_summary)
+        if dataset_summary.empty:
+            print(f"No data for dataset {dataset}. Skipping.")
+            continue
+        dataset_result['TrainAcc_init'] = dataset_summary['S1_Train_acc'].mean()
+        dataset_result['TrainLoss_init'] = dataset_summary['S1_Train_loss'].mean()
+        dataset_result['TrainAcc_S2'] = dataset_summary['S2_Train_acc'].mean()
+        dataset_result['TrainLoss_S2'] = dataset_summary['S2_Train_loss'].mean()
+        dataset_result['TestAcc_init'] = dataset_summary['S1_Test_acc'].mean()
+        dataset_result['TestAcc_S2'] = dataset_summary['S2_Test_acc'].mean()
+        dataset_result['TestAccGain'] = dataset_summary['S2_Test_acc'].mean() - dataset_summary['S1_Test_acc'].mean()
+        results.loc[len(results)] = dataset_result
+    results = results.sort_values(by='Dataset', ascending=True, key=lambda col: col.str.lower())
+    # print(results)
+
+    def fmt(v):
+        s = f"{v:.2f}"
+        return f"{{\\bf {s}}}" if v < 0 else s
+
+    '''Print Table 3'''
+    for index, row in results.iterrows():
+        print(f"{row['Dataset']} & {fmt(row['TrainAcc_init'])} & {fmt(row['TrainLoss_init'])} & {fmt(row['TrainAcc_S2'])} & {fmt(row['TrainLoss_S2'])} & {fmt(row['TestAcc_init'])} & {fmt(row['TestAcc_S2'])} & {fmt(row['TestAccGain'])} \\\\")
+
+
 if __name__ == "__main__":
     # FillStatsFileWithTrain()
-    ResultAllFile("RAF_C10")
+    # ResultAllFile("RAF_C10")
 
-    SummarizeAllFiles("RAF_C10")
+    # SummarizeAllFiles("RAF_C10")
 
     # SummarizeAllFiles_NoReTraining("RAF")
 
+    # GetSummaryStats_CMC()
+    # print("\n\n")
+    # GetSummaryStats_TAGD()
+    print("\n\n")
+    GetSummaryStats_CMC_Individual("Any", 1)
 
