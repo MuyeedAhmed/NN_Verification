@@ -15,7 +15,7 @@ import numpy as np
 
 
 class MILP:
-    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 3e-5, misclassification_count=0, timeLimit=10800, loaded_inputs=None, candidate=0):
+    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 3e-5, misclassification_count=0, timeLimit=3600, loaded_inputs=None, candidate=0):
         self.dataset_name = dataset_name
         self.store_file_name = store_file_name
         self.run_id = run_id
