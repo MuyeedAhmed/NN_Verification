@@ -69,8 +69,8 @@ class AWP:
 
 
 class TrainModel:
-    def __init__(self, method, dataset_name, model, train_loader, val_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0):
-        self.method = method
+    def __init__(self, training_type, dataset_name, model, train_loader, val_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0):
+        self.training_type = training_type
         self.run_id = run_id
         self.dataset_name = dataset_name
         self.model = model
@@ -97,18 +97,19 @@ class TrainModel:
             self.scheduler = optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[int(0.5*self.num_epochs), int(0.75*self.num_epochs)], gamma=0.1)
        
         self.criterion = nn.CrossEntropyLoss()
-        
-        if self.method == "AWP":
+
+        if "AWP" in self.training_type:
             self.awp = AWP(self.model, self.optimizer, adv_lr=1.0, adv_eps=0.01)
         else:
             self.awp = None
+
 
         os.makedirs("NNRunLog", exist_ok=True)
         self.log_file = f"NNRunLog/{self.dataset_name}.csv"
         
         if os.path.exists(self.log_file) == False:
             with open(self.log_file, "w") as f:
-                f.write("Run,Phase,Method,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
+                f.write("Run,Phase,TrainingType,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
 
     def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=0):
         loss = -1
@@ -155,12 +156,12 @@ class TrainModel:
                         
             if epoch + 1 <= warmup_epochs:
                 with open(self.log_file, "a") as f:
-                    f.write(f"{self.run_id},{self.phase},{self.method},{epoch+1},{avg_train_loss},{train_accuracy},-,-\n")
+                    f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},-,-\n")
                 continue
             
             val_loss, val_acc = self.evaluate("Val")
             with open(self.log_file, "a") as f:
-                f.write(f"{self.run_id},{self.phase},{self.method},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc}\n")
+                f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc}\n")
 
             # if best_train_loss - avg_train_loss > min_delta:
             #     best_train_loss = avg_train_loss
@@ -196,7 +197,7 @@ class TrainModel:
         if self.phase == "Train":
             self.save_model(loss, save_suffix="")
         elif self.phase == "GurobiEdit":
-            self.save_model(loss, save_suffix=f"_GE_{self.method}")
+            self.save_model(loss, save_suffix=f"_GE_{self.training_type}")
         elif self.phase == "ResumeTrain":
             self.save_model(loss, save_suffix="_Resume")
         
@@ -223,7 +224,7 @@ class TrainModel:
         accuracy = 100. * correct / total
         print(f'Test Accuracy: {accuracy:.2f}%')
         with open(self.log_file, "a") as f:
-            f.write(f"{self.run_id},{self.phase}_Test,{self.method},-1,{avg_loss},{accuracy},-,-\n")
+            f.write(f"{self.run_id},{self.phase}_Test,{self.training_type},-1,{avg_loss},{accuracy},-,-\n")
         return accuracy
 
     def save_model(self, loss, save_suffix=""):
