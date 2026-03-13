@@ -109,11 +109,43 @@ if __name__ == "__main__":
     checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
     gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}_CO/Run{i}_checkpoint_{method}_{cmc_type}_{misclassification_count}.pth"
 
+    TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i)
     if os.path.exists(checkpoint_dir) == False:
-        TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i)
         TM.run()
     
     if save_checkpoint == "Y":
+        if method == "AWP":
+            if os.path.exists(checkpoint_dir):
+                if device.type == 'cuda':
+                    checkpoint = torch.load(checkpoint_dir)
+                else:
+                    checkpoint = torch.load(checkpoint_dir, map_location=torch.device('cpu'))
+                TM.model.load_state_dict(checkpoint['model_state_dict'])
+            
+            train_loss, train_acc = TM.evaluate("Train")
+            val_loss, val_acc = TM.evaluate("Val")
+            test_loss, test_acc = evaluate_loader(dataset_name, TM.model, test_loader, device)
+            
+            results_awp = {
+                "Dataset": dataset_name,
+                "Run": i,
+                "Method": method,
+                "Train_Loss": float(train_loss),
+                "Train_Acc": float(train_acc),
+                "Val_Loss": float(val_loss),
+                "Val_Acc": float(val_acc),
+                "Test_Loss": float(test_loss),
+                "Test_Acc": float(test_acc)
+            }
+            
+            os.makedirs("Stats", exist_ok=True)
+            csv_path_awp = "Stats/Summary_AWP.csv"
+            write_header = not os.path.exists(csv_path_awp)
+            with open(csv_path_awp, "a", newline="") as f:
+                writer = csv.DictWriter(f, fieldnames=results_awp.keys())
+                if write_header:
+                    writer.writeheader()
+                writer.writerow(results_awp)
         sys.exit()
 
     # if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
