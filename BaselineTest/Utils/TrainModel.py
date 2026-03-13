@@ -14,6 +14,60 @@ import copy
 import numpy as np
 
 
+class AWP:
+    def __init__(self, model, optimizer, adv_param="weight", adv_lr=1.0, adv_eps=0.01):
+        self.model = model
+        self.optimizer = optimizer
+        self.adv_param = adv_param
+        self.adv_lr = adv_lr
+        self.adv_eps = adv_eps
+        self.backup = {}
+        self.backup_eps = {}
+
+    def _save(self):
+        for name, param in self.model.named_parameters():
+            if param.requires_grad and param.grad is not None and self.adv_param in name:
+                if name not in self.backup:
+                    self.backup[name] = param.data.clone()
+                    grad_eps = self.adv_eps * param.abs().detach()
+                    self.backup_eps[name] = (
+                        self.backup[name] - grad_eps,
+                        self.backup[name] + grad_eps,
+                    )
+
+    def _restore(self):
+        for name, param in self.model.named_parameters():
+            if name in self.backup:
+                param.data.copy_(self.backup[name])
+        self.backup = {}
+        self.backup_eps = {}
+
+    def _attack_step(self):
+        e = 1e-6
+        for name, param in self.model.named_parameters():
+            if param.requires_grad and param.grad is not None and self.adv_param in name:
+                norm1 = torch.norm(param.grad)
+                norm2 = torch.norm(param.data.detach())
+                if norm1 != 0 and not torch.isnan(norm1):
+                    r_at = self.adv_lr * param.grad / (norm1 + e) * (norm2 + e)
+                    param.data.add_(r_at)
+                    param.data.copy_(torch.max(
+                        torch.min(param.data, self.backup_eps[name][1]),
+                        self.backup_eps[name][0]
+                    ))
+
+    def attack_backward(self, inputs, labels, criterion):
+        self._save()
+        self._attack_step()
+        self.optimizer.zero_grad()
+        logits = self.model(inputs)
+        loss = criterion(logits, labels)
+        loss.backward()
+
+    def restore(self):
+        self._restore()
+
+
 class TrainModel:
     def __init__(self, method, dataset_name, model, train_loader, val_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0):
         self.method = method
@@ -43,6 +97,12 @@ class TrainModel:
             self.scheduler = optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[int(0.5*self.num_epochs), int(0.75*self.num_epochs)], gamma=0.1)
        
         self.criterion = nn.CrossEntropyLoss()
+        
+        if self.method == "AWP":
+            self.awp = AWP(self.model, self.optimizer, adv_lr=1.0, adv_eps=0.01)
+        else:
+            self.awp = None
+
         os.makedirs("NNRunLog", exist_ok=True)
         self.log_file = f"NNRunLog/{self.dataset_name}.csv"
         
@@ -57,6 +117,7 @@ class TrainModel:
         epochs_no_improve = 0
         best_epoch = -1
         acceptable_val_acc = 0.0
+        best_state_dict = None
 
         for epoch in range(self.num_epochs+self.resume_epochs):
             self.model.train()
@@ -71,6 +132,11 @@ class TrainModel:
                 outputs = self.model(inputs)
                 loss = self.criterion(outputs, labels_for_loss)
                 loss.backward()
+
+                if self.awp is not None:
+                    self.awp.attack_backward(inputs, labels_for_loss, self.criterion)
+                    self.awp.restore()
+
                 self.optimizer.step()
 
                 running_loss += loss.item()

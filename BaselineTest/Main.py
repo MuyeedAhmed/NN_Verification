@@ -74,7 +74,12 @@ if __name__ == "__main__":
         cmc_type = ""
     elif method == "CMC":
         n_samples_gurobi = 1000
-        
+    elif method == "AWP":
+        n_samples_gurobi = 0
+        G_epoch = 0
+        misclassification_count = 0
+        cmc_type = ""
+    
     print(f'Using device: {device}, dataset: {dataset_name}')
 
     BatchSize, optimize, learningRate, scheduler_type = GetHparams(dataset_name)
@@ -159,6 +164,11 @@ if __name__ == "__main__":
     print("Loaded inputs for Gurobi optimization.")
     with open(TM_after_g.log_file, "a") as f:
         f.write(f"{method}_{cmc_type}_{misclassification_count},,,,,,,\n")
+    
+    if method == "AWP":
+        print("AWP is a training method. Skipping Gurobi optimization.")
+        sys.exit(0)
+
     time0 = time.time()
 
     milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi)
