@@ -15,7 +15,7 @@ import numpy as np
 
 
 class MILP:
-    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 3e-5, misclassification_count=0, timeLimit=3600, loaded_inputs=None, candidate=0):
+    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 3e-5, misclassification_count=0, timeLimit=3600, loaded_inputs=None, candidate=0, input_type='t'):
         self.dataset_name = dataset_name
         self.store_file_name = store_file_name
         self.run_id = run_id
@@ -23,6 +23,7 @@ class MILP:
         self.tol = tol
         self.misclassification_count = misclassification_count
         self.candidate = candidate
+        self.input_type = input_type
         self.X_full, self.labels_full, self.pred_full, self.X_val, self.labels_val, self.pred_val = None, None, None, None, None, None
         self.X_full_edited = None
         self.AddedNoise = False
@@ -40,25 +41,39 @@ class MILP:
             self.X_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_train.pt").numpy()
             self.labels_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_train.pt").numpy()
             self.pred_full = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_train.pt").numpy()
-        X_full_size = self.X_full.shape[0]
+        
+        if self.input_type == 'v':
+            if self.X_val is None:
+                self.X_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_inputs_val.pt").numpy()
+                self.labels_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_labels_val.pt").numpy()
+                self.pred_val = torch.load(f"checkpoints_inputs/{self.dataset_name}/fc_preds_val.pt").numpy()
+            source_X = self.X_val
+            source_labels = self.labels_val
+            source_pred = self.pred_val
+        else:
+            source_X = self.X_full
+            source_labels = self.labels_full
+            source_pred = self.pred_full
+
+        X_source_size = source_X.shape[0]
         if self.n == -1:
-            self.X_org = self.X_full
-            if self.AddedNoise:
+            self.X_org = source_X
+            if self.AddedNoise and self.input_type == 't':
                 self.X = self.X_full_edited
             else:
-                self.X = self.X_full
-            self.labels_gt = self.labels_full
-            self.pred_checkpoint = self.pred_full
+                self.X = source_X
+            self.labels_gt = source_labels
+            self.pred_checkpoint = source_pred
         else:
             np.random.seed(self.candidate*42)
-            idx = np.random.choice(X_full_size, size=self.n, replace=False)
-            self.X_org = self.X_full[idx]
-            if self.AddedNoise:
+            idx = np.random.choice(X_source_size, size=self.n, replace=False)
+            self.X_org = source_X[idx]
+            if self.AddedNoise and self.input_type == 't':
                 self.X = self.X_full_edited[idx]
             else:
-                self.X = self.X_full[idx]
-            self.labels_gt = self.labels_full[idx]
-            self.pred_checkpoint = self.pred_full[idx]
+                self.X = source_X[idx]
+            self.labels_gt = source_labels[idx]
+            self.pred_checkpoint = source_pred[idx]
 
         self.W = torch.load(f"checkpoints/{self.dataset_name}/Run{self.run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
         self.b = torch.load(f"checkpoints/{self.dataset_name}/Run{self.run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()

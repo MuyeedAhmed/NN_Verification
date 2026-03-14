@@ -50,7 +50,7 @@ if __name__ == "__main__":
     G_epoch = 100
     
     if len(sys.argv) <= 3:
-        print("Usage: python Main.py <Dataset_Name> <Training_Type> <Method> <Save_Checkpoint(Y/N)> <Misclassification_Count> <Misclassification_Type> <Run ID>")
+        print("Usage: python Main.py <Dataset_Name> <Training_Type> <Method> <Save_Checkpoint(Y/N)> <Misclassification_Count> <Misclassification_Type> <Run ID> <Input_Type(v/t)>")
         sys.exit(1)
     dataset_name = sys.argv[1]
     training_type = sys.argv[2] # Regular or AWP
@@ -59,6 +59,7 @@ if __name__ == "__main__":
     misclassification_count = int(sys.argv[5]) if len(sys.argv) > 5 else (1 if method == "CMC" else 0)
     cmc_type = sys.argv[6] if len(sys.argv) > 6 else ("Any" if method == "CMC" else "")
     i = int(sys.argv[7]) if len(sys.argv) > 7 else 2
+    input_type = sys.argv[8] if len(sys.argv) > 8 else "t"
 
     # os.makedirs(f"Stats/{method}", exist_ok=True)
     os.makedirs(f"./checkpoints/{dataset_name}_CO", exist_ok=True)
@@ -81,7 +82,7 @@ if __name__ == "__main__":
         misclassification_count = 0
         cmc_type = ""
     
-    print(f'Using device: {device}, dataset: {dataset_name}, training: {training_type}, method: {method}')
+    print(f'Using device: {device}, dataset: {dataset_name}, training: {training_type}, method: {method}, input: {input_type}')
 
     BatchSize, optimize, learningRate, scheduler_type = GetHparams(dataset_name)
 
@@ -201,7 +202,7 @@ if __name__ == "__main__":
     
     time0 = time.time()
 
-    milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi)
+    milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, input_type=input_type)
     if method == "TAGD":
         Gurobi_output = milp_instance.Optimize(Method="LowerConf")
     elif method == "TAGDW":
