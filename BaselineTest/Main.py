@@ -170,7 +170,11 @@ if __name__ == "__main__":
     
     results = []
 
-    TM_after_g = TrainModel(training_type+"_"+method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
+    tm_type = training_type + "_" + method
+    if method == "CMC":
+        tm_type += "_" + cmc_type
+
+    TM_after_g = TrainModel(tm_type, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
 
     if device.type == 'cuda':
         checkpoint = torch.load(checkpoint_dir)
