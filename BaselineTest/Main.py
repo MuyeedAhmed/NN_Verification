@@ -72,7 +72,7 @@ if __name__ == "__main__":
     save_checkpoint = args.save_checkpoint
     misclassification_count = args.misclassification_count
     cmc_type = args.cmc_type
-    run_id = args.run_id
+    i = args.run_id
     input_type = args.input_type
 
     # os.makedirs(f"Stats/{method}", exist_ok=True)
