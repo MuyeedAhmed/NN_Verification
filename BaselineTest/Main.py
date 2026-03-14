@@ -12,6 +12,7 @@ import os
 import sys
 import time
 import random
+import argparse
 import numpy as np
 from Utils.TrainModel import TrainModel
 from Utils.GetModelsDatasets import GetDataset, GetModel, GetHparams
@@ -49,17 +50,30 @@ if __name__ == "__main__":
     initEpoch = 300
     G_epoch = 100
     
-    if len(sys.argv) <= 3:
-        print("Usage: python Main.py <Dataset_Name> <Training_Type> <Method> <Save_Checkpoint(Y/N)> <Misclassification_Count> <Misclassification_Type> <Run ID> <Input_Type(v/t)>")
-        sys.exit(1)
-    dataset_name = sys.argv[1]
-    training_type = sys.argv[2] # Regular or AWP
-    method = sys.argv[3] # TAGD, TAGDW, HTA, CMC, S
-    save_checkpoint = sys.argv[4] if len(sys.argv) > 4 else "N"
-    misclassification_count = int(sys.argv[5]) if len(sys.argv) > 5 else (1 if method == "CMC" else 0)
-    cmc_type = sys.argv[6] if len(sys.argv) > 6 else ("Any" if method == "CMC" else "")
-    i = int(sys.argv[7]) if len(sys.argv) > 7 else 2
-    input_type = sys.argv[8] if len(sys.argv) > 8 else "t"
+    # if len(sys.argv) <= 3:
+    #     print("Usage: python Main.py <Dataset_Name> <Training_Type> <Method> <Save_Checkpoint(Y/N)> <Misclassification_Count> <Misclassification_Type> <Run ID> <Input_Type(v/t)>")
+    #     sys.exit(1)
+    parser = argparse.ArgumentParser(description="Training script")
+
+    parser.add_argument("--dataset_name", required=True)
+    parser.add_argument("--training_type", default="Regular")  # Regular or AWP
+    parser.add_argument("--method", default="S")         # TAGD, TAGDW, HTA, CMC, S
+    parser.add_argument("--save_checkpoint", default="N")
+    parser.add_argument("--misclassification_count", type=int, default=0)
+    parser.add_argument("--cmc_type", default="")
+    parser.add_argument("--run_id", type=int, default=0)
+    parser.add_argument("--input_type", default="t")  # v/t
+
+    args = parser.parse_args()
+
+    dataset_name = args.dataset_name
+    training_type = args.training_type
+    method = args.method
+    save_checkpoint = args.save_checkpoint
+    misclassification_count = args.misclassification_count
+    cmc_type = args.cmc_type
+    run_id = args.run_id
+    input_type = args.input_type
 
     # os.makedirs(f"Stats/{method}", exist_ok=True)
     os.makedirs(f"./checkpoints/{dataset_name}_CO", exist_ok=True)
