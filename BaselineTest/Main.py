@@ -292,6 +292,7 @@ if __name__ == "__main__":
         "Training_Type": training_type,
         "Method": method,
         "CMC_Type": cmc_type,
+        "Input_Type": input_type,
         "Misclassification_Count": int(misclassification_count),
         "S1_Train_loss": float(S1_Train_loss),
         "S1_Train_acc": float(S1_Train_acc),
