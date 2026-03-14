@@ -273,7 +273,7 @@ if __name__ == "__main__":
         f.write(f"{i},{method},{cmc_type},{misclassification_count},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
     
     
-    if method == "CMC":
+    if method == "CMC" and input_type == "t":
         TM_after_g.run()
     
         S3_Train_loss, S3_Train_acc = TM_after_g.evaluate("Train")
