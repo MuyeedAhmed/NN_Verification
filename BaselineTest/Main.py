@@ -95,7 +95,9 @@ if __name__ == "__main__":
         G_epoch = 0
         misclassification_count = 0
         cmc_type = ""
-    
+    if input_type == "v":
+        n_samples_gurobi = -
+        
     print(f'Using device: {device}, dataset: {dataset_name}, training: {training_type}, method: {method}, input: {input_type}')
 
     BatchSize, optimize, learningRate, scheduler_type = GetHparams(dataset_name)

@@ -220,7 +220,10 @@ class MILP:
                         self.gurobi_model.addConstr(Z[label_max] >= Z[k] + self.tol, name=f"violation_0flip_{s}_{k}")
                 self.gurobi_model.addConstr(misclassified_flags[s] == 0, name=f"misclassified_flag_{s}")
         
-        self.gurobi_model.addConstr(gp.quicksum(misclassified_flags[s] for s in range(n_samples)) == self.misclassification_count, name="exactly_one_misclassified")
+        if self.input_type == 'v':
+            self.gurobi_model.addConstr(gp.quicksum(misclassified_flags[s] for s in range(n_samples)) >= self.misclassification_count, name="exactly_one_misclassified")
+        else:
+            self.gurobi_model.addConstr(gp.quicksum(misclassified_flags[s] for s in range(n_samples)) == self.misclassification_count, name="exactly_one_misclassified")
 
         abs_W = self.gurobi_model.addVars(*self.W.shape, lb=0, name="abs_W")
         abs_b = self.gurobi_model.addVars(layer_size, lb=0, name="abs_b")
