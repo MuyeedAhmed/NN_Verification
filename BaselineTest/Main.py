@@ -46,7 +46,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type == 'cpu':
         device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-    
+    pass_test_loader = False
     initEpoch = 300
     G_epoch = 100
     
@@ -125,7 +125,11 @@ if __name__ == "__main__":
     checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
     gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}_CO/Run{i}_checkpoint_{method}_{cmc_type}_{misclassification_count}.pth"
 
-    TM = TrainModel(training_type, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i)
+    if pass_test_loader:
+        tloader = test_loader
+    else:        
+        tloader = None
+    TM = TrainModel(training_type, dataset_name, model_t, train_loader, val_loader, device, test_loader=tloader, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i)
     if os.path.exists(checkpoint_dir) == False:
         TM.run()
     
@@ -174,7 +178,7 @@ if __name__ == "__main__":
     if method == "CMC":
         tm_type += "_" + cmc_type
 
-    TM_after_g = TrainModel(tm_type, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
+    TM_after_g = TrainModel(tm_type, dataset_name, model_g, train_loader, val_loader, device, test_loader=tloader, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
 
     if device.type == 'cuda':
         checkpoint = torch.load(checkpoint_dir)

@@ -69,13 +69,14 @@ class AWP:
 
 
 class TrainModel:
-    def __init__(self, training_type, dataset_name, model, train_loader, val_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0):
+    def __init__(self, training_type, dataset_name, model, train_loader, val_loader, device, test_loader=None, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0):
         self.training_type = training_type
         self.run_id = run_id
         self.dataset_name = dataset_name
         self.model = model
         self.train_loader = train_loader
         self.val_loader = val_loader
+        self.test_loader = test_loader
         self.device = device
         self.num_epochs = num_epochs
         self.resume_epochs = resume_epochs
@@ -109,8 +110,8 @@ class TrainModel:
         
         if os.path.exists(self.log_file) == False:
             with open(self.log_file, "w") as f:
-                f.write("Run,Phase,TrainingType,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
-
+                f.write("Run,Phase,TrainingType,Epoch,Train_loss,Train_acc,Val_loss,Val_acc,Test_loss,Test_acc\n")
+                
     def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=0):
         loss = -1
         best_val_loss = float('inf')
@@ -160,8 +161,13 @@ class TrainModel:
                 continue
             
             val_loss, val_acc = self.evaluate("Val")
+            if self.test_loader is not None:
+                test_loss, test_acc = self.evaluate("Test")
             with open(self.log_file, "a") as f:
-                f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc}\n")
+                if self.test_loader is not None:
+                    f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc},{test_loss},{test_acc}\n")
+                else:
+                    f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc},-,-\n")
 
             # if best_train_loss - avg_train_loss > min_delta:
             #     best_train_loss = avg_train_loss
@@ -313,6 +319,8 @@ class TrainModel:
             loader = self.train_loader
         elif dataset_type == "Val":
             loader = self.val_loader
+        elif dataset_type == "Test":
+            loader = self.test_loader
         with torch.no_grad():
             for inputs, labels in loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
@@ -330,5 +338,4 @@ class TrainModel:
         avg_loss = total_loss / total
         accuracy = 100. * correct / total
         return avg_loss, accuracy
-        
         
