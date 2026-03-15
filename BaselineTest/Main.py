@@ -96,7 +96,7 @@ if __name__ == "__main__":
         misclassification_count = 0
         cmc_type = ""
     if input_type == "v":
-        n_samples_gurobi = -
+        n_samples_gurobi = -1
         
     print(f'Using device: {device}, dataset: {dataset_name}, training: {training_type}, method: {method}, input: {input_type}')
 
