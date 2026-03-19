@@ -1,5 +1,4 @@
 Run,Phase,TrainingType,Epoch,Train_loss,Train_acc,Val_loss,Val_acc,Test_loss,Test_acc
-<<<<<<< Updated upstream
 1,Train,SAP,1,1.7779332894486741,34.705,1.5474985401153565,42.78,-,-
 1,Train,SAP,2,1.379988453639582,49.4825,1.38019031829834,50.63,-,-
 1,Train,SAP,3,1.1174409041008628,59.6125,1.0921156190872192,61.25,-,-
@@ -275,7 +274,6 @@ CMC_Correct_1,,,,,,,
 3,GurobiEdit,SAP_CMC_Correct,14,0.3294948749363232,88.6575,0.5920022577285766,80.8,-,-
 3,GurobiEdit,SAP_CMC_Correct,15,0.3141211915416078,89.3425,0.5552386523723603,81.39,-,-
 3,GurobiEdit_Test,SAP_CMC_Correct,-1,0.4215342867851257,86.04,-,-
-=======
 CMC_Any_1,,,,,,,
 1,GurobiComplete_Train,-1,-1,89.0
 1,GurobiComplete_Val,-1,-1,83.77
@@ -406,4 +404,3 @@ CMC_Any_1,,,,,,,
 5,GurobiEdit,SAP_CMC_Any,14,0.33949273391463125,88.2975,0.5385384792327881,82.42,-,-
 5,GurobiEdit,SAP_CMC_Any,15,0.34082426149814654,88.365,0.6317663583755493,79.58,-,-
 5,GurobiEdit_Test,SAP_CMC_Any,-1,0.47718193082809446,83.77,-,-
->>>>>>> Stashed changes
