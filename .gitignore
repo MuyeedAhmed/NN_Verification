@@ -1,6 +1,7 @@
 .DS_Store
 Old_CNN/data/
 __pycache__/
+**/checkpoints_*
 **/checkpoints/
 **/checkpoints_inputs/
 **/data/
