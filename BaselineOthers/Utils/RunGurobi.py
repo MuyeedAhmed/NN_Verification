@@ -15,10 +15,11 @@ import numpy as np
 
 
 class MILP:
-    def __init__(self, dataset_name, store_file_name, run_id, n=-1, tol = 3e-5, misclassification_count=0, timeLimit=3600, loaded_inputs=None, candidate=0, input_type='t'):
+    def __init__(self, dataset_name, store_file_name, run_id, training_type="Regular", n=-1, tol = 3e-5, misclassification_count=0, timeLimit=3600, loaded_inputs=None, candidate=0, input_type='t'):
         self.dataset_name = dataset_name
         self.store_file_name = store_file_name
         self.run_id = run_id
+        self.training_type = training_type
         self.n = n
         self.tol = tol
         self.misclassification_count = misclassification_count
@@ -75,8 +76,8 @@ class MILP:
             self.labels_gt = source_labels[idx]
             self.pred_checkpoint = source_pred[idx]
 
-        self.W = torch.load(f"checkpoints/{self.dataset_name}/Run{self.run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
-        self.b = torch.load(f"checkpoints/{self.dataset_name}/Run{self.run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()
+        self.W = torch.load(f"checkpoints_{self.training_type}/{self.dataset_name}/Run{self.run_id}_classifier_weight.pt", map_location=torch.device('cpu')).numpy()
+        self.b = torch.load(f"checkpoints_{self.training_type}/{self.dataset_name}/Run{self.run_id}_classifier_bias.pt", map_location=torch.device('cpu')).numpy()
 
         self.Z_target = self.X_org @ self.W.T + self.b
     

@@ -68,6 +68,100 @@ class AWP:
         self._restore()
 
 
+class SAM:
+    def __init__(self, model, optimizer, rho=0.05):
+        self.model = model
+        self.optimizer = optimizer
+        self.rho = rho
+        self.backup = {}
+
+    @torch.no_grad()
+    def _save(self):
+        for name, param in self.model.named_parameters():
+            if param.requires_grad and param.grad is not None:
+                self.backup[name] = param.data.clone()
+
+    @torch.no_grad()
+    def _restore(self):
+        for name, param in self.model.named_parameters():
+            if name in self.backup:
+                param.data.copy_(self.backup[name])
+        self.backup = {}
+
+    @torch.no_grad()
+    def _attack_step(self):
+        grads = []
+        for name, param in self.model.named_parameters():
+            if param.requires_grad and param.grad is not None:
+                grads.append(param.grad.view(-1))
+        
+        if not grads:
+            return
+            
+        grad_norm = torch.norm(torch.cat(grads))
+        scale = self.rho / (grad_norm + 1e-12)
+
+        for name, param in self.model.named_parameters():
+            if param.requires_grad and param.grad is not None:
+                e_w = param.grad * scale
+                param.data.add_(e_w)
+
+    def attack_backward(self, inputs, labels, criterion):
+        self._save()
+        self._attack_step()
+        self.optimizer.zero_grad()
+        logits = self.model(inputs)
+        loss = criterion(logits, labels)
+        loss.backward()
+
+    def restore(self):
+        self._restore()
+
+
+class RWP:
+    def __init__(self, model, optimizer, adv_param="weight", eps=0.01):
+        self.model = model
+        self.optimizer = optimizer
+        self.adv_param = adv_param
+        self.eps = eps
+        self.backup = {}
+
+    @torch.no_grad()
+    def _save(self):
+        for name, param in self.model.named_parameters():
+            if param.requires_grad and self.adv_param in name:
+                self.backup[name] = param.data.clone()
+
+    @torch.no_grad()
+    def _restore(self):
+        for name, param in self.model.named_parameters():
+            if name in self.backup:
+                param.data.copy_(self.backup[name])
+        self.backup = {}
+
+    @torch.no_grad()
+    def _attack_step(self):
+        for name, param in self.model.named_parameters():
+            if param.requires_grad and self.adv_param in name:
+                noise = torch.randn_like(param.data)
+                norm_n = torch.norm(noise)
+                norm_p = torch.norm(param.data)
+                if norm_n != 0:
+                    r_at = self.eps * noise / norm_n * norm_p
+                    param.data.add_(r_at)
+
+    def attack_backward(self, inputs, labels, criterion):
+        self._save()
+        self._attack_step()
+        self.optimizer.zero_grad()
+        logits = self.model(inputs)
+        loss = criterion(logits, labels)
+        loss.backward()
+
+    def restore(self):
+        self._restore()
+
+
 class TrainModel:
     def __init__(self, training_type, dataset_name, model, train_loader, val_loader, device, test_loader=None, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0):
         self.training_type = training_type
@@ -103,7 +197,16 @@ class TrainModel:
             self.awp = AWP(self.model, self.optimizer, adv_lr=1.0, adv_eps=0.01)
         else:
             self.awp = None
-
+        
+        if "SAM" in self.training_type:
+            self.sam = SAM(self.model, self.optimizer, rho=0.05)
+        else:
+            self.sam = None
+            
+        if "RWP" in self.training_type:
+            self.rwp = RWP(self.model, self.optimizer, eps=0.01)
+        else:
+            self.rwp = None
 
         os.makedirs("NNRunLog", exist_ok=True)
         self.log_file = f"NNRunLog/{self.dataset_name}.csv"
@@ -138,6 +241,14 @@ class TrainModel:
                 if self.awp is not None:
                     self.awp.attack_backward(inputs, labels_for_loss, self.criterion)
                     self.awp.restore()
+                
+                if self.sam is not None:
+                    self.sam.attack_backward(inputs, labels_for_loss, self.criterion)
+                    self.sam.restore()
+                
+                if self.rwp is not None:
+                    self.rwp.attack_backward(inputs, labels_for_loss, self.criterion)
+                    self.rwp.restore()
 
                 self.optimizer.step()
 
@@ -235,9 +346,9 @@ class TrainModel:
 
     def save_model(self, loss, save_suffix=""):
         if save_suffix == "" or save_suffix == "_Resume":
-            checkpoint_dir = f"./checkpoints/{self.dataset_name}"
+            checkpoint_dir = f"./checkpoints_{self.training_type}/{self.dataset_name}"
         else:
-            checkpoint_dir = f"./checkpoints/{self.dataset_name}_CO"
+            checkpoint_dir = f"./checkpoints_{self.training_type}/{self.dataset_name}_CO"
         os.makedirs(checkpoint_dir, exist_ok=True)
         
         # torch.save(self.model.fc_hidden.weight.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_fc_hidden_weight{save_suffix}.pt")

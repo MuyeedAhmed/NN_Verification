@@ -56,7 +56,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Training script")
 
     parser.add_argument("--dataset_name", required=True)
-    parser.add_argument("--training_type", default="Regular")  # Regular or AWP
+    parser.add_argument("--training_type", default="Regular")  # Regular (ERM), AWP, SAM, RWP
     parser.add_argument("--method", default="S")         # TAGD, TAGDW, HTA, CMC, S
     parser.add_argument("--save_checkpoint", default="N")
     parser.add_argument("--misclassification_count", type=int, default=0)
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     input_type = args.input_type
 
     # os.makedirs(f"Stats/{method}", exist_ok=True)
-    os.makedirs(f"./checkpoints/{dataset_name}_CO", exist_ok=True)
+    os.makedirs(f"./checkpoints_{training_type}/{dataset_name}_CO", exist_ok=True)
     
     if save_checkpoint == "N" or (method == "CMC" or method == "TAGD" or method == "TAGDW" or method == "HTA"):
         from Utils.RunGurobi import MILP
@@ -124,8 +124,8 @@ if __name__ == "__main__":
     val_loader = DataLoader(val_subset, batch_size=BatchSize, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=BatchSize, shuffle=False)
     
-    checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
-    gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}_CO/Run{i}_checkpoint_{method}_{cmc_type}_{misclassification_count}.pth"
+    checkpoint_dir = f"./checkpoints_{training_type}/{dataset_name}/Run{i}_full_checkpoint.pth"
+    gurobi_checkpoint_dir = f"./checkpoints_{training_type}/{dataset_name}_CO/Run{i}_checkpoint_{method}_{cmc_type}_{misclassification_count}.pth"
 
     if pass_test_loader:
         tloader = test_loader
@@ -226,7 +226,7 @@ if __name__ == "__main__":
     
     time0 = time.time()
 
-    milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, input_type=input_type)
+    milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, training_type=training_type, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, input_type=input_type)
     if method == "TAGD":
         Gurobi_output = milp_instance.Optimize(Method="LowerConf")
     elif method == "TAGDW":
