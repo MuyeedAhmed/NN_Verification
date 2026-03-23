@@ -14,14 +14,69 @@ import copy
 import numpy as np
 
 
+class AWP:
+    def __init__(self, model, optimizer, adv_param="weight", adv_lr=1.0, adv_eps=0.01):
+        self.model = model
+        self.optimizer = optimizer
+        self.adv_param = adv_param
+        self.adv_lr = adv_lr
+        self.adv_eps = adv_eps
+        self.backup = {}
+        self.backup_eps = {}
+
+    def _save(self):
+        for name, param in self.model.named_parameters():
+            if param.requires_grad and param.grad is not None and self.adv_param in name:
+                if name not in self.backup:
+                    self.backup[name] = param.data.clone()
+                    grad_eps = self.adv_eps * param.abs().detach()
+                    self.backup_eps[name] = (
+                        self.backup[name] - grad_eps,
+                        self.backup[name] + grad_eps,
+                    )
+
+    def _restore(self):
+        for name, param in self.model.named_parameters():
+            if name in self.backup:
+                param.data.copy_(self.backup[name])
+        self.backup = {}
+        self.backup_eps = {}
+
+    def _attack_step(self):
+        e = 1e-6
+        for name, param in self.model.named_parameters():
+            if param.requires_grad and param.grad is not None and self.adv_param in name:
+                norm1 = torch.norm(param.grad)
+                norm2 = torch.norm(param.data.detach())
+                if norm1 != 0 and not torch.isnan(norm1):
+                    r_at = self.adv_lr * param.grad / (norm1 + e) * (norm2 + e)
+                    param.data.add_(r_at)
+                    param.data.copy_(torch.max(
+                        torch.min(param.data, self.backup_eps[name][1]),
+                        self.backup_eps[name][0]
+                    ))
+
+    def attack_backward(self, inputs, labels, criterion):
+        self._save()
+        self._attack_step()
+        self.optimizer.zero_grad()
+        logits = self.model(inputs)
+        loss = criterion(logits, labels)
+        loss.backward()
+
+    def restore(self):
+        self._restore()
+
+
 class TrainModel:
-    def __init__(self, method, dataset_name, model, train_loader, val_loader, device, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0):
-        self.method = method
+    def __init__(self, training_type, dataset_name, model, train_loader, val_loader, device, test_loader=None, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0):
+        self.training_type = training_type
         self.run_id = run_id
         self.dataset_name = dataset_name
         self.model = model
         self.train_loader = train_loader
         self.val_loader = val_loader
+        self.test_loader = test_loader
         self.device = device
         self.num_epochs = num_epochs
         self.resume_epochs = resume_epochs
@@ -43,13 +98,20 @@ class TrainModel:
             self.scheduler = optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[int(0.5*self.num_epochs), int(0.75*self.num_epochs)], gamma=0.1)
        
         self.criterion = nn.CrossEntropyLoss()
+
+        if "AWP" in self.training_type:
+            self.awp = AWP(self.model, self.optimizer, adv_lr=1.0, adv_eps=0.01)
+        else:
+            self.awp = None
+
+
         os.makedirs("NNRunLog", exist_ok=True)
         self.log_file = f"NNRunLog/{self.dataset_name}.csv"
         
         if os.path.exists(self.log_file) == False:
             with open(self.log_file, "w") as f:
-                f.write("Run,Phase,Method,Epoch,Train_loss,Train_acc,Val_loss,Val_acc\n")
-
+                f.write("Run,Phase,TrainingType,Epoch,Train_loss,Train_acc,Val_loss,Val_acc,Test_loss,Test_acc\n")
+                
     def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=0):
         loss = -1
         best_val_loss = float('inf')
@@ -57,6 +119,7 @@ class TrainModel:
         epochs_no_improve = 0
         best_epoch = -1
         acceptable_val_acc = 0.0
+        best_state_dict = None
 
         for epoch in range(self.num_epochs+self.resume_epochs):
             self.model.train()
@@ -71,6 +134,11 @@ class TrainModel:
                 outputs = self.model(inputs)
                 loss = self.criterion(outputs, labels_for_loss)
                 loss.backward()
+
+                if self.awp is not None:
+                    self.awp.attack_backward(inputs, labels_for_loss, self.criterion)
+                    self.awp.restore()
+
                 self.optimizer.step()
 
                 running_loss += loss.item()
@@ -89,12 +157,17 @@ class TrainModel:
                         
             if epoch + 1 <= warmup_epochs:
                 with open(self.log_file, "a") as f:
-                    f.write(f"{self.run_id},{self.phase},{self.method},{epoch+1},{avg_train_loss},{train_accuracy},-,-\n")
+                    f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},-,-\n")
                 continue
             
             val_loss, val_acc = self.evaluate("Val")
+            if self.test_loader is not None:
+                test_loss, test_acc = self.evaluate("Test")
             with open(self.log_file, "a") as f:
-                f.write(f"{self.run_id},{self.phase},{self.method},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc}\n")
+                if self.test_loader is not None:
+                    f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc},{test_loss},{test_acc}\n")
+                else:
+                    f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc},-,-\n")
 
             # if best_train_loss - avg_train_loss > min_delta:
             #     best_train_loss = avg_train_loss
@@ -130,7 +203,7 @@ class TrainModel:
         if self.phase == "Train":
             self.save_model(loss, save_suffix="")
         elif self.phase == "GurobiEdit":
-            self.save_model(loss, save_suffix=f"_GE_{self.method}")
+            self.save_model(loss, save_suffix=f"_GE_{self.training_type}")
         elif self.phase == "ResumeTrain":
             self.save_model(loss, save_suffix="_Resume")
         
@@ -157,7 +230,7 @@ class TrainModel:
         accuracy = 100. * correct / total
         print(f'Test Accuracy: {accuracy:.2f}%')
         with open(self.log_file, "a") as f:
-            f.write(f"{self.run_id},{self.phase}_Test,{self.method},-1,{avg_loss},{accuracy},-,-\n")
+            f.write(f"{self.run_id},{self.phase}_Test,{self.training_type},-1,{avg_loss},{accuracy},-,-\n")
         return accuracy
 
     def save_model(self, loss, save_suffix=""):
@@ -246,6 +319,8 @@ class TrainModel:
             loader = self.train_loader
         elif dataset_type == "Val":
             loader = self.val_loader
+        elif dataset_type == "Test":
+            loader = self.test_loader
         with torch.no_grad():
             for inputs, labels in loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
@@ -263,5 +338,4 @@ class TrainModel:
         avg_loss = total_loss / total
         accuracy = 100. * correct / total
         return avg_loss, accuracy
-        
         

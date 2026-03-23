@@ -12,6 +12,7 @@ import os
 import sys
 import time
 import random
+import argparse
 import numpy as np
 from Utils.TrainModel import TrainModel
 from Utils.GetModelsDatasets import GetDataset, GetModel, GetHparams
@@ -45,24 +46,39 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type == 'cpu':
         device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-    
+    pass_test_loader = False
     initEpoch = 300
     G_epoch = 100
     
-    if len(sys.argv) <= 3:
-        print("Usage: python Main.py <Dataset_Name> <Method> <Save_Checkpoint(Y/N)> <Misclassification_Count> <Misclassification_Type> <Run ID>")
-        sys.exit(1)
-    dataset_name = sys.argv[1]
-    method = sys.argv[2]
-    save_checkpoint = sys.argv[3] if len(sys.argv) > 3 else "N"
-    misclassification_count = int(sys.argv[4]) if len(sys.argv) > 4 else 1
-    cmc_type = sys.argv[5] if len(sys.argv) > 5 else "Any"
-    i = int(sys.argv[6]) if len(sys.argv) > 6 else 2
+    # if len(sys.argv) <= 3:
+    #     print("Usage: python Main.py <Dataset_Name> <Training_Type> <Method> <Save_Checkpoint(Y/N)> <Misclassification_Count> <Misclassification_Type> <Run ID> <Input_Type(v/t)>")
+    #     sys.exit(1)
+    parser = argparse.ArgumentParser(description="Training script")
+
+    parser.add_argument("--dataset_name", required=True)
+    parser.add_argument("--training_type", default="Regular")  # Regular or AWP
+    parser.add_argument("--method", default="S")         # TAGD, TAGDW, HTA, CMC, S
+    parser.add_argument("--save_checkpoint", default="N")
+    parser.add_argument("--misclassification_count", type=int, default=0)
+    parser.add_argument("--cmc_type", default="")
+    parser.add_argument("--run_id", type=int, default=0)
+    parser.add_argument("--input_type", default="t")  # v/t
+
+    args = parser.parse_args()
+
+    dataset_name = args.dataset_name
+    training_type = args.training_type
+    method = args.method
+    save_checkpoint = args.save_checkpoint
+    misclassification_count = args.misclassification_count
+    cmc_type = args.cmc_type
+    i = args.run_id
+    input_type = args.input_type
 
     # os.makedirs(f"Stats/{method}", exist_ok=True)
     os.makedirs(f"./checkpoints/{dataset_name}_CO", exist_ok=True)
     
-    if save_checkpoint == "N":
+    if save_checkpoint == "N" or (method == "CMC" or method == "TAGD" or method == "TAGDW" or method == "HTA"):
         from Utils.RunGurobi import MILP
 
     if method == "TAGD" or method == "TAGDW" or method == "HTA":
@@ -74,8 +90,15 @@ if __name__ == "__main__":
         cmc_type = ""
     elif method == "CMC":
         n_samples_gurobi = 1000
+    elif method == "S":
+        n_samples_gurobi = 0
+        G_epoch = 0
+        misclassification_count = 0
+        cmc_type = ""
+    if input_type == "v":
+        n_samples_gurobi = -1
         
-    print(f'Using device: {device}, dataset: {dataset_name}')
+    print(f'Using device: {device}, dataset: {dataset_name}, training: {training_type}, method: {method}, input: {input_type}')
 
     BatchSize, optimize, learningRate, scheduler_type = GetHparams(dataset_name)
 
@@ -104,11 +127,48 @@ if __name__ == "__main__":
     checkpoint_dir = f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint.pth"
     gurobi_checkpoint_dir = f"./checkpoints/{dataset_name}_CO/Run{i}_checkpoint_{method}_{cmc_type}_{misclassification_count}.pth"
 
+    if pass_test_loader:
+        tloader = test_loader
+    else:        
+        tloader = None
+    TM = TrainModel(training_type, dataset_name, model_t, train_loader, val_loader, device, test_loader=tloader, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i)
     if os.path.exists(checkpoint_dir) == False:
-        TM = TrainModel(method, dataset_name, model_t, train_loader, val_loader, device, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i)
         TM.run()
     
-    if save_checkpoint == "Y":
+    if os.path.exists(checkpoint_dir):
+        if device.type == 'cuda':
+            checkpoint = torch.load(checkpoint_dir)
+        else:
+            checkpoint = torch.load(checkpoint_dir, map_location=torch.device('cpu'))
+        TM.model.load_state_dict(checkpoint['model_state_dict'])
+    
+    train_loss, train_acc = TM.evaluate("Train")
+    val_loss, val_acc = TM.evaluate("Val")
+    test_loss, test_acc = evaluate_loader(dataset_name, TM.model, test_loader, device)
+    
+    results_standalone = {
+        "Dataset": dataset_name,
+        "Run": i,
+        "Training_Type": training_type,
+        "Method": "S",
+        "Train_Loss": float(train_loss),
+        "Train_Acc": float(train_acc),
+        "Val_Loss": float(val_loss),
+        "Val_Acc": float(val_acc),
+        "Test_Loss": float(test_loss),
+        "Test_Acc": float(test_acc)
+    }
+    
+    os.makedirs("Stats", exist_ok=True)
+    csv_path_standalone = "Stats/Summary_S.csv"
+    write_header = not os.path.exists(csv_path_standalone)
+    with open(csv_path_standalone, "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=results_standalone.keys())
+        if write_header:
+            writer.writeheader()
+        writer.writerow(results_standalone)
+
+    if method == "S" or save_checkpoint == "Y":
         sys.exit()
 
     # if os.path.exists(f"./checkpoints/{dataset_name}/Run{i}_full_checkpoint_GE_{method}.pth"):
@@ -116,7 +176,11 @@ if __name__ == "__main__":
     
     results = []
 
-    TM_after_g = TrainModel(method, dataset_name, model_g, train_loader, val_loader, device, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
+    tm_type = training_type + "_" + method
+    if method == "CMC":
+        tm_type += "_" + cmc_type
+
+    TM_after_g = TrainModel(tm_type, dataset_name, model_g, train_loader, val_loader, device, test_loader=tloader, num_epochs=G_epoch, resume_epochs=0, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit", run_id=i)
 
     if device.type == 'cuda':
         checkpoint = torch.load(checkpoint_dir)
@@ -159,9 +223,10 @@ if __name__ == "__main__":
     print("Loaded inputs for Gurobi optimization.")
     with open(TM_after_g.log_file, "a") as f:
         f.write(f"{method}_{cmc_type}_{misclassification_count},,,,,,,\n")
+    
     time0 = time.time()
 
-    milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi)
+    milp_instance = MILP(dataset_name, TM_after_g.log_file, run_id=i, n=n_samples_gurobi, tol=1e-5, misclassification_count=misclassification_count, loaded_inputs=loaded_inputs_gurobi, input_type=input_type)
     if method == "TAGD":
         Gurobi_output = milp_instance.Optimize(Method="LowerConf")
     elif method == "TAGDW":
@@ -214,7 +279,7 @@ if __name__ == "__main__":
         f.write(f"{i},{method},{cmc_type},{misclassification_count},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
     
     
-    if method == "CMC":
+    if method == "CMC" and input_type == "t":
         TM_after_g.run()
     
         S3_Train_loss, S3_Train_acc = TM_after_g.evaluate("Train")
@@ -230,8 +295,10 @@ if __name__ == "__main__":
         "Dataset": dataset_name,
         "Run": i,
         "Checkpoint": gurobi_checkpoint_dir,
+        "Training_Type": training_type,
         "Method": method,
         "CMC_Type": cmc_type,
+        "Input_Type": input_type,
         "Misclassification_Count": int(misclassification_count),
         "S1_Train_loss": float(S1_Train_loss),
         "S1_Train_acc": float(S1_Train_acc),
