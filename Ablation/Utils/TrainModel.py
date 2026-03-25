@@ -303,12 +303,6 @@ class TrainModel:
                         self.save_model(loss=best_val_loss, save_suffix="", model_state_dict=best_state_dict, optimizer_state_dict=best_opt_state, scheduler_state_dict=best_sch_state, epoch=best_epoch)
                     already_saved_early = True
 
-            if epoch == self.num_epochs:
-                if self.phase == "Train":
-                    self.save_model(loss, save_suffix="")
-                    test_accuracy = self.test()
-                self.phase = "ResumeTrain"
-
         if best_state_dict is not None:
             self.model.load_state_dict(best_state_dict)
             self.optimizer.load_state_dict(best_opt_state)
@@ -316,7 +310,12 @@ class TrainModel:
             print(f"Restored best model from epoch {best_epoch}.")
 
         if self.phase == "Train":
-            self.save_model(loss, save_suffix="")
+            if force_full_epochs:
+                self.save_model(loss=best_val_loss, save_suffix="_best")
+                if not already_saved_early:
+                    self.save_model(loss=best_val_loss, save_suffix="")
+            else:
+                self.save_model(loss=best_val_loss, save_suffix="")
         elif self.phase == "GurobiEdit":
             self.save_model(loss, save_suffix=f"_GE_{self.training_type}")
         elif self.phase == "ResumeTrain":
