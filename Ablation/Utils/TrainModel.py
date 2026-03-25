@@ -215,7 +215,7 @@ class TrainModel:
             with open(self.log_file, "w") as f:
                 f.write("Run,Phase,TrainingType,Epoch,Train_loss,Train_acc,Val_loss,Val_acc,Test_loss,Test_acc\n")
                 
-    def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=0, early_stopping=True, force_full_epochs=False):
+    def train(self, early_stopping_patience=25, min_delta=1e-5, warmup_epochs=0, early_stopping=True, force_full_epochs=False):
         loss = -1
         best_val_loss = float('inf')
         best_train_loss = float('inf')
