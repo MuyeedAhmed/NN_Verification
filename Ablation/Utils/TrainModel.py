@@ -215,7 +215,7 @@ class TrainModel:
             with open(self.log_file, "w") as f:
                 f.write("Run,Phase,TrainingType,Epoch,Train_loss,Train_acc,Val_loss,Val_acc,Test_loss,Test_acc\n")
                 
-    def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=0, early_stopping=True):
+    def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=0, early_stopping=True, force_full_epochs=False):
         loss = -1
         best_val_loss = float('inf')
         best_train_loss = float('inf')
@@ -223,6 +223,9 @@ class TrainModel:
         best_epoch = -1
         acceptable_val_acc = 0.0
         best_state_dict = None
+        best_opt_state = None
+        best_sch_state = None
+        already_saved_early = False
 
         for epoch in range(self.num_epochs+self.resume_epochs):
             self.model.train()
@@ -280,26 +283,25 @@ class TrainModel:
                 else:
                     f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc},-,-\n")
 
-            # if best_train_loss - avg_train_loss > min_delta:
-            #     best_train_loss = avg_train_loss
-            #     epochs_no_improve = 0
-            # else:
-            #     epochs_no_improve += 1
-            # if epochs_no_improve >= early_stopping_patience:
-            #     print(f"Early stopping triggered after {epoch+1} epochs based on training loss.")
-            #     break
-
             if best_val_loss - val_loss > min_delta:
                 best_val_loss = val_loss
                 epochs_no_improve = 0
                 best_state_dict = copy.deepcopy(self.model.state_dict())
+                best_opt_state = copy.deepcopy(self.optimizer.state_dict())
+                best_sch_state = copy.deepcopy(self.scheduler.state_dict())
                 best_epoch = epoch + 1
             else:
                 epochs_no_improve += 1
 
             if early_stopping and epochs_no_improve >= early_stopping_patience and val_acc >= acceptable_val_acc:
-                print(f"Early stopping at epoch {epoch+1}. Best was epoch {best_epoch} (val_loss={best_val_loss:.4f}).")
-                break
+                if not force_full_epochs:
+                    print(f"Early stopping at epoch {epoch+1}. Best was epoch {best_epoch} (val_loss={best_val_loss:.4f}).")
+                    break
+                elif not already_saved_early:
+                    print(f"Early stopping condition met at epoch {epoch+1}. Saving best model (epoch {best_epoch}) and continuing...")
+                    if self.phase == "Train":
+                        self.save_model(loss=best_val_loss, save_suffix="", model_state_dict=best_state_dict, optimizer_state_dict=best_opt_state, scheduler_state_dict=best_sch_state, epoch=best_epoch)
+                    already_saved_early = True
 
             if epoch == self.num_epochs:
                 if self.phase == "Train":
@@ -309,6 +311,8 @@ class TrainModel:
 
         if best_state_dict is not None:
             self.model.load_state_dict(best_state_dict)
+            self.optimizer.load_state_dict(best_opt_state)
+            self.scheduler.load_state_dict(best_sch_state)
             print(f"Restored best model from epoch {best_epoch}.")
 
         if self.phase == "Train":
@@ -344,23 +348,38 @@ class TrainModel:
             f.write(f"{self.run_id},{self.phase}_Test,{self.training_type},-1,{avg_loss},{accuracy},-,-\n")
         return accuracy
 
-    def save_model(self, loss, save_suffix=""):
+    def save_model(self, loss, save_suffix="", model_state_dict=None, optimizer_state_dict=None, scheduler_state_dict=None, epoch=None):
         if save_suffix == "" or save_suffix == "_Resume":
             checkpoint_dir = f"./checkpoints_{self.training_type}/{self.dataset_name}"
         else:
             checkpoint_dir = f"./checkpoints_{self.training_type}/{self.dataset_name}_CO"
         os.makedirs(checkpoint_dir, exist_ok=True)
         
-        # torch.save(self.model.fc_hidden.weight.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_fc_hidden_weight{save_suffix}.pt")
-        # torch.save(self.model.fc_hidden.bias.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_fc_hidden_bias{save_suffix}.pt")
-        torch.save(self.model.classifier.weight.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_classifier_weight{save_suffix}.pt")
-        torch.save(self.model.classifier.bias.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_classifier_bias{save_suffix}.pt")
+        m_state = model_state_dict if model_state_dict is not None else self.model.state_dict()
+        o_state = optimizer_state_dict if optimizer_state_dict is not None else self.optimizer.state_dict()
+        s_state = scheduler_state_dict if scheduler_state_dict is not None else self.scheduler.state_dict()
+        ep = epoch if epoch is not None else self.num_epochs
+
+        # Find keys for classifier weights in state dict
+        classifier_weight_key = None
+        classifier_bias_key = None
+        for name, param in self.model.named_parameters():
+            if param is self.model.classifier.weight:
+                classifier_weight_key = name
+            if param is self.model.classifier.bias:
+                classifier_bias_key = name
+        
+        if classifier_weight_key in m_state:
+            torch.save(m_state[classifier_weight_key].clone(), f"{checkpoint_dir}/Run{self.run_id}_classifier_weight{save_suffix}.pt")
+        if classifier_bias_key in m_state:
+            torch.save(m_state[classifier_bias_key].clone(), f"{checkpoint_dir}/Run{self.run_id}_classifier_bias{save_suffix}.pt")
+            
         torch.save({
-            'epoch': self.num_epochs,
-            'model_state_dict': self.model.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict(),
-            'scheduler_state_dict': self.scheduler.state_dict(),
-            'loss': loss.item()
+            'epoch': ep,
+            'model_state_dict': m_state,
+            'optimizer_state_dict': o_state,
+            'scheduler_state_dict': s_state,
+            'loss': loss.item() if hasattr(loss, 'item') else loss
         }, f"{checkpoint_dir}/Run{self.run_id}_full_checkpoint{save_suffix}.pth")
 
         # self.save_fc_inputs("Train", save_suffix=save_suffix)
@@ -413,12 +432,12 @@ class TrainModel:
         except FileNotFoundError:
             print(f"Files for not found for detele.")
 
-    def run(self, early_stopping=True):
+    def run(self, early_stopping=True, force_full_epochs=False):
         start_time = time.time()
         if self.phase == "Train":
-            self.train(early_stopping=early_stopping)
+            self.train(early_stopping=early_stopping, force_full_epochs=force_full_epochs)
         elif self.phase == "GurobiEdit" or self.phase == "ResumeTrain":
-            self.train(warmup_epochs=0, early_stopping=early_stopping)
+            self.train(warmup_epochs=0, early_stopping=early_stopping, force_full_epochs=force_full_epochs)
         accuracy = self.test()
     
     def evaluate(self, dataset_type):

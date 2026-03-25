@@ -63,6 +63,7 @@ if __name__ == "__main__":
     parser.add_argument("--input_type", default="t")  # v/t
     parser.add_argument("--total_epochs", type=int, default=300)
     parser.add_argument("--early_stopping", default="Y")
+    parser.add_argument("--force_full_epochs", default="N")
     parser.add_argument("--pass_test_loader", default="N")
     parser.add_argument("--cmc_iterations", type=int, default=1)
 
@@ -78,6 +79,7 @@ if __name__ == "__main__":
     input_type = args.input_type
     initEpoch = args.total_epochs
     early_stopping = args.early_stopping == "Y"
+    force_full_epochs = args.force_full_epochs == "Y"
     pass_test_loader = args.pass_test_loader == "Y"
     cmc_iterations = args.cmc_iterations
 
@@ -139,7 +141,7 @@ if __name__ == "__main__":
         tloader = None
     TM = TrainModel(training_type, dataset_name, model_t, train_loader, val_loader, device, test_loader=tloader, num_epochs=initEpoch, resume_epochs=G_epoch, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i)
     if os.path.exists(checkpoint_dir) == False:
-        TM.run(early_stopping=early_stopping)
+        TM.run(early_stopping=early_stopping, force_full_epochs=force_full_epochs)
     
     if os.path.exists(checkpoint_dir):
         if device.type == 'cuda':
@@ -294,7 +296,7 @@ if __name__ == "__main__":
         
         
         if method == "CMC" and input_type == "t":
-            TM_after_g.run(early_stopping=early_stopping)
+            TM_after_g.run(early_stopping=early_stopping, force_full_epochs=force_full_epochs)
         
             S3_Train_loss, S3_Train_acc = TM_after_g.evaluate("Train")
             S3_Val_loss, S3_Val_acc = TM_after_g.evaluate("Val")
