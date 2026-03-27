@@ -75,11 +75,10 @@ if __name__ == "__main__":
     if training_type not in ["Regular", "S", "ERM", "AWP", "SAM", "RWP"]:     
         print(f"Unknown training type: {training_type}. Exiting.")
         sys.exit(1)
-
-    os.makedirs(f"./checkpoints_{training_type}/{dataset_name}_CO", exist_ok=True)
     
     if save_checkpoint == "N" or (method == "CMC" or method == "TAGD" or method == "TAGDW" or method == "HTA"):
-        from Utils.RunGurobi import MILP
+            os.makedirs(f"./checkpoints_{training_type}/{dataset_name}_CO", exist_ok=True)
+            from Utils.RunGurobi import MILP
 
     if method == "TAGD" or method == "TAGDW" or method == "HTA":
         torch.set_default_dtype(torch.float64)
