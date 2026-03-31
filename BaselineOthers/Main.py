@@ -95,7 +95,7 @@ if __name__ == "__main__":
         misclassification_count = 0
         cmc_type = ""
     if input_type == "v":
-        n_samples_gurobi = -1
+        n_samples_gurobi = 100
         
     print(f'Using device: {device}, dataset: {dataset_name}, training: {training_type}, method: {method}, input: {input_type}')
 
@@ -278,7 +278,7 @@ if __name__ == "__main__":
         f.write(f"{i},{method},{cmc_type},{misclassification_count},Gurobi_Complete_Eval_Test,-1,{test_loss},{test_acc}\n")
     
     
-    if method == "CMC" and input_type == "t":
+    if method == "CMC":
         TM_after_g.run()
     
         S3_Train_loss, S3_Train_acc = TM_after_g.evaluate("Train")
