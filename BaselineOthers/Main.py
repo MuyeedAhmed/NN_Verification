@@ -50,9 +50,6 @@ if __name__ == "__main__":
     initEpoch = 300
     G_epoch = 100
     
-    # if len(sys.argv) <= 3:
-    #     print("Usage: python Main.py <Dataset_Name> <Training_Type> <Method> <Save_Checkpoint(Y/N)> <Misclassification_Count> <Misclassification_Type> <Run ID> <Input_Type(v/t)>")
-    #     sys.exit(1)
     parser = argparse.ArgumentParser(description="Training script")
 
     parser.add_argument("--dataset_name", required=True)
@@ -75,11 +72,13 @@ if __name__ == "__main__":
     i = args.run_id
     input_type = args.input_type
 
-    # os.makedirs(f"Stats/{method}", exist_ok=True)
-    os.makedirs(f"./checkpoints_{training_type}/{dataset_name}_CO", exist_ok=True)
+    if training_type not in ["Regular", "S", "ERM", "AWP", "SAM", "RWP"]:     
+        print(f"Unknown training type: {training_type}. Exiting.")
+        sys.exit(1)
     
     if save_checkpoint == "N" or (method == "CMC" or method == "TAGD" or method == "TAGDW" or method == "HTA"):
-        from Utils.RunGurobi import MILP
+            os.makedirs(f"./checkpoints_{training_type}/{dataset_name}_CO", exist_ok=True)
+            from Utils.RunGurobi import MILP
 
     if method == "TAGD" or method == "TAGDW" or method == "HTA":
         torch.set_default_dtype(torch.float64)

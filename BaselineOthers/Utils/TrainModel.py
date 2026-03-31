@@ -280,15 +280,6 @@ class TrainModel:
                 else:
                     f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc},-,-\n")
 
-            # if best_train_loss - avg_train_loss > min_delta:
-            #     best_train_loss = avg_train_loss
-            #     epochs_no_improve = 0
-            # else:
-            #     epochs_no_improve += 1
-            # if epochs_no_improve >= early_stopping_patience:
-            #     print(f"Early stopping triggered after {epoch+1} epochs based on training loss.")
-            #     break
-
             if best_val_loss - val_loss > min_delta:
                 best_val_loss = val_loss
                 epochs_no_improve = 0
@@ -345,14 +336,20 @@ class TrainModel:
         return accuracy
 
     def save_model(self, loss, save_suffix=""):
-        if save_suffix == "" or save_suffix == "_Resume":
-            checkpoint_dir = f"./checkpoints_{self.training_type}/{self.dataset_name}"
+        if "AWP" in self.training_type:
+            tt = "AWP"
+        elif "SAM" in self.training_type:
+            tt = "SAM"
+        elif "RWP" in self.training_type:
+            tt = "RWP"
         else:
-            checkpoint_dir = f"./checkpoints_{self.training_type}/{self.dataset_name}_CO"
+            tt = "ERM"
+        if save_suffix == "" or save_suffix == "_Resume":
+            checkpoint_dir = f"./checkpoints_{tt}/{self.dataset_name}"
+        else:
+            checkpoint_dir = f"./checkpoints_{tt}/{self.dataset_name}_CO"
         os.makedirs(checkpoint_dir, exist_ok=True)
         
-        # torch.save(self.model.fc_hidden.weight.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_fc_hidden_weight{save_suffix}.pt")
-        # torch.save(self.model.fc_hidden.bias.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_fc_hidden_bias{save_suffix}.pt")
         torch.save(self.model.classifier.weight.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_classifier_weight{save_suffix}.pt")
         torch.save(self.model.classifier.bias.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_classifier_bias{save_suffix}.pt")
         torch.save({
@@ -362,9 +359,6 @@ class TrainModel:
             'scheduler_state_dict': self.scheduler.state_dict(),
             'loss': loss.item()
         }, f"{checkpoint_dir}/Run{self.run_id}_full_checkpoint{save_suffix}.pth")
-
-        # self.save_fc_inputs("Train", save_suffix=save_suffix)
-        # self.save_fc_inputs("Val", save_suffix=save_suffix)
 
     def save_fc_inputs(self, dataset_type, save_suffix=""):
         checkpoint_dir_input = f"./checkpoints_inputs/{self.dataset_name}"
@@ -384,9 +378,7 @@ class TrainModel:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 fc_input, _ = self.model(inputs, extract_fc_input=True)
                 logits = self.model.classifier(fc_input)
-                # fc_input, _ = self.model(inputs, extract_fc_input=True)
-                # logits = self.model.classifier(self.model.fc_hidden(fc_input))
-                # # logits = self.model.classifier(torch.relu(self.model.fc_hidden(fc_input)))
+                
                 preds = torch.argmax(logits, dim=1)
                 X_fc_input.append(fc_input.cpu())
                 Y_true.append(labels.cpu())
