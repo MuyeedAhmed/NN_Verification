@@ -43,6 +43,89 @@ def GetDelta(df):
 
     return merged, merged_filtered
 
+def GetBestCMCperDataset(df):
+    bestCMCs = pd.DataFrame(columns=df.columns)
+    for ttype in df["Training_Type"].unique():
+        for dataset in df["Dataset"].unique():
+            subset = df[(df["Training_Type"] == ttype) & (df["Dataset"] == dataset)]
+            best_row = subset.loc[subset["Delta_Val"].idxmax()]
+
+            bestCMCs = pd.concat([bestCMCs, best_row.to_frame().T], ignore_index=True)
+
+    return bestCMCs
+
+
+def PlotBestCMCperDataset(bestCMCs):
+    plt.figure(figsize=(10, 6))
+    
+    label_map = {
+        "Any_1": "Any 1", 
+        "Any_10": "Any 10", 
+        "Correct_1": "Correct 1", 
+        "Correct_10": "Correct 10"
+    }
+    bestCMCs["CMC_Label"] = bestCMCs["CMC_Label"].map(label_map).fillna(bestCMCs["CMC_Label"])
+
+    dataset_order = (
+        bestCMCs.groupby("Dataset")["Delta"]
+        .mean()
+        .sort_values(ascending=False)
+        .index.tolist()
+    )
+
+    ax = sns.barplot(
+        data=bestCMCs,
+        y='Dataset',
+        x='Delta',
+        hue='Training_Type',
+        order=dataset_order
+    )
+    
+    hue_order = [l.get_label() for l in ax.legend_.get_lines()]
+    if not hue_order:
+        hue_order = list(bestCMCs['Training_Type'].unique())
+
+    for i, container in enumerate(ax.containers):
+        current_hue = hue_order[i]
+        
+        for j, bar in enumerate(container):
+            if bar is None or bar.get_height() == 0:
+                continue
+                
+            dataset = dataset_order[j]
+            label_row = bestCMCs[(bestCMCs['Dataset'] == dataset) & 
+                                 (bestCMCs['Training_Type'] == current_hue)]
+            
+            if not label_row.empty:
+                label_text = str(label_row['CMC_Label'].item())
+                delta_val = bar.get_width()
+                y_pos = bar.get_y() + bar.get_height() / 2
+                
+                x_pos = max(delta_val, 0.01)
+
+                ax.annotate(
+                    label_text,
+                    xy=(x_pos, y_pos),
+                    xytext=(5, 0),
+                    textcoords="offset points",
+                    va='center',
+                    ha='left',
+                    fontsize=9,
+                    fontweight='bold'
+                )
+
+    ax.set_xlabel(r'Accuracy Gain (Training$_{\text{CMC}}$ - Standalone)', fontsize=12)
+    ax.set_ylabel('', fontsize=12)
+    ax.axvline(0, linestyle="--", color="black", linewidth=1)
+    ax.set_xlim(-0.5, 3.5)
+    
+    plt.legend(title='Training Type', loc='lower right')
+    plt.tight_layout()
+    os.makedirs('Figs', exist_ok=True)
+    plt.savefig('Figs/Best_CMC_Delta.pdf')
+    plt.show()
+
+
 def PlotDelta(merged):
     merged = merged.copy() 
     g = sns.catplot(
@@ -91,7 +174,7 @@ def PlotDelta_Sorted(merged):
             .index
         )
 
-        plt.figure(figsize=(8, max(4, len(order) * 0.5)))
+        plt.figure(figsize=(6, 4))
 
         ax = sns.barplot(
             data=df,
@@ -102,10 +185,12 @@ def PlotDelta_Sorted(merged):
         )
         ax.axvline(0, linestyle="--", color="black", linewidth=1)
 
-        ax.set_title(f"{ttype}")
-        ax.set_xlabel("Accuracy Gain (Training+CMC - Standalone)")
+        ax.set_title(f"{ttype}", fontsize=14)
+        ax.set_xlabel(r'Accuracy Gain (Training$_{\text{CMC}}$ - Standalone)', fontsize=14)
         ax.set_ylabel("")
-        plt.legend(title="CMC Types", loc="lower right")
+        ax.tick_params(axis='x', labelsize=14)
+        ax.tick_params(axis='y', labelsize=14)
+        plt.legend(title="CMC Types", loc="lower right", fontsize=14, title_fontsize=14)
 
         plt.tight_layout()
         plt.savefig(f"Figs/Delta_{ttype}.pdf")
@@ -124,13 +209,6 @@ def PlotStandaloneComparison(merged):
         x='Standalone',
         hue='Training_Type',
     )
-    # print(ax.containers)
-    # for container in ax.containers:
-    #     label = container.get_label()
-
-    #     ax.bar_label(container, labels=[f' {label}: {v:.1f}%' for v in container.datavalues], padding=5, fontsize=9)
-
-    # ax.set_title('Comparison of Standalone Training Accuracies', fontsize=16, pad=20)
     ax.set_xlabel('Standalone Accuracy (%)', fontsize=12)
     ax.set_ylabel('', fontsize=12)
     ax.set_xlim(60, 100)
@@ -143,6 +221,7 @@ def PlotStandaloneComparison(merged):
     plt.show()
 
 
+
 if __name__ == "__main__":
     try:
         df = pd.read_csv("../Stats/Summary.csv")
@@ -150,6 +229,9 @@ if __name__ == "__main__":
         df = pd.read_csv("Stats/Summary.csv")
     
     merged, merged_filtered = GetDelta(df)
+    # bestCMCs = GetBestCMCperDataset(merged_filtered)
+    # PlotBestCMCperDataset(bestCMCs)
+    # print(bestCMCs)
     # PlotDelta_Sorted(merged)
     PlotDelta_Sorted(merged_filtered)
-    PlotStandaloneComparison(merged)
+    # PlotStandaloneComparison(merged)

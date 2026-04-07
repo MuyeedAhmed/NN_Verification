@@ -72,7 +72,12 @@ def CompareByCType(df, ctype="Any", MiscCount = 1):
 def FindTopTechniques(df):
     df_cmc = df[df["Method"] == "CMC"]
     datasets = df_cmc["Dataset"].unique()
-    
+    label_map = {
+        "Any": "A", 
+        "Correct": "C"
+    }
+    df_cmc["CMC_Type"] = df_cmc["CMC_Type"].map(label_map).fillna(df_cmc["CMC_Type"])
+
     for dataset in datasets:
         df_d = df_cmc[df_cmc["Dataset"] == dataset]
         results = []
@@ -87,19 +92,21 @@ def FindTopTechniques(df):
         improved = df_d.groupby(["Training_Type", "CMC_Type", "Misclassification_Count"])["S3_Test_acc"].mean().reset_index()
         for _, row in improved.iterrows():
             results.append({
-                "name": f"{row['Training_Type']}+{row['CMC_Type']}\_{int(row['Misclassification_Count'])}",
+                "name": f"{row['Training_Type']}$_[{row['CMC_Type']}{int(row['Misclassification_Count'])}]$",
                 "acc": row["S3_Test_acc"]
             })
             
         results.sort(key=lambda x: x["acc"], reverse=True)
+        # print(results)
         # value = next(res['acc'] for res in results if res['name'] == 'SAP_Standalone')
         # print(value)
-        print(f"{dataset} & " + " & ".join(f"{res['name']} ({res['acc']:.2f}\\%)" for res in results[:3]) + " & " + f"{next(res['acc'] for res in results if res['name'] == 'AWP'):.2f}\\% & {next(res['acc'] for res in results if res['name'] == 'SAP'):.2f}\\% \\\\")
+        print(f"{dataset} & " + " & ".join(f"{res['name']} ({res['acc']:.2f}\\%)" for res in results[:3]) + " & " 
+        + f"{next(res['acc'] for res in results if res['name'] == 'ERM'):.2f}\\% & {next(res['acc'] for res in results if res['name'] == 'AWP'):.2f}\\% & {next(res['acc'] for res in results if res['name'] == 'SAM'):.2f}\\% & {next(res['acc'] for res in results if res['name'] == 'RWP'):.2f}\\% \\\\")
         # print(f"\n--- Dataset: {dataset} ---")
         # for rank, res in enumerate(results[:3], 1):
         #     print(f"Rank {rank}: {res['name']} ({res['acc']:.2f}%)")
 
 
-df = pd.read_csv("Stats/Summary copy.csv")
-# FindTopTechniques(df)
-CompareByCType(df, ctype="Any", MiscCount=10)
+df = pd.read_csv("Stats/Summary.csv")
+FindTopTechniques(df)
+# CompareByCType(df, ctype="Any", MiscCount=10)
