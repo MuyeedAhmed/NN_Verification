@@ -33,7 +33,7 @@ def GetDelta(df):
     merged["Delta"] = merged["S3_Test_mean"] - merged["S1_Test_mean"]
     merged["Delta_Val"] = merged["S3_Val_mean"] - merged["S1_Val_mean"]
     merged = merged.rename(columns={'S3_Test_mean': 'Training+CMC', 'S1_Test_mean': 'Standalone'})
-    merged.drop(columns=["S3_Val_mean", "S1_Val_mean"], inplace=True)
+    # merged.drop(columns=["S3_Val_mean", "S1_Val_mean"], inplace=True)
 
     merged.to_csv("Stats/Summary_Delta.csv", index=False)
     
@@ -42,6 +42,25 @@ def GetDelta(df):
     merged_filtered.to_csv("Stats/Summary_Delta_Filtered.csv", index=False)
 
     return merged, merged_filtered
+
+
+def SummarizeDeltaStatsToLatex(df):
+    def format_cell(x):
+        x = x.dropna()
+        pos_count = (x > 0).sum()
+        total_count = len(x)
+        avg_delta = x.mean()
+        return f"{pos_count}/{total_count} ({avg_delta:.2f})"
+
+    summary_table = df.pivot_table(
+        values='Delta', 
+        index='Training_Type', 
+        columns='CMC_Label', 
+        aggfunc=format_cell
+    )
+    print(summary_table)
+    return summary_table
+
 
 def GetBestCMCperDataset(df):
     bestCMCs = pd.DataFrame(columns=df.columns)
@@ -52,6 +71,7 @@ def GetBestCMCperDataset(df):
 
             bestCMCs = pd.concat([bestCMCs, best_row.to_frame().T], ignore_index=True)
 
+    bestCMCs.to_csv("Stats/Best_CMCs.csv", index=False)
     return bestCMCs
 
 
@@ -80,7 +100,7 @@ def PlotBestCMCperDataset(bestCMCs):
         hue='Training_Type',
         order=dataset_order
     )
-    
+
     hue_order = [l.get_label() for l in ax.legend_.get_lines()]
     if not hue_order:
         hue_order = list(bestCMCs['Training_Type'].unique())
@@ -229,9 +249,11 @@ if __name__ == "__main__":
         df = pd.read_csv("Stats/Summary.csv")
     
     merged, merged_filtered = GetDelta(df)
-    # bestCMCs = GetBestCMCperDataset(merged_filtered)
+    bestCMCs = GetBestCMCperDataset(merged_filtered)
+    SummarizeDeltaStatsToLatex(merged_filtered)
+    
     # PlotBestCMCperDataset(bestCMCs)
     # print(bestCMCs)
     # PlotDelta_Sorted(merged)
-    PlotDelta_Sorted(merged_filtered)
+    # PlotDelta_Sorted(merged_filtered)
     # PlotStandaloneComparison(merged)
