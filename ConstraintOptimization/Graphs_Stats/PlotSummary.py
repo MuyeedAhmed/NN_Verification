@@ -76,13 +76,13 @@ def GetBestCMCperDataset(df):
 
 
 def PlotBestCMCperDataset(bestCMCs):
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(9, 4))
     
     label_map = {
-        "Any_1": "Any 1", 
-        "Any_10": "Any 10", 
-        "Correct_1": "Correct 1", 
-        "Correct_10": "Correct 10"
+        "Any_1": "A1", 
+        "Any_10": "A10", 
+        "Correct_1": "C1", 
+        "Correct_10": "C10"
     }
     bestCMCs["CMC_Label"] = bestCMCs["CMC_Label"].map(label_map).fillna(bestCMCs["CMC_Label"])
 
@@ -95,11 +95,14 @@ def PlotBestCMCperDataset(bestCMCs):
 
     ax = sns.barplot(
         data=bestCMCs,
-        y='Dataset',
-        x='Delta',
+        x='Dataset',
+        y='Delta',
         hue='Training_Type',
         order=dataset_order
     )
+
+    # Rotate dataset labels
+    ax.tick_params(axis='x', rotation=10)
 
     hue_order = [l.get_label() for l in ax.legend_.get_lines()]
     if not hue_order:
@@ -109,7 +112,8 @@ def PlotBestCMCperDataset(bestCMCs):
         current_hue = hue_order[i]
         
         for j, bar in enumerate(container):
-            if bar is None or bar.get_height() == 0:
+            height = bar.get_height()
+            if bar is None or np.isnan(height) or height == 0:
                 continue
                 
             dataset = dataset_order[j]
@@ -118,32 +122,32 @@ def PlotBestCMCperDataset(bestCMCs):
             
             if not label_row.empty:
                 label_text = str(label_row['CMC_Label'].item())
-                delta_val = bar.get_width()
-                y_pos = bar.get_y() + bar.get_height() / 2
                 
-                x_pos = max(delta_val, 0.01)
+                x_pos = bar.get_x() + bar.get_width() / 2
+                y_pos = max(height, 0.01)
 
                 ax.annotate(
                     label_text,
                     xy=(x_pos, y_pos),
-                    xytext=(5, 0),
+                    xytext=(0, 5),
                     textcoords="offset points",
-                    va='center',
-                    ha='left',
+                    va='bottom',
+                    ha='center',
+                    rotation=90,
                     fontsize=9,
                     fontweight='bold'
                 )
 
-    ax.set_xlabel(r'Accuracy Gain (Training$_{\text{CMC}}$ - Standalone)', fontsize=12)
-    ax.set_ylabel('', fontsize=12)
-    ax.axvline(0, linestyle="--", color="black", linewidth=1)
-    ax.set_xlim(-0.5, 3.5)
+    ax.set_ylabel(r'Accuracy Gain (Training$_{\text{CMC}}$ - Standalone)', fontsize=12)
+    ax.set_xlabel('', fontsize=12)
+    ax.axhline(0, linestyle="--", color="black", linewidth=1)
+    ax.set_ylim(-0.3, 3.5)
     
-    plt.legend(title='Training Type', loc='lower right')
+    plt.legend(title='Training Type', loc='upper right')
     plt.tight_layout()
     os.makedirs('Figs', exist_ok=True)
     plt.savefig('Figs/Best_CMC_Delta.pdf')
-    plt.show()
+    # plt.show()
 
 
 def PlotDelta(merged):
@@ -252,7 +256,7 @@ if __name__ == "__main__":
     bestCMCs = GetBestCMCperDataset(merged_filtered)
     SummarizeDeltaStatsToLatex(merged_filtered)
     
-    # PlotBestCMCperDataset(bestCMCs)
+    PlotBestCMCperDataset(bestCMCs)
     # print(bestCMCs)
     # PlotDelta_Sorted(merged)
     # PlotDelta_Sorted(merged_filtered)
