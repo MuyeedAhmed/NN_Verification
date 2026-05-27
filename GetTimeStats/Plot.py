@@ -93,9 +93,9 @@ def plot_time_stats_SampleSize(file_name, method):
         )
     plt.yticks(fontsize=20)
     if method == "RAB":
-        plt.title("(a) TAGD", fontsize=24)
+        plt.title("(a)", fontsize=24)
     else:
-        plt.title("(b) CMC", fontsize=24)
+        plt.title("(b)", fontsize=24)
     plt.tight_layout()
     plt.savefig(f"Figures/{file_name.split('/')[1].split('.')[0]}_{method}.pdf", format='pdf', bbox_inches='tight')
 
@@ -119,7 +119,7 @@ def TimeVSample_1st_Best(file_name1, file_name2, method):
     plt.plot(df2['Sample_Size'], df2['Time'], marker='o', label='Best Solution')
     plt.plot(df1['Sample_Size'], df1['Time'], marker='o', label='1st Solution')
 
-    plt.title("(d)", fontsize=24)
+    plt.title("(c)", fontsize=24)
     plt.xlabel('# Samples', fontsize=22)
     plt.ylabel('Average Time (s)', fontsize=22)
     plt.legend(fontsize=22)
@@ -245,7 +245,7 @@ def polyFit(file_name, method):
 
 if __name__ == "__main__":
     plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAB.csv", "RAB")
-    # plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_20k.csv", "RAF")
+    plot_time_stats_SampleSize("Stats/TimeStats_S_Thelma_20k.csv", "RAF")
 
     # # plot_time_stats_SampleSize("Stats/TimeStats_SampleSize_RAF.csv", "RAF")
 
@@ -269,7 +269,7 @@ if __name__ == "__main__":
     # plot_time_stats_Classes("Stats/TimeStats_Classes.csv")
 
     # ## Compare 1st and Best solution times (d)
-    # TimeVSample_1st_Best("Stats/TimeStats_S_Thelma_20k_1s.csv", "Stats/TimeStats_S_Thelma_20k.csv", "RAF") ## Remove MNIST From stats
+    TimeVSample_1st_Best("Stats/TimeStats_S_Thelma_20k_1s.csv", "Stats/TimeStats_S_Thelma_20k.csv", "RAF") ## Remove MNIST From stats
     
     ## Global Misclassified Plot
     # plot_GlobalMisclassified("Stats/GlobalFlips.csv")
