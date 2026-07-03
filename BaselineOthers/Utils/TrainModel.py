@@ -163,7 +163,7 @@ class RWP:
 
 
 class TrainModel:
-    def __init__(self, training_type, dataset_name, model, train_loader, val_loader, device, test_loader=None, num_epochs=200, resume_epochs=100, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0):
+    def __init__(self, training_type, dataset_name, model, train_loader, val_loader, device, test_loader, num_epochs=200, batch_size=64, learning_rate=0.01, optimizer_type='SGD', scheduler_type='CosineAnnealingLR', phase = "Train", run_id=0):
         self.training_type = training_type
         self.run_id = run_id
         self.dataset_name = dataset_name
@@ -173,7 +173,6 @@ class TrainModel:
         self.test_loader = test_loader
         self.device = device
         self.num_epochs = num_epochs
-        self.resume_epochs = resume_epochs
         self.batch_size = batch_size
         self.learning_rate = learning_rate
         self.phase = phase
@@ -215,21 +214,19 @@ class TrainModel:
             with open(self.log_file, "w") as f:
                 f.write("Run,Phase,TrainingType,Epoch,Train_loss,Train_acc,Val_loss,Val_acc,Test_loss,Test_acc\n")
                 
-    def train(self, early_stopping_patience=10, min_delta=1e-5, warmup_epochs=0):
+    def train(self, early_stopping_patience=25, min_delta=1e-5, save_suffix="", co_dir=False, co_subdir=""):
         loss = -1
         best_val_loss = float('inf')
-        best_train_loss = float('inf')
         epochs_no_improve = 0
         best_epoch = -1
         acceptable_val_acc = 0.0
         best_state_dict = None
 
-        for epoch in range(self.num_epochs+self.resume_epochs):
+        for epoch in range(self.num_epochs):
             self.model.train()
             running_loss, correct, total = 0.0, 0, 0
 
             for i, (inputs, labels) in enumerate(tqdm(self.train_loader)):
-            # for i, (inputs, labels) in enumerate(self.train_loader):
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 labels_for_loss = labels - 1 if self.dataset_name == "EMNIST" else labels
 
@@ -241,11 +238,11 @@ class TrainModel:
                 if self.awp is not None:
                     self.awp.attack_backward(inputs, labels_for_loss, self.criterion)
                     self.awp.restore()
-                
+
                 if self.sam is not None:
                     self.sam.attack_backward(inputs, labels_for_loss, self.criterion)
                     self.sam.restore()
-                
+
                 if self.rwp is not None:
                     self.rwp.attack_backward(inputs, labels_for_loss, self.criterion)
                     self.rwp.restore()
@@ -261,81 +258,35 @@ class TrainModel:
                 self.scheduler.step()
             avg_train_loss = running_loss / len(self.train_loader)
             train_accuracy = 100. * correct / total
-            
+
             print(f'Epoch [{epoch+1}/{self.num_epochs}], '
                 f'Train Loss: {avg_train_loss:.4f}, Train Acc: {train_accuracy:.2f}%')
-            
-                        
-            if epoch + 1 <= warmup_epochs:
-                with open(self.log_file, "a") as f:
-                    f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},-,-\n")
-                continue
-            
+
             val_loss, val_acc = self.evaluate("Val")
-            if self.test_loader is not None:
-                test_loss, test_acc = self.evaluate("Test")
+            test_loss, test_acc = self.evaluate("Test")
             with open(self.log_file, "a") as f:
-                if self.test_loader is not None:
-                    f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc},{test_loss},{test_acc}\n")
+                f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc},{test_loss},{test_acc}\n")
+
+            if early_stopping_patience is not None:
+                if best_val_loss - val_loss > min_delta:
+                    best_val_loss = val_loss
+                    epochs_no_improve = 0
+                    best_state_dict = copy.deepcopy(self.model.state_dict())
+                    best_epoch = epoch + 1
                 else:
-                    f.write(f"{self.run_id},{self.phase},{self.training_type},{epoch+1},{avg_train_loss},{train_accuracy},{val_loss},{val_acc},-,-\n")
+                    epochs_no_improve += 1
 
-            if best_val_loss - val_loss > min_delta:
-                best_val_loss = val_loss
-                epochs_no_improve = 0
-                best_state_dict = copy.deepcopy(self.model.state_dict())
-                best_epoch = epoch + 1
-            else:
-                epochs_no_improve += 1
-
-            if epochs_no_improve >= early_stopping_patience and val_acc >= acceptable_val_acc:
-                print(f"Early stopping at epoch {epoch+1}. Best was epoch {best_epoch} (val_loss={best_val_loss:.4f}).")
-                break
-
-            if epoch == self.num_epochs:
-                if self.phase == "Train":
-                    self.save_model(loss, save_suffix="")
-                    test_accuracy = self.test()
-                self.phase = "ResumeTrain"
+                if epochs_no_improve >= early_stopping_patience and val_acc >= acceptable_val_acc:
+                    print(f"Early stopping at epoch {epoch+1}. Best was epoch {best_epoch} (val_loss={best_val_loss:.4f}).")
+                    break
 
         if best_state_dict is not None:
             self.model.load_state_dict(best_state_dict)
             print(f"Restored best model from epoch {best_epoch}.")
 
-        if self.phase == "Train":
-            self.save_model(loss, save_suffix="")
-        elif self.phase == "GurobiEdit":
-            self.save_model(loss, save_suffix=f"_GE_{self.training_type}")
-        elif self.phase == "ResumeTrain":
-            self.save_model(loss, save_suffix="_Resume")
-        
-    def test(self):
-        self.model.eval()
-        correct = 0
-        total = 0
-        total_loss = 0.0
-        with torch.no_grad():
-            for inputs, labels in self.val_loader:
-                inputs, labels = inputs.to(self.device), labels.to(self.device)
-                labels_for_loss = labels - 1 if self.dataset_name == "EMNIST" else labels
-                outputs = self.model(inputs)
-                loss = self.criterion(outputs, labels_for_loss)
+        self.save_model(loss, save_suffix=save_suffix, co_dir=co_dir, co_subdir=co_subdir)
 
-                batch_size = inputs.size(0)
-                total += batch_size
-                total_loss += loss.item() * batch_size
-                _, predicted = outputs.max(1)
-                correct += predicted.eq(labels_for_loss).sum().item()
-                
-        avg_loss = total_loss / total
-
-        accuracy = 100. * correct / total
-        print(f'Test Accuracy: {accuracy:.2f}%')
-        with open(self.log_file, "a") as f:
-            f.write(f"{self.run_id},{self.phase}_Test,{self.training_type},-1,{avg_loss},{accuracy},-,-\n")
-        return accuracy
-
-    def save_model(self, loss, save_suffix=""):
+    def checkpoint_paths(self, save_suffix="", co_dir=False, co_subdir=""):
         if "AWP" in self.training_type:
             tt = "AWP"
         elif "SAM" in self.training_type:
@@ -344,21 +295,37 @@ class TrainModel:
             tt = "RWP"
         else:
             tt = "ERM"
-        if save_suffix == "" or save_suffix == "_Resume":
-            checkpoint_dir = f"./checkpoints_{tt}/{self.dataset_name}"
-        else:
-            checkpoint_dir = f"./checkpoints_{tt}/{self.dataset_name}_CO"
+        checkpoint_dir = f"./checkpoints_{tt}/{self.dataset_name}"
+        if co_dir:
+            checkpoint_dir += "_CO"
+            if co_subdir:
+                checkpoint_dir += f"/{co_subdir}"
+        full_ckpt_path = f"{checkpoint_dir}/Run{self.run_id}_full_checkpoint{save_suffix}.pth"
+        weight_path = f"{checkpoint_dir}/Run{self.run_id}_classifier_weight{save_suffix}.pt"
+        bias_path = f"{checkpoint_dir}/Run{self.run_id}_classifier_bias{save_suffix}.pt"
+        return checkpoint_dir, full_ckpt_path, weight_path, bias_path
+
+    def save_model(self, loss, save_suffix="", co_dir=False, co_subdir=""):
+        checkpoint_dir, full_ckpt_path, weight_path, bias_path = self.checkpoint_paths(save_suffix, co_dir, co_subdir)
         os.makedirs(checkpoint_dir, exist_ok=True)
-        
-        torch.save(self.model.classifier.weight.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_classifier_weight{save_suffix}.pt")
-        torch.save(self.model.classifier.bias.data.clone(), f"{checkpoint_dir}/Run{self.run_id}_classifier_bias{save_suffix}.pt")
+
+        torch.save(self.model.classifier.weight.data.clone(), weight_path)
+        torch.save(self.model.classifier.bias.data.clone(), bias_path)
         torch.save({
             'epoch': self.num_epochs,
             'model_state_dict': self.model.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
             'scheduler_state_dict': self.scheduler.state_dict(),
-            'loss': loss.item()
-        }, f"{checkpoint_dir}/Run{self.run_id}_full_checkpoint{save_suffix}.pth")
+            'loss': loss.item() if hasattr(loss, "item") else loss
+        }, full_ckpt_path)
+
+    def load_model(self, save_suffix="", co_dir=False, co_subdir=""):
+        _, full_ckpt_path, _, _ = self.checkpoint_paths(save_suffix, co_dir, co_subdir)
+        map_location = None if self.device.type == 'cuda' else torch.device('cpu')
+        checkpoint = torch.load(full_ckpt_path, map_location=map_location)
+        self.model.load_state_dict(checkpoint['model_state_dict'])
+        self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        self.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
 
     def save_fc_inputs(self, dataset_type, save_suffix=""):
         checkpoint_dir_input = f"./checkpoints_inputs/{self.dataset_name}"
@@ -405,14 +372,9 @@ class TrainModel:
         except FileNotFoundError:
             print(f"Files for not found for detele.")
 
-    def run(self):
-        start_time = time.time()
-        if self.phase == "Train":
-            self.train()
-        elif self.phase == "GurobiEdit" or self.phase == "ResumeTrain":
-            self.train(warmup_epochs=0)
-        accuracy = self.test()
-    
+    def run(self, early_stopping_patience=25, min_delta=1e-5, save_suffix="", co_dir=False, co_subdir=""):
+        self.train(early_stopping_patience=early_stopping_patience, min_delta=min_delta, save_suffix=save_suffix, co_dir=co_dir, co_subdir=co_subdir)
+
     def evaluate(self, dataset_type):
         self.model.eval()
         total_loss = 0.0

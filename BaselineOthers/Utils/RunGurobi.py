@@ -167,9 +167,6 @@ class MILP:
             misclassified_mask_full = predictions_gurobi_full != self.pred_full
             misclassified_full = np.sum(misclassified_mask_full)
             accuracy_gurobi_full = np.sum(predictions_gurobi_full == self.labels_full)  / len(self.labels_full) * 100
-            with open(self.store_file_name, "a") as f:
-                f.write(f"{self.run_id},GurobiComplete_Train,-1,-1,{accuracy_gurobi}\n")
-                f.write(f"{self.run_id},GurobiComplete_Val,-1,-1,{accuracy_val}\n")
 
             if os.path.exists(milp_log_file) == False:
                 with open(milp_log_file, "w") as f:
