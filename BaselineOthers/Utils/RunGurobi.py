@@ -170,10 +170,10 @@ class MILP:
 
             if os.path.exists(milp_log_file) == False:
                 with open(milp_log_file, "w") as f:
-                    f.write("Dataset,Method,RunID,Candidate,W_offset_sum,b_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,Accuracy_Val,GlobalMisclassified\n")
+                    f.write("Dataset,Method,RunID,Candidate,W_offset_sum,b_offset_sum,Objective_value,n,Misclassified,Accuracy_Full,Accuracy_Val,GlobalMisclassified,Solve_Time\n")
 
             with open(milp_log_file, "a") as f:
-                f.write(f"{self.dataset_name},{Method},{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{accuracy_val},{misclassified_full}\n")
+                f.write(f"{self.dataset_name},{Method},{self.run_id},{self.candidate},{np.sum(np.abs(W_off))},{np.sum(np.abs(b_off))},{self.gurobi_model.ObjVal},{self.n},{misclassified},{accuracy_gurobi_full},{accuracy_val},{misclassified_full},{self.gurobi_model.Runtime}\n")
             
             return [W_new, b_new]
         else:
