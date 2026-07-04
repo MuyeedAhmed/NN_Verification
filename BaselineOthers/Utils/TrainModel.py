@@ -208,8 +208,9 @@ class TrainModel:
             self.rwp = None
 
         os.makedirs("NNRunLog", exist_ok=True)
-        self.log_file = f"NNRunLog/{self.dataset_name}.csv"
-        
+        log_prefix = "G_" if "Gurobi" in phase else ""
+        self.log_file = f"NNRunLog/{log_prefix}{self.dataset_name}.csv"
+
         if os.path.exists(self.log_file) == False:
             with open(self.log_file, "w") as f:
                 f.write("Run,Phase,TrainingType,Epoch,Train_loss,Train_acc,Val_loss,Val_acc,Test_loss,Test_acc\n")
