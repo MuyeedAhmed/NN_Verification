@@ -189,7 +189,7 @@ if __name__ == "__main__":
 
     tm_type = training_type + "_" + method
     if method == "CMC":
-        tm_type += "_" + cmc_type
+        tm_type = f"{training_type}_C{misclassification_count}{cmc_type}_{n_samples_gurobi}"
 
     if method == "CMC":
         co_subdir = f"{cmc_type}_{misclassification_count}_N{n_samples_gurobi}"
