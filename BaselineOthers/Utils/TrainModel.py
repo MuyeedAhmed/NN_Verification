@@ -370,9 +370,9 @@ class TrainModel:
             os.remove(f"{checkpoint_dir_input}/fc_labels_val.pt")
             os.remove(f"{checkpoint_dir_input}/fc_preds_val.pt")
         except FileNotFoundError:
-            print(f"Files for not found for detele.")
+            print(f"Files for not found for deletion.")
 
-    def run(self, early_stopping_patience=25, min_delta=1e-5, save_suffix="", co_dir=False, co_subdir=""):
+    def run(self, early_stopping_patience=50, min_delta=1e-5, save_suffix="", co_dir=False, co_subdir=""):
         self.train(early_stopping_patience=early_stopping_patience, min_delta=min_delta, save_suffix=save_suffix, co_dir=co_dir, co_subdir=co_subdir)
 
     def evaluate(self, dataset_type):

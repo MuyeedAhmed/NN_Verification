@@ -44,7 +44,7 @@ if __name__ == "__main__":
     parser.add_argument("--cmc_type", default="")
     parser.add_argument("--run_id", type=int, default=0)
     parser.add_argument("--input_type", default="t")  # v/t
-    parser.add_argument("--init_epochs", type=int, default=300, help="Max epochs for Model_init (until convergence)")
+    parser.add_argument("--init_epochs", type=int, default=400, help="Max epochs for Model_init (until convergence)")
     parser.add_argument("--extra_epochs", type=int, default=50, help="Extra epochs run standalone after Model_init converges -> Model_init_50")
     parser.add_argument("--cmc_resume_epochs", type=int, default=100, help="Max epochs to resume training after CMC (until convergence) -> Model_init_CMC_AGAIN_UNTIL_CONVERGENCE")
     parser.add_argument("--cmc_extra_epochs", type=int, default=50, help="Extra epochs after the post-CMC convergence -> Model_init_CMC_AGAIN_UNTIL_CONVERGENCE_50")
@@ -66,11 +66,6 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if training_type == "Regular":
-        # TrainModel.checkpoint_paths() maps anything that isn't AWP/SAM/RWP to "ERM";
-        # normalize here so the paths built in this file (gurobi_checkpoint_dir, the
-        # ./checkpoints_{training_type}_CO makedirs below) and the ones RunGurobi.py
-        # reads from checkpoints_{training_type}/... agree with where TrainModel
-        # actually saves the checkpoint.
         training_type = "ERM"
 
     if save_checkpoint == "N" or (method == "CMC" or method == "TAGD" or method == "TAGDW" or method == "HTA"):
@@ -138,9 +133,6 @@ if __name__ == "__main__":
             "Test_Acc": float(test_acc),
         }
 
-    # ---------------------------------------------------------------
-    # Stage 1: Model_init - initial training until convergence
-    # ---------------------------------------------------------------
     TM = TrainModel(training_type, dataset_name, model_t, train_loader, val_loader, device, test_loader=test_loader, num_epochs=args.init_epochs, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i)
     _, checkpoint_file, _, _ = TM.checkpoint_paths("", co_dir=False)
     if not os.path.exists(checkpoint_file):
@@ -176,22 +168,19 @@ if __name__ == "__main__":
 
     write_stage_row(stages_csv_path, stage_row("Model_init", checkpoint_file, train_loss, train_acc, val_loss, val_acc, test_loss, test_acc))
 
-    # ---------------------------------------------------------------
-    # Stage 2: Model_init_50 - standalone extra epochs after Model_init
-    # converged. Independent of SAM/RWP/ERM/AWP-specific Gurobi/CMC path.
-    # ---------------------------------------------------------------
-    TM50 = TrainModel(training_type, dataset_name, TM.model, train_loader, val_loader, device, test_loader=test_loader, num_epochs=args.extra_epochs, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train_Extra", run_id=i)
-    _, checkpoint_file_50, _, _ = TM50.checkpoint_paths("_50", co_dir=False)
-    if not os.path.exists(checkpoint_file_50):
-        TM50.run(early_stopping_patience=None, save_suffix="_50", co_dir=False)
-    else:
-        TM50.load_model("_50", co_dir=False)
+    if args.extra_epochs > 0:
+        TM50 = TrainModel(training_type, dataset_name, TM.model, train_loader, val_loader, device, test_loader=test_loader, num_epochs=args.extra_epochs, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train_Extra", run_id=i)
+        _, checkpoint_file_50, _, _ = TM50.checkpoint_paths("_50", co_dir=False)
+        if not os.path.exists(checkpoint_file_50):
+            TM50.run(early_stopping_patience=None, save_suffix="_50", co_dir=False)
+        else:
+            TM50.load_model("_50", co_dir=False)
 
-    train_loss_50, train_acc_50 = TM50.evaluate("Train")
-    val_loss_50, val_acc_50 = TM50.evaluate("Val")
-    test_loss_50, test_acc_50 = TM50.evaluate("Test")
+        train_loss_50, train_acc_50 = TM50.evaluate("Train")
+        val_loss_50, val_acc_50 = TM50.evaluate("Val")
+        test_loss_50, test_acc_50 = TM50.evaluate("Test")
 
-    write_stage_row(stages_csv_path, stage_row("Model_init_50", checkpoint_file_50, train_loss_50, train_acc_50, val_loss_50, val_acc_50, test_loss_50, test_acc_50))
+        write_stage_row(stages_csv_path, stage_row("Model_init_50", checkpoint_file_50, train_loss_50, train_acc_50, val_loss_50, val_acc_50, test_loss_50, test_acc_50))
 
     if method == "S" or save_checkpoint == "Y":
         sys.exit()
@@ -202,11 +191,6 @@ if __name__ == "__main__":
     if method == "CMC":
         tm_type += "_" + cmc_type
 
-    # CMC checkpoints live in their own subfolder per (cmc_type, misclassification_count,
-    # gurobi_samples) combination so ablations (Any/Correct/Incorrect x 1/10/... x subset
-    # size) never collide or overwrite each other. TAGD/TAGDW/HTA have no such ablation
-    # axes (cmc_type/misclassification_count are forced to ""/0 for them), so they keep
-    # the flat ./checkpoints_{tt}/{dataset}_CO/ layout, distinguished by method suffix.
     if method == "CMC":
         co_subdir = f"{cmc_type}_{misclassification_count}_N{n_samples_gurobi}"
         edit_suffix = ""
@@ -223,11 +207,6 @@ if __name__ == "__main__":
     S1_Test_loss, S1_Test_acc = TM_after_g.evaluate("Test")
     print("Training and Validation Accuracy before Gurobi optimization:", S1_Train_acc, S1_Val_acc, "Test Accuracy:", S1_Test_acc)
 
-    # ---------------------------------------------------------------
-    # Stage 3: Model_init_CMC - immediately after the Gurobi weight edit.
-    # Skip the (potentially slow) MILP solve entirely if this exact
-    # ablation config has already been solved and checkpointed.
-    # ---------------------------------------------------------------
     _, stage3_checkpoint, _, _ = TM_after_g.checkpoint_paths(edit_suffix, co_dir=True, co_subdir=co_subdir)
 
     if not os.path.exists(stage3_checkpoint):
@@ -309,10 +288,6 @@ if __name__ == "__main__":
     write_stage_row(stages_csv_path, stage_row("Model_init_CMC", stage3_checkpoint, train_loss, train_acc, val_loss, val_acc, test_loss, test_acc))
 
     if method == "CMC":
-        # -----------------------------------------------------------
-        # Stage 4: Model_init_CMC_AGAIN_UNTIL_CONVERGENCE - resume
-        # training after CMC, budget args.cmc_resume_epochs (default 100)
-        # -----------------------------------------------------------
         ge_suffix = "_Resume"
         _, ge_checkpoint, _, _ = TM_after_g.checkpoint_paths(ge_suffix, co_dir=True, co_subdir=co_subdir)
         if not os.path.exists(ge_checkpoint):
@@ -326,23 +301,20 @@ if __name__ == "__main__":
 
         write_stage_row(stages_csv_path, stage_row("Model_init_CMC_AGAIN_UNTIL_CONVERGENCE", ge_checkpoint, S3_Train_loss, S3_Train_acc, S3_Val_loss, S3_Val_acc, S3_Test_loss, S3_Test_acc))
 
-        # -----------------------------------------------------------
-        # Stage 5: Model_init_CMC_AGAIN_UNTIL_CONVERGENCE_50 - standalone
-        # extra epochs (default 50) after stage 4 converges
-        # -----------------------------------------------------------
-        TM_after_g_extra = TrainModel(tm_type, dataset_name, TM_after_g.model, train_loader, val_loader, device, test_loader=test_loader, num_epochs=args.cmc_extra_epochs, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit_Extra", run_id=i)
-        ge_extra_suffix = "_Resume_Extra"
-        _, ge_extra_checkpoint, _, _ = TM_after_g_extra.checkpoint_paths(ge_extra_suffix, co_dir=True, co_subdir=co_subdir)
-        if not os.path.exists(ge_extra_checkpoint):
-            TM_after_g_extra.run(early_stopping_patience=None, save_suffix=ge_extra_suffix, co_dir=True, co_subdir=co_subdir)
-        else:
-            TM_after_g_extra.load_model(ge_extra_suffix, co_dir=True, co_subdir=co_subdir)
+        if args.cmc_extra_epochs > 0:
+            TM_after_g_extra = TrainModel(tm_type, dataset_name, TM_after_g.model, train_loader, val_loader, device, test_loader=test_loader, num_epochs=args.cmc_extra_epochs, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="GurobiEdit_Extra", run_id=i)
+            ge_extra_suffix = "_Resume_Extra"
+            _, ge_extra_checkpoint, _, _ = TM_after_g_extra.checkpoint_paths(ge_extra_suffix, co_dir=True, co_subdir=co_subdir)
+            if not os.path.exists(ge_extra_checkpoint):
+                TM_after_g_extra.run(early_stopping_patience=None, save_suffix=ge_extra_suffix, co_dir=True, co_subdir=co_subdir)
+            else:
+                TM_after_g_extra.load_model(ge_extra_suffix, co_dir=True, co_subdir=co_subdir)
 
-        S4_Train_loss, S4_Train_acc = TM_after_g_extra.evaluate("Train")
-        S4_Val_loss, S4_Val_acc = TM_after_g_extra.evaluate("Val")
-        S4_Test_loss, S4_Test_acc = TM_after_g_extra.evaluate("Test")
+            S4_Train_loss, S4_Train_acc = TM_after_g_extra.evaluate("Train")
+            S4_Val_loss, S4_Val_acc = TM_after_g_extra.evaluate("Val")
+            S4_Test_loss, S4_Test_acc = TM_after_g_extra.evaluate("Test")
 
-        write_stage_row(stages_csv_path, stage_row("Model_init_CMC_AGAIN_UNTIL_CONVERGENCE_50", ge_extra_checkpoint, S4_Train_loss, S4_Train_acc, S4_Val_loss, S4_Val_acc, S4_Test_loss, S4_Test_acc))
+            write_stage_row(stages_csv_path, stage_row("Model_init_CMC_AGAIN_UNTIL_CONVERGENCE_50", ge_extra_checkpoint, S4_Train_loss, S4_Train_acc, S4_Val_loss, S4_Val_acc, S4_Test_loss, S4_Test_acc))
 
     else:
         S3_Train_loss, S3_Train_acc = -1, -1
