@@ -102,8 +102,8 @@ class MILP:
         # time0 = time.time()
 
         if Method == "MisCls_Correct":
-            # self.AddConstraints_MisCls(samples="Correct")
-            self.AddConstraints_CorrectClsMaximize()
+            self.AddConstraints_MisCls(samples="Correct")
+            # self.AddConstraints_CorrectClsMaximize()
         elif Method == "MisCls_Incorrect":
             self.AddConstraints_MisCls(samples="Incorrect")
         elif Method == "MisCls_Any":
@@ -237,7 +237,7 @@ class MILP:
             gp.quicksum(abs_W[i, j] for i in range(self.W.shape[0]) for j in range(self.W.shape[1])) +
             gp.quicksum(abs_b[i] for i in range(layer_size))
         )
-        objective2 = self.missclassification_count
+        objective2 = self.misclassification_count
         self.gurobi_model.setObjective(objective, GRB.MINIMIZE)
         self.gurobi_model.setObjective(objective2, GRB.MAXIMIZE)
         # self.gurobi_model.addConstr(objective >= 0, "ObjectiveLowerBound") 
