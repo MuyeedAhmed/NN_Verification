@@ -49,6 +49,7 @@ if __name__ == "__main__":
     parser.add_argument("--cmc_resume_epochs", type=int, default=100, help="Max epochs to resume training after CMC (until convergence) -> Model_init_CMC_AGAIN_UNTIL_CONVERGENCE")
     parser.add_argument("--cmc_extra_epochs", type=int, default=50, help="Extra epochs after the post-CMC convergence -> Model_init_CMC_AGAIN_UNTIL_CONVERGENCE_50")
     parser.add_argument("--gurobi_samples", type=int, default=1000, help="Number of samples used to build the CMC MILP (subset size ablation)")
+    parser.add_argument("--early_stopping_patience", type=int, default=25, help="Patience for early stopping (number of epochs with no improvement)")
 
     args = parser.parse_args()
 
@@ -60,6 +61,7 @@ if __name__ == "__main__":
     cmc_type = args.cmc_type
     i = args.run_id
     input_type = args.input_type
+    early_stopping_patience = args.early_stopping_patience
 
     if training_type not in ["Regular", "S", "ERM", "AWP", "SAM", "RWP"]:
         print(f"Unknown training type: {training_type}. Exiting.")
@@ -136,7 +138,7 @@ if __name__ == "__main__":
     TM = TrainModel(training_type, dataset_name, model_t, train_loader, val_loader, device, test_loader=test_loader, num_epochs=args.init_epochs, batch_size=BatchSize, learning_rate=learningRate, optimizer_type=optimize, scheduler_type=scheduler_type, phase="Train", run_id=i)
     _, checkpoint_file, _, _ = TM.checkpoint_paths("", co_dir=False)
     if not os.path.exists(checkpoint_file):
-        TM.run(early_stopping_patience=25, save_suffix="", co_dir=False)
+        TM.run(early_stopping_patience=early_stopping_patience, save_suffix="", co_dir=False)
     else:
         TM.load_model("", co_dir=False)
 
@@ -291,7 +293,7 @@ if __name__ == "__main__":
         ge_suffix = "_Resume"
         _, ge_checkpoint, _, _ = TM_after_g.checkpoint_paths(ge_suffix, co_dir=True, co_subdir=co_subdir)
         if not os.path.exists(ge_checkpoint):
-            TM_after_g.run(early_stopping_patience=25, save_suffix=ge_suffix, co_dir=True, co_subdir=co_subdir)
+            TM_after_g.run(early_stopping_patience=early_stopping_patience, save_suffix=ge_suffix, co_dir=True, co_subdir=co_subdir)
         else:
             TM_after_g.load_model(ge_suffix, co_dir=True, co_subdir=co_subdir)
 
